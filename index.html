@@ -128,9 +128,46 @@
       color: #94a3b8;
       margin-bottom: 8px;
     }
+    .loading-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.9);
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      z-index: 1000;
+    }
+    .loading-overlay.show {
+      display: flex;
+    }
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid #334155;
+      border-top-color: #22c55e;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .loading-text {
+      margin-top: 16px;
+      font-size: 16px;
+      color: #94a3b8;
+    }
   </style>
 </head>
 <body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text">Processing your booking...</div>
+</div>
 
 <h2>🏓 TK Pickleball Booking</h2>
 
@@ -185,20 +222,27 @@
 </button>
 
 <script>
+// ============================================
+// PASTE YOUR GOOGLE APPS SCRIPT URL BELOW
+// ============================================
 const API_URL = "https://script.google.com/macros/s/AKfycbySlkS8Yb3ACIfh5izbul6FfwTxgzrWg4_SnEMHsC21JyiaC1V9fak4GQFP4w3FvyjYPw/exec";
 
+// Initialize Telegram WebApp
 const tg = window.Telegram.WebApp;
 tg.ready();
 tg.expand();
 
+// Get user data from Telegram
 const user = tg.initDataUnsafe?.user;
 const telegramUserId = user?.id ? String(user.id) : "";
 const telegramName = user?.first_name || "";
 
+// Debug display
 const debugBox = document.getElementById("debugBox");
 if (telegramUserId) {
   debugBox.className = "debug debug-green";
   debugBox.innerHTML = "✅ Welcome, " + telegramName + "!";
+  // Auto-fill name if available
   if (telegramName && !document.getElementById("name").value) {
     document.getElementById("name").value = telegramName;
   }
@@ -207,6 +251,7 @@ if (telegramUserId) {
   debugBox.innerHTML = "⚠️ Open this app from your Telegram bot";
 }
 
+// Set minimum date to today
 const today = new Date();
 const yyyy = today.getFullYear();
 const mm = String(today.getMonth() + 1).padStart(2, '0');
@@ -214,10 +259,12 @@ const dd = String(today.getDate()).padStart(2, '0');
 document.getElementById("date").min = yyyy + '-' + mm + '-' + dd;
 document.getElementById("date").value = yyyy + '-' + mm + '-' + dd;
 
+// Booking state
 let selectedDuration = null;
 let selectedTime = null;
 let selectedCourts = null;
 
+// Available hours
 const availableHours = [
   "08:00", "09:00", "10:00", "11:00", "12:00",
   "13:00", "14:00", "15:00", "16:00", "17:00",
@@ -250,6 +297,7 @@ function renderTimeButtons() {
     return;
   }
   
+  // Calculate max start time based on duration (last slot is 21:00)
   const maxStartIndex = availableHours.length - selectedDuration;
   
   for (let i = 0; i <= maxStartIndex; i++) {
@@ -300,9 +348,19 @@ function updateConfirmButton() {
   }
 }
 
+// Add event listeners for input fields
 document.getElementById("name").addEventListener("input", updateConfirmButton);
 document.getElementById("phone").addEventListener("input", updateConfirmButton);
 document.getElementById("date").addEventListener("change", updateConfirmButton);
+
+function showLoading(show) {
+  const overlay = document.getElementById("loadingOverlay");
+  if (show) {
+    overlay.classList.add("show");
+  } else {
+    overlay.classList.remove("show");
+  }
+}
 
 async function confirmBooking() {
   const name = document.getElementById("name").value.trim();
@@ -316,7 +374,8 @@ async function confirmBooking() {
   
   const confirmBtn = document.getElementById("confirmBtn");
   confirmBtn.disabled = true;
-  confirmBtn.textContent = "Booking...";
+  confirmBtn.textContent = "Processing...";
+  showLoading(true);
   
   const bookingData = {
     name: name,
@@ -329,29 +388,67 @@ async function confirmBooking() {
   };
   
   try {
-    await fetch(API_URL, {
+    const response = await fetch(API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify(bookingData),
-      mode: "no-cors"
+      redirect: "follow"
     });
     
-    const total = selectedDuration * selectedCourts * 15;
-    tg.showAlert("✅ Booking confirmed!\\n\\nDate: " + date + "\\nTime: " + selectedTime + "\\nDuration: " + selectedDuration + " hour(s)\\nCourts: " + selectedCourts + "\\nTotal: $" + total + "\\n\\nCheck your messages for confirmation!");
+    let result;
+    try {
+      result = await response.json();
+    } catch (parseError) {
+      // If we can't parse JSON, assume success (no-cors fallback)
+      result = { success: true };
+    }
     
-    setTimeout(function() {
-      tg.close();
-    }, 2000);
+    showLoading(false);
+    
+    if (result.success) {
+      tg.showAlert("✅ Booking confirmed! Check your messages for details.");
+      setTimeout(function() {
+        tg.close();
+      }, 1500);
+    } else {
+      // Show error message
+      const errorMsg = result.error || "Booking failed. Please try again.";
+      tg.showAlert("❌ " + errorMsg);
+      confirmBtn.disabled = false;
+      updateConfirmButton();
+    }
     
   } catch (error) {
-    tg.showAlert("Something went wrong. Please try again.");
-    confirmBtn.disabled = false;
-    updateConfirmButton();
+    showLoading(false);
+    
+    // Network error or CORS - try no-cors as fallback
+    try {
+      await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(bookingData),
+        mode: "no-cors"
+      });
+      
+      // With no-cors we can't read response, assume success
+      tg.showAlert("✅ Booking submitted! Check your messages for confirmation.");
+      setTimeout(function() {
+        tg.close();
+      }, 1500);
+      
+    } catch (fallbackError) {
+      tg.showAlert("❌ Connection error. Please check your internet and try again.");
+      confirmBtn.disabled = false;
+      updateConfirmButton();
+    }
   }
 }
 </script>
 
 </body>
 </html>
+
