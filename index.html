@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>TK Pickleball Booking</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      font-family: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f172a;
+      color: #ffffff;
+      padding: 16px;
+      padding-bottom: 100px;
+      margin: 0;
+      min-height: 100vh;
+    }
+    h2 {
+      margin: 0 0 16px 0;
+      font-size: 22px;
+      text-align: center;
+    }
+    .card {
+      background: #1e293b;
+      padding: 14px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+    .card label {
+      font-size: 13px;
+      color: #94a3b8;
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    .grid-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .grid-4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+    button {
+      padding: 12px 8px;
+      border-radius: 10px;
+      border: none;
+      background: #334155;
+      color: #ffffff;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-weight: 500;
+    }
+    button:active {
+      transform: scale(0.96);
+      opacity: 0.9;
+    }
+    button.active {
+      background: #22c55e;
+      color: #000000;
+      font-weight: 600;
+    }
+    button.confirm {
+      background: #22c55e;
+      color: #000000;
+      font-weight: bold;
+      width: 100%;
+      padding: 16px;
+      font-size: 17px;
+      margin-top: 12px;
+      border-radius: 12px;
+    }
+    button.confirm:disabled {
+      background: #334155;
+      color: #64748b;
+    }
+    input {
+      width: 100%;
+      padding: 14px;
+      border-radius: 10px;
+      border: 2px solid #334155;
+      font-size: 16px;
+      background: #0f172a;
+      color: #ffffff;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus {
+      border-color: #22c55e;
+    }
+    input::placeholder {
+      color: #64748b;
+    }
+    .debug {
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      text-align: center;
+      font-weight: 500;
+    }
+    .debug-green {
+      background: #166534;
+      color: #bbf7d0;
+    }
+    .debug-red {
+      background: #991b1b;
+      color: #fecaca;
+    }
+    .price-display {
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      color: #22c55e;
+      margin: 16px 0 8px 0;
+    }
+    .price-note {
+      text-align: center;
+      font-size: 13px;
+      color: #94a3b8;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<h2>🏓 TK Pickleball Booking</h2>
+
+<div class="debug" id="debugBox">Loading...</div>
+
+<div class="card">
+  <label>📛 Your Name</label>
+  <input type="text" id="name" placeholder="Enter your name" autocomplete="name">
+</div>
+
+<div class="card">
+  <label>📱 Phone Number</label>
+  <input type="tel" id="phone" placeholder="Enter your phone number" autocomplete="tel">
+</div>
+
+<div class="card">
+  <label>📅 Select Date</label>
+  <input type="date" id="date">
+</div>
+
+<div class="card">
+  <label>⏱ Duration</label>
+  <div class="grid grid-3" id="durationBtns">
+    <button onclick="selectDuration(this, 1)">1 Hour</button>
+    <button onclick="selectDuration(this, 2)">2 Hours</button>
+    <button onclick="selectDuration(this, 3)">3 Hours</button>
+  </div>
+</div>
+
+<div class="card">
+  <label>🕐 Start Time</label>
+  <div class="grid" id="timeBtns">
+    <span style="color:#64748b; font-size:14px; grid-column: span 2; text-align: center; padding: 8px;">Select duration first</span>
+  </div>
+</div>
+
+<div class="card">
+  <label>🏟 Number of Courts</label>
+  <div class="grid grid-4" id="courtBtns">
+    <button onclick="selectCourts(this, 1)">1</button>
+    <button onclick="selectCourts(this, 2)">2</button>
+    <button onclick="selectCourts(this, 3)">3</button>
+    <button onclick="selectCourts(this, 4)">4</button>
+  </div>
+</div>
+
+<div class="price-display" id="priceDisplay">$0</div>
+<div class="price-note">$15 per hour per court • Pay on arrival</div>
+
+<button class="confirm" id="confirmBtn" onclick="confirmBooking()" disabled>
+  Select all options to book
+</button>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbySlkS8Yb3ACIfh5izbul6FfwTxgzrWg4_SnEMHsC21JyiaC1V9fak4GQFP4w3FvyjYPw/exec";
+
+const tg = window.Telegram.WebApp;
+tg.ready();
+tg.expand();
+
+const user = tg.initDataUnsafe?.user;
+const telegramUserId = user?.id ? String(user.id) : "";
+const telegramName = user?.first_name || "";
+
+const debugBox = document.getElementById("debugBox");
+if (telegramUserId) {
+  debugBox.className = "debug debug-green";
+  debugBox.innerHTML = "✅ Welcome, " + telegramName + "!";
+  if (telegramName && !document.getElementById("name").value) {
+    document.getElementById("name").value = telegramName;
+  }
+} else {
+  debugBox.className = "debug debug-red";
+  debugBox.innerHTML = "⚠️ Open this app from your Telegram bot";
+}
+
+const today = new Date();
+const yyyy = today.getFullYear();
+const mm = String(today.getMonth() + 1).padStart(2, '0');
+const dd = String(today.getDate()).padStart(2, '0');
+document.getElementById("date").min = yyyy + '-' + mm + '-' + dd;
+document.getElementById("date").value = yyyy + '-' + mm + '-' + dd;
+
+let selectedDuration = null;
+let selectedTime = null;
+let selectedCourts = null;
+
+const availableHours = [
+  "08:00", "09:00", "10:00", "11:00", "12:00",
+  "13:00", "14:00", "15:00", "16:00", "17:00",
+  "18:00", "19:00", "20:00", "21:00"
+];
+
+function clearActiveButtons(container) {
+  const buttons = container.querySelectorAll("button");
+  buttons.forEach(function(btn) {
+    btn.classList.remove("active");
+  });
+}
+
+function selectDuration(btn, hours) {
+  selectedDuration = hours;
+  selectedTime = null;
+  clearActiveButtons(btn.parentNode);
+  btn.classList.add("active");
+  renderTimeButtons();
+  updatePrice();
+  updateConfirmButton();
+}
+
+function renderTimeButtons() {
+  const container = document.getElementById("timeBtns");
+  container.innerHTML = "";
+  
+  if (!selectedDuration) {
+    container.innerHTML = '<span style="color:#64748b; font-size:14px; grid-column: span 2; text-align: center; padding: 8px;">Select duration first</span>';
+    return;
+  }
+  
+  const maxStartIndex = availableHours.length - selectedDuration;
+  
+  for (let i = 0; i <= maxStartIndex; i++) {
+    const timeSlot = availableHours[i];
+    const btn = document.createElement("button");
+    btn.textContent = timeSlot;
+    btn.onclick = function() {
+      clearActiveButtons(container);
+      this.classList.add("active");
+      selectedTime = timeSlot;
+      updateConfirmButton();
+    };
+    container.appendChild(btn);
+  }
+}
+
+function selectCourts(btn, num) {
+  selectedCourts = num;
+  clearActiveButtons(btn.parentNode);
+  btn.classList.add("active");
+  updatePrice();
+  updateConfirmButton();
+}
+
+function updatePrice() {
+  const priceDisplay = document.getElementById("priceDisplay");
+  if (selectedDuration && selectedCourts) {
+    const total = selectedDuration * selectedCourts * 15;
+    priceDisplay.textContent = "$" + total;
+  } else {
+    priceDisplay.textContent = "$0";
+  }
+}
+
+function updateConfirmButton() {
+  const btn = document.getElementById("confirmBtn");
+  const name = document.getElementById("name").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const date = document.getElementById("date").value;
+  
+  if (name && phone && date && selectedDuration && selectedTime && selectedCourts) {
+    btn.disabled = false;
+    const total = selectedDuration * selectedCourts * 15;
+    btn.textContent = "Confirm Booking • $" + total;
+  } else {
+    btn.disabled = true;
+    btn.textContent = "Select all options to book";
+  }
+}
+
+document.getElementById("name").addEventListener("input", updateConfirmButton);
+document.getElementById("phone").addEventListener("input", updateConfirmButton);
+document.getElementById("date").addEventListener("change", updateConfirmButton);
+
+async function confirmBooking() {
+  const name = document.getElementById("name").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const date = document.getElementById("date").value;
+  
+  if (!name || !phone || !date || !selectedDuration || !selectedTime || !selectedCourts) {
+    tg.showAlert("Please fill in all fields and select all options.");
+    return;
+  }
+  
+  const confirmBtn = document.getElementById("confirmBtn");
+  confirmBtn.disabled = true;
+  confirmBtn.textContent = "Booking...";
+  
+  const bookingData = {
+    name: name,
+    phone: phone,
+    date: date,
+    time: selectedTime,
+    duration: selectedDuration,
+    courts: selectedCourts,
+    telegramUserId: telegramUserId
+  };
+  
+  try {
+    await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(bookingData),
+      mode: "no-cors"
+    });
+    
+    const total = selectedDuration * selectedCourts * 15;
+    tg.showAlert("✅ Booking confirmed!\\n\\nDate: " + date + "\\nTime: " + selectedTime + "\\nDuration: " + selectedDuration + " hour(s)\\nCourts: " + selectedCourts + "\\nTotal: $" + total + "\\n\\nCheck your messages for confirmation!");
+    
+    setTimeout(function() {
+      tg.close();
+    }, 2000);
+    
+  } catch (error) {
+    tg.showAlert("Something went wrong. Please try again.");
+    confirmBtn.disabled = false;
+    updateConfirmButton();
+  }
+}
+</script>
+
+</body>
+</html>
