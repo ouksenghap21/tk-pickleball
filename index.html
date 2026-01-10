@@ -424,14 +424,16 @@
             justify-content: center;
         }
 
-        .modal-content {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            margin: 16px;
-            max-width: 400px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-        }
+       .modal-content {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    margin: 16px;
+    max-width: 400px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    color: #000000;  /* ADD THIS LINE */
+}
+
 
         .modal-header {
             font-size: 20px;
@@ -440,14 +442,15 @@
             font-weight: 700;
         }
 
-        .modal-details {
-            background: #f5f5f5;
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            line-height: 1.8;
-        }
+       .modal-details {
+    background: #f5f5f5;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    line-height: 1.8;
+    color: #000000;  /* ADD THIS LINE */
+}
 
         .modal-buttons {
             display: flex;
@@ -991,62 +994,97 @@
     }
 
     async function submitBooking() {
-        hideConfirmationModal();
-        showLoading(true);
+    hideConfirmationModal();
+    showLoading(true);
 
-        const telegramUser = getTelegramUserData();
-        if (!telegramUser) {
-            showLoading(false);
-            showMessage(translations[currentLang].errorTelegram, 'error');
-            return;
-        }
-
-        const formData = {
-            action: 'book',
-            name: document.getElementById('name').value,
-            phone: document.getElementById('phone').value,
-            date: document.getElementById('date').value,
-            time: document.getElementById('selectedTime').value,
-            duration: document.getElementById('duration').value,
-            courts: document.getElementById('courts').value,
-            telegram_id: telegramUser.telegram_id,
-            source: 'telegram_miniapp'
-        };
-
-        try {
-            const params = new URLSearchParams(formData);
-            const response = await fetch(`${BACKEND_URL}?${params.toString()}`);
-            const data = await response.json();
-
-            showLoading(false);
-
-            if (data.status === 'success') {
-                showMessage(translations[currentLang].successBooked, 'success');
-                
-                document.getElementById('bookingForm').reset();
-                document.getElementById('timeGrid').innerHTML = '';
-                document.getElementById('selectedTime').value = '';
-                document.getElementById('totalPrice').textContent = '0';
-                document.getElementById('durationValue').textContent = '1';
-                document.getElementById('durationSlider').value = '1';
-                
-                setTimeout(() => {
-                    if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
-                        Telegram.WebApp.close();
-                    }
-                }, 3000);
-            } else if (data.error && data.error.includes('already booked')) {
-                showMessage(translations[currentLang].errorDoubleBooked, 'error');
-                checkAndLoadAvailability();
-            } else {
-                showMessage(data.error || translations[currentLang].errorBookingFailed, 'error');
-            }
-        } catch (error) {
-            showLoading(false);
-            showMessage(translations[currentLang].errorConnection, 'error');
-            console.error('Booking error:', error);
-        }
+    const telegramUser = getTelegramUserData();
+    if (!telegramUser) {
+        showLoading(false);
+        showMessage(translations[currentLang].errorTelegram, 'error');
+        return;
     }
+
+    // Get form values
+    const name = document.getElementById('name').value;
+    const phone = document.getElementById('phone').value;
+    const date = document.getElementById('date').value;
+    const time = document.getElementById('selectedTime').value;
+    const duration = document.getElementById('duration').value;
+    const courts = document.getElementById('courts').value;
+
+    console.log('📤 Submitting booking:', {
+        name, phone, date, time, duration, courts,
+        telegram_id: telegramUser.telegram_id
+    });
+
+    const formData = {
+        action: 'book',
+        name: name,
+        phone: phone,
+        date: date,
+        time: time,
+        duration: duration,
+        courts: courts,
+        telegram_id: telegramUser.telegram_id,
+        source: 'telegram_miniapp'
+    };
+
+    try {
+        const params = new URLSearchParams(formData);
+        const url = `${BACKEND_URL}?${params.toString()}`;
+        
+        console.log('🌐 Booking URL:', url);
+        
+        const response = await fetch(url);
+        console.log('📡 Response status:', response.status);
+        
+        const data = await response.json();
+        console.log('📦 Response data:', data);
+
+        showLoading(false);
+
+        // Check for different response formats
+        if (data.success === true || data.status === 'success') {
+            showMessage(translations[currentLang].successBooked, 'success');
+            
+            // Reset form
+            document.getElementById('bookingForm').reset();
+            document.getElementById('timeGrid').innerHTML = '';
+            document.getElementById('selectedTime').value = '';
+            document.getElementById('totalPrice').textContent = '0';
+            document.getElementById('durationValue').textContent = '1';
+            document.getElementById('durationSlider').value = '1';
+            document.getElementById('duration').value = '1';
+            
+            // Reload initial state
+            const today = new Date();
+            document.getElementById('date').value = formatDate(today);
+            document.getElementById('courts').value = '1';
+            
+            // Close Telegram WebApp after 3 seconds
+            setTimeout(() => {
+                if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
+                    Telegram.WebApp.close();
+                }
+            }, 3000);
+        } else {
+            // Show the actual error message from backend
+            const errorMsg = data.error || data.message || translations[currentLang].errorBookingFailed;
+            console.error('❌ Booking error:', errorMsg);
+            showMessage(errorMsg, 'error');
+            
+            // If it's a double booking, refresh availability
+            if (errorMsg.includes('already booked') || errorMsg.includes('not available')) {
+                checkAndLoadAvailability();
+            }
+        }
+    } catch (error) {
+        showLoading(false);
+        console.error('💥 Network error:', error);
+        showMessage(translations[currentLang].errorConnection + ': ' + error.message, 'error');
+    }
+}
+
 
     // ============================================
     // AUTO-REFRESH
