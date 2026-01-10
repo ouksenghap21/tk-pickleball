@@ -6,8 +6,8 @@
     <title>TK Pickleball Booking</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        * {
-            margin: 0;
+     * {
+    margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
@@ -594,7 +594,7 @@
 
             <div class="info-box">
                 <h3 data-i18n="location">📍 Location</h3>
-                <p data-i18n="locationDetails">TK Pickleball Courts<br>Open daily 8:00 AM - 9:00 PM</p>
+                <p data-i18n="locationDetails">TK Pickleball Courts<br>Open daily 8:00 AM - 10:00 PM</p>
             </div>
         </form>
 
@@ -748,21 +748,18 @@
     function switchLanguage(lang) {
         currentLang = lang;
         localStorage.setItem('preferredLang', lang);
-        
-        // Update active button
+
         document.querySelectorAll('.lang-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.lang === lang);
         });
-        
-        // Update all translatable elements
+
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
             if (translations[lang][key]) {
                 el.innerHTML = translations[lang][key];
             }
         });
-        
-        // Update placeholders
+
         document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
             const key = el.getAttribute('data-i18n-placeholder');
             if (translations[lang][key]) {
@@ -778,10 +775,7 @@
         const messageBox = document.getElementById('messageBox');
         messageBox.textContent = message;
         messageBox.className = `message ${type} show`;
-        
-        setTimeout(() => {
-            messageBox.classList.remove('show');
-        }, 5000);
+        setTimeout(() => messageBox.classList.remove('show'), 5000);
     }
 
     function showLoading(show = true) {
@@ -825,14 +819,11 @@
 
     function updatePrice() {
         const duration = parseInt(document.getElementById('duration').value) || 1;
-        const courts = parseInt(document.getElementById('courts').value) || 1;
+        const courts = parseInt(document.getElementById('courts').value) || 0;
         const totalPrice = duration * courts * PRICE_PER_HOUR;
         document.getElementById('totalPrice').textContent = totalPrice;
     }
 
-    // ============================================
-    // DATE HANDLING
-    // ============================================
     function setQuickDate(days) {
         const dateInput = document.getElementById('date');
         const today = new Date();
@@ -841,9 +832,6 @@
         dateInput.dispatchEvent(new Event('change'));
     }
 
-    // ============================================
-    // DURATION SLIDER
-    // ============================================
     function setupDurationSlider() {
         const slider = document.getElementById('durationSlider');
         const valueDisplay = document.getElementById('durationValue');
@@ -948,6 +936,7 @@
         document.getElementById('selectedTime').value = time;
         document.getElementById('btnBook').disabled = false;
     }
+
     // ============================================
     // FORM SUBMISSION & BOOKING
     // ============================================
@@ -1022,7 +1011,6 @@
             if (data.status === 'success') {
                 showMessage(translations[currentLang].successBooked, 'success');
                 
-                // Reset form
                 document.getElementById('bookingForm').reset();
                 document.getElementById('timeGrid').innerHTML = '';
                 document.getElementById('selectedTime').value = '';
@@ -1030,7 +1018,6 @@
                 document.getElementById('durationValue').textContent = '1';
                 document.getElementById('durationSlider').value = '1';
                 
-                // Close Telegram WebApp after 3 seconds
                 setTimeout(() => {
                     if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
                         Telegram.WebApp.close();
@@ -1038,7 +1025,7 @@
                 }, 3000);
             } else if (data.error && data.error.includes('already booked')) {
                 showMessage(translations[currentLang].errorDoubleBooked, 'error');
-                checkAndLoadAvailability(); // Refresh availability
+                checkAndLoadAvailability();
             } else {
                 showMessage(data.error || translations[currentLang].errorBookingFailed, 'error');
             }
@@ -1050,7 +1037,7 @@
     }
 
     // ============================================
-    // AUTO-REFRESH FOR AVAILABILITY
+    // AUTO-REFRESH
     // ============================================
     function startAutoRefresh() {
         stopAutoRefresh();
@@ -1076,46 +1063,36 @@
     // EVENT LISTENERS
     // ============================================
     function setupEventListeners() {
-        // Language toggle
         document.querySelectorAll('.lang-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                switchLanguage(btn.dataset.lang);
-            });
+            btn.addEventListener('click', () => switchLanguage(btn.dataset.lang));
         });
 
-        // Quick date buttons
         document.getElementById('btnToday').addEventListener('click', () => setQuickDate(0));
         document.getElementById('btnTomorrow').addEventListener('click', () => setQuickDate(1));
         document.getElementById('btnNextWeek').addEventListener('click', () => setQuickDate(7));
 
-        // Date change
         document.getElementById('date').addEventListener('change', () => {
             checkAndLoadAvailability();
             startAutoRefresh();
         });
 
-        // Courts selection
         document.getElementById('courts').addEventListener('change', () => {
             updatePrice();
             checkAndLoadAvailability();
         });
 
-        // Hide unavailable toggle
         document.getElementById('hideUnavailable').addEventListener('change', () => {
             checkAndLoadAvailability();
         });
 
-        // Form submission
         document.getElementById('bookingForm').addEventListener('submit', (e) => {
             e.preventDefault();
             showConfirmationModal();
         });
 
-        // Modal buttons
         document.getElementById('confirmCancel').addEventListener('click', hideConfirmationModal);
         document.getElementById('confirmSubmit').addEventListener('click', submitBooking);
 
-        // Close modal on background click
         document.getElementById('confirmModal').addEventListener('click', (e) => {
             if (e.target.id === 'confirmModal') {
                 hideConfirmationModal();
@@ -1123,39 +1100,30 @@
         });
     }
 
-      // ============================================
+    // ============================================
     // INITIALIZATION
     // ============================================
     function init() {
-        // Load saved language preference
         const savedLang = localStorage.getItem('preferredLang') || 'en';
         switchLanguage(savedLang);
 
-        // Setup all event listeners
         setupEventListeners();
-
-        // Setup duration slider
         setupDurationSlider();
 
-        // Set default date to today
         const today = new Date();
         document.getElementById('date').value = formatDate(today);
         document.getElementById('date').setAttribute('min', formatDate(today));
 
-        // Set max date (30 days from now)
         const maxDate = new Date();
         maxDate.setDate(maxDate.getDate() + 30);
         document.getElementById('date').setAttribute('max', formatDate(maxDate));
 
-        // Set default courts to 1
         document.getElementById('courts').value = '1';
 
-        // Initialize Telegram WebApp
         if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
             Telegram.WebApp.ready();
             Telegram.WebApp.expand();
             
-            // Set theme colors
             if (Telegram.WebApp.themeParams) {
                 document.body.style.setProperty('--tg-theme-bg-color', Telegram.WebApp.themeParams.bg_color || '#ffffff');
                 document.body.style.setProperty('--tg-theme-text-color', Telegram.WebApp.themeParams.text_color || '#000000');
@@ -1163,18 +1131,25 @@
             }
         }
 
-        // Initial price update
         updatePrice();
-
-        // Load initial availability (with default values: today, 1 hour, 1 court)
         checkAndLoadAvailability();
-        
-        // Start auto-refresh
         startAutoRefresh();
 
-        console.log('TK Pickleball Booking System Initialized');
+        console.log('TK Pickleball Booking System Initialized ✅');
     }
 
+    // ============================================
+    // START THE APPLICATION
+    // ============================================
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+
+    window.addEventListener('beforeunload', () => {
+        stopAutoRefresh();
+    });
 </script>
 </body>
 </html>
