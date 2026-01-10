@@ -618,8 +618,8 @@
     // CONFIGURATION & CONSTANTS
     // ============================================
     const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbySlkS8Yb3ACIfh5izbul6FfwTxgzrWg4_SnEMHsC21JyiaC1V9fak4GQFP4w3FvyjYPw/exec';
-    const AUTO_REFRESH_INTERVAL = 15000;
-    const PRICE_PER_HOUR = 5;
+    const AUTO_REFRESH_INTERVAL = 30000;
+    const PRICE_PER_HOUR = 15;
     let autoRefreshTimer = null;
     let currentLang = 'en';
 
@@ -1123,7 +1123,7 @@
         });
     }
 
-    // ============================================
+      // ============================================
     // INITIALIZATION
     // ============================================
     function init() {
@@ -1147,6 +1147,9 @@
         maxDate.setDate(maxDate.getDate() + 30);
         document.getElementById('date').setAttribute('max', formatDate(maxDate));
 
+        // Set default courts to 1
+        document.getElementById('courts').value = '1';
+
         // Initialize Telegram WebApp
         if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
             Telegram.WebApp.ready();
@@ -1163,20 +1166,15 @@
         // Initial price update
         updatePrice();
 
+        // Load initial availability (with default values: today, 1 hour, 1 court)
+        checkAndLoadAvailability();
+        
+        // Start auto-refresh
+        startAutoRefresh();
+
         console.log('TK Pickleball Booking System Initialized');
     }
 
-    // Start the app when DOM is ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
-    }
-
-    // Cleanup on page unload
-    window.addEventListener('beforeunload', () => {
-        stopAutoRefresh();
-    });
 </script>
 </body>
 </html>
