@@ -73,6 +73,95 @@
             border-color: var(--tg-theme-button-color, #3390ec);
         }
 
+        /* ⭐ NEW: Time Slot Grid Styles */
+        .time-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .time-slot {
+            padding: 16px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--tg-theme-bg-color, #ffffff);
+            user-select: none;
+        }
+
+        .time-slot .time {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--tg-theme-text-color, #000000);
+            margin-bottom: 4px;
+        }
+
+        .time-slot .courts-info {
+            font-size: 11px;
+            color: var(--tg-theme-hint-color, #999999);
+        }
+
+        /* Available slot */
+        .time-slot.available {
+            border-color: var(--tg-theme-button-color, #3390ec);
+            background: rgba(51, 144, 236, 0.05);
+        }
+
+        .time-slot.available:hover {
+            background: rgba(51, 144, 236, 0.1);
+            transform: scale(1.02);
+        }
+
+        .time-slot.available:active {
+            transform: scale(0.98);
+        }
+
+        /* Selected slot */
+        .time-slot.selected {
+            border-color: var(--tg-theme-button-color, #3390ec);
+            background: var(--tg-theme-button-color, #3390ec);
+        }
+
+        .time-slot.selected .time {
+            color: white;
+        }
+
+        .time-slot.selected .courts-info {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Unavailable slot */
+        .time-slot.unavailable {
+            border-color: #e0e0e0;
+            background: #f5f5f5;
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .time-slot.unavailable .time {
+            color: #999999;
+        }
+
+        .time-slot.unavailable .courts-info {
+            color: #cccccc;
+        }
+
+        /* Loading state for time slots */
+        .time-grid.loading {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .time-loading {
+            text-align: center;
+            padding: 20px;
+            color: var(--tg-theme-hint-color, #999999);
+            font-size: 14px;
+        }
+
         .info-box {
             background: var(--tg-theme-secondary-bg-color, #f4f4f5);
             border-radius: 8px;
@@ -203,6 +292,14 @@
         .required {
             color: #dc3545;
         }
+
+        /* ⭐ NEW: Helper text for time selection */
+        .helper-text {
+            font-size: 12px;
+            color: var(--tg-theme-hint-color, #999999);
+            margin-top: 8px;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -236,27 +333,6 @@
             </div>
 
             <div class="form-group">
-                <label for="time">Start Time <span class="required">*</span></label>
-                <select id="time" name="time" required>
-                    <option value="">Select time</option>
-                    <option value="08:00">08:00 AM</option>
-                    <option value="09:00">09:00 AM</option>
-                    <option value="10:00">10:00 AM</option>
-                    <option value="11:00">11:00 AM</option>
-                    <option value="12:00">12:00 PM</option>
-                    <option value="13:00">01:00 PM</option>
-                    <option value="14:00">02:00 PM</option>
-                    <option value="15:00">03:00 PM</option>
-                    <option value="16:00">04:00 PM</option>
-                    <option value="17:00">05:00 PM</option>
-                    <option value="18:00">06:00 PM</option>
-                    <option value="19:00">07:00 PM</option>
-                    <option value="20:00">08:00 PM</option>
-                    <option value="21:00">09:00 PM</option>
-                </select>
-            </div>
-
-            <div class="form-group">
                 <label for="duration">Duration (Hours) <span class="required">*</span></label>
                 <select id="duration" name="duration" required>
                     <option value="">Select duration</option>
@@ -276,6 +352,20 @@
                     <option value="3">3 Courts</option>
                     <option value="4">4 Courts</option>
                 </select>
+            </div>
+
+            <!-- ⭐ NEW: Visual Time Slot Picker -->
+            <div class="form-group">
+                <label>Start Time <span class="required">*</span></label>
+                <p class="helper-text">Select date, duration, and number of courts first to see available times</p>
+                <div id="timeLoadingMessage" class="time-loading" style="display: none;">
+                    Checking availability...
+                </div>
+                <div id="timeGrid" class="time-grid">
+                    <!-- Time slots will be dynamically generated here -->
+                </div>
+                <!-- Hidden input to store selected time -->
+                <input type="hidden" id="selectedTime" name="time" required>
             </div>
 
             <div class="price-display">
@@ -301,7 +391,25 @@
         // ============================================
         // CONFIGURATION
         // ============================================
-        const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbySlkS8Yb3ACIfh5izbul6FfwTxgzrWg4_SnEMHsC21JyiaC1V9fak4GQFP4w3FvyjYPw/exec'; // ⚠️ REPLACE THIS
+        const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbySlkS8Yb3ACIfh5izbul6FfwTxgzrWg4_SnEMHsC21JyiaC1V9fak4GQFP4w3FvyjYPw/exec';
+
+        // ⭐ Time slots (8 AM to 9 PM)
+        const TIME_SLOTS = [
+            { value: '08:00', label: '8:00 AM' },
+            { value: '09:00', label: '9:00 AM' },
+            { value: '10:00', label: '10:00 AM' },
+            { value: '11:00', label: '11:00 AM' },
+            { value: '12:00', label: '12:00 PM' },
+            { value: '13:00', label: '1:00 PM' },
+            { value: '14:00', label: '2:00 PM' },
+            { value: '15:00', label: '3:00 PM' },
+            { value: '16:00', label: '4:00 PM' },
+            { value: '17:00', label: '5:00 PM' },
+            { value: '18:00', label: '6:00 PM' },
+            { value: '19:00', label: '7:00 PM' },
+            { value: '20:00', label: '8:00 PM' },
+            { value: '21:00', label: '9:00 PM' }
+        ];
 
         // ============================================
         // TELEGRAM WEB APP INITIALIZATION
@@ -310,7 +418,6 @@
         tg.expand();
         tg.MainButton.hide();
 
-        // Get Telegram user data
         let telegramUser = tg.initDataUnsafe?.user || null;
         let telegramUserId = telegramUser?.id || null;
 
@@ -326,12 +433,18 @@
         dateInput.value = today;
 
         // ============================================
-        // PRICE CALCULATION
+        // ELEMENTS
         // ============================================
         const durationInput = document.getElementById('duration');
         const courtsInput = document.getElementById('courts');
         const priceDisplay = document.getElementById('totalPrice');
+        const timeGrid = document.getElementById('timeGrid');
+        const timeLoadingMessage = document.getElementById('timeLoadingMessage');
+        const selectedTimeInput = document.getElementById('selectedTime');
 
+        // ============================================
+        // PRICE CALCULATION
+        // ============================================
         function calculatePrice() {
             const duration = parseInt(durationInput.value) || 0;
             const courts = parseInt(courtsInput.value) || 0;
@@ -339,8 +452,122 @@
             priceDisplay.textContent = total;
         }
 
-        durationInput.addEventListener('change', calculatePrice);
-        courtsInput.addEventListener('change', calculatePrice);
+        durationInput.addEventListener('change', () => {
+            calculatePrice();
+            fetchAvailability();
+        });
+
+        courtsInput.addEventListener('change', () => {
+            calculatePrice();
+            fetchAvailability();
+        });
+
+        dateInput.addEventListener('change', fetchAvailability);
+
+        // ============================================
+        // ⭐ FETCH AVAILABILITY FROM BACKEND
+        // ============================================
+        async function fetchAvailability() {
+            const date = dateInput.value;
+            const duration = durationInput.value;
+            const courts = courtsInput.value;
+
+            // Clear previous selection
+            selectedTimeInput.value = '';
+
+            // Validate required fields
+            if (!date || !duration || !courts) {
+                timeGrid.innerHTML = '<p style="text-align: center; color: #999; padding: 20px; grid-column: 1 / -1;">Please select date, duration, and number of courts first</p>';
+                return;
+            }
+
+            // Show loading
+            timeGrid.classList.add('loading');
+            timeLoadingMessage.style.display = 'block';
+
+            try {
+                const url = `${BACKEND_URL}?action=getSlots&date=${date}&duration=${duration}&courts=${courts}`;
+                console.log('Fetching availability:', url);
+
+                const response = await fetch(url, {
+                    method: 'GET',
+                    redirect: 'follow'
+                });
+
+                const result = await response.json();
+                console.log('Availability result:', result);
+
+                if (result.success) {
+                    renderTimeSlots(result.slots);
+                } else {
+                    timeGrid.innerHTML = '<p style="text-align: center; color: #dc3545; padding: 20px; grid-column: 1 / -1;">❌ Error loading availability</p>';
+                }
+
+            } catch (error) {
+                console.error('Error fetching availability:', error);
+                timeGrid.innerHTML = '<p style="text-align: center; color: #dc3545; padding: 20px; grid-column: 1 / -1;">❌ Connection error</p>';
+            } finally {
+                timeGrid.classList.remove('loading');
+                timeLoadingMessage.style.display = 'none';
+            }
+        }
+
+        // ============================================
+        // ⭐ RENDER TIME SLOTS
+        // ============================================
+        function renderTimeSlots(availableSlots) {
+            timeGrid.innerHTML = '';
+
+            // Create a map of available times
+            const availabilityMap = {};
+            availableSlots.forEach(slot => {
+                availabilityMap[slot.time] = slot.availableCourts;
+            });
+
+            // Render all time slots
+            TIME_SLOTS.forEach(slot => {
+                const div = document.createElement('div');
+                div.className = 'time-slot';
+
+                const availableCourts = availabilityMap[slot.value];
+                const isAvailable = availableCourts !== undefined && availableCourts > 0;
+
+                if (isAvailable) {
+                    div.classList.add('available');
+                    div.onclick = () => selectTimeSlot(slot.value, div);
+                } else {
+                    div.classList.add('unavailable');
+                }
+
+                div.innerHTML = `
+                    <div class="time">${slot.label}</div>
+                    <div class="courts-info">${isAvailable ? `${availableCourts} courts` : 'Full'}</div>
+                `;
+
+                timeGrid.appendChild(div);
+            });
+        }
+
+        // ============================================
+        // ⭐ SELECT TIME SLOT
+        // ============================================
+        function selectTimeSlot(time, element) {
+            // Remove previous selection
+            document.querySelectorAll('.time-slot.selected').forEach(slot => {
+                slot.classList.remove('selected');
+            });
+
+            // Select new slot
+            element.classList.add('selected');
+            selectedTimeInput.value = time;
+
+            console.log('Selected time:', time);
+
+            // Haptic feedback
+            if (tg.HapticFeedback) {
+                tg.HapticFeedback.selectionChanged();
+            }
+        }
 
         // ============================================
         // SHOW MESSAGE
@@ -350,14 +577,12 @@
             messageBox.textContent = text;
             messageBox.className = `message ${type} show`;
             
-            // Auto-hide after 5 seconds for success messages
             if (type === 'success') {
                 setTimeout(() => {
                     messageBox.classList.remove('show');
                 }, 5000);
             }
             
-            // Scroll to top to show message
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -386,7 +611,6 @@
         document.getElementById('bookingForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            // Validate Telegram user ID
             if (!telegramUserId) {
                 showMessage('❌ Error: Telegram user data not available. Please open this app from Telegram.', 'error');
                 return;
@@ -398,68 +622,56 @@
                 name: document.getElementById('name').value.trim(),
                 phone: document.getElementById('phone').value.trim(),
                 date: document.getElementById('date').value,
-                time: document.getElementById('time').value,
+                time: selectedTimeInput.value,
                 duration: document.getElementById('duration').value,
                 courts: document.getElementById('courts').value,
                 telegramUserId: telegramUserId.toString()
             };
 
-            // Validate all fields
+            // Validate
             if (!formData.name || !formData.phone || !formData.date || 
                 !formData.time || !formData.duration || !formData.courts) {
-                showMessage('❌ Please fill in all required fields', 'error');
+                showMessage('❌ Please fill in all required fields and select a time', 'error');
                 return;
             }
 
             console.log('Submitting booking:', formData);
-
-            // Show loading
             showLoading(true);
 
             try {
-                // Build URL with parameters (GET method)
                 const params = new URLSearchParams(formData);
                 const url = `${BACKEND_URL}?${params.toString()}`;
 
-                console.log('Request URL:', url);
-
-                // Make request
                 const response = await fetch(url, {
                     method: 'GET',
                     redirect: 'follow'
                 });
 
-                console.log('Response status:', response.status);
-
-                // Parse response
                 const result = await response.json();
                 console.log('Response data:', result);
 
                 showLoading(false);
 
                 if (result.success) {
-                    // Success!
                     showMessage('✅ ' + result.message, 'success');
                     
-                    // Show success haptic feedback
                     if (tg.HapticFeedback) {
                         tg.HapticFeedback.notificationOccurred('success');
                     }
 
-                    // Reset form after 2 seconds
                     setTimeout(() => {
                         document.getElementById('bookingForm').reset();
                         dateInput.value = today;
                         priceDisplay.textContent = '0';
+                        selectedTimeInput.value = '';
+                        timeGrid.innerHTML = '<p style="text-align: center; color: #999; padding: 20px; grid-column: 1 / -1;">Please select date, duration, and number of courts first</p>';
                     }, 2000);
 
-                    // Optionally close the Mini App after 3 seconds
                     setTimeout(() => {
                         tg.close();
                     }, 3000);
 
                 } else {
-                    // Error from backend
                     showMessage('❌ ' + (result.error || 'Booking failed. Please try again.'), 'error');
                     
                     if (tg.HapticFeedback) {
@@ -479,7 +691,7 @@
         });
 
         // ============================================
-        // AUTO-FILL NAME IF AVAILABLE
+        // AUTO-FILL NAME
         // ============================================
         if (telegramUser) {
             const firstName = telegramUser.first_name || '';
@@ -492,11 +704,13 @@
         }
 
         // ============================================
-        // READY NOTIFICATION
+        // INITIALIZE
         // ============================================
         tg.ready();
         console.log('✅ Telegram Mini App initialized');
-        console.log('Backend URL:', BACKEND_URL);
+
+        // Initialize with empty state
+        timeGrid.innerHTML = '<p style="text-align: center; color: #999; padding: 20px; grid-column: 1 / -1;">Please select date, duration, and number of courts first</p>';
     </script>
 </body>
 </html>
