@@ -26,9 +26,39 @@
             margin: 0 auto;
         }
 
+        .lang-toggle {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            display: flex;
+            gap: 4px;
+            background: #f0f0f0;
+            border-radius: 20px;
+            padding: 4px;
+            z-index: 100;
+        }
+
+        .lang-btn {
+            padding: 6px 14px;
+            border: none;
+            border-radius: 16px;
+            background: transparent;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #666;
+        }
+
+        .lang-btn.active {
+            background: var(--tg-theme-button-color, #3390ec);
+            color: white;
+        }
+
         .header {
             text-align: center;
             margin-bottom: 24px;
+            margin-top: 40px;
         }
 
         .header h1 {
@@ -73,7 +103,94 @@
             border-color: var(--tg-theme-button-color, #3390ec);
         }
 
-        /* ⭐ NEW: Time Slot Grid Styles */
+        .quick-dates {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .quick-date-btn {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-date-btn:active {
+            transform: scale(0.95);
+        }
+
+        .duration-slider-container {
+            margin-top: 12px;
+        }
+
+        .duration-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            color: white;
+        }
+
+        .duration-display .value {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .duration-display .label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .duration-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #e0e0e0;
+            outline: none;
+        }
+
+        .duration-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--tg-theme-button-color, #3390ec);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .duration-slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--tg-theme-button-color, #3390ec);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .duration-marks {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4px;
+            padding: 0 4px;
+        }
+
+        .duration-mark {
+            font-size: 11px;
+            color: #999;
+        }
+
         .time-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -104,7 +221,6 @@
             color: var(--tg-theme-hint-color, #999999);
         }
 
-        /* Available slot */
         .time-slot.available {
             border-color: var(--tg-theme-button-color, #3390ec);
             background: rgba(51, 144, 236, 0.05);
@@ -119,7 +235,6 @@
             transform: scale(0.98);
         }
 
-        /* Selected slot */
         .time-slot.selected {
             border-color: var(--tg-theme-button-color, #3390ec);
             background: var(--tg-theme-button-color, #3390ec);
@@ -133,7 +248,6 @@
             color: rgba(255, 255, 255, 0.8);
         }
 
-        /* Unavailable slot */
         .time-slot.unavailable {
             border-color: #e0e0e0;
             background: #f5f5f5;
@@ -141,18 +255,16 @@
             cursor: not-allowed;
         }
 
-        .time-slot.unavailable .time {
-            color: #999999;
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: 8px;
         }
 
-        .time-slot.unavailable .courts-info {
-            color: #cccccc;
-        }
-
-        /* Loading state for time slots */
-        .time-grid.loading {
-            opacity: 0.5;
-            pointer-events: none;
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
 
         .time-loading {
@@ -173,7 +285,6 @@
             font-size: 16px;
             font-weight: 600;
             margin-bottom: 8px;
-            color: var(--tg-theme-text-color, #000000);
         }
 
         .info-box p {
@@ -293,60 +404,167 @@
             color: #dc3545;
         }
 
-        /* ⭐ NEW: Helper text for time selection */
         .helper-text {
             font-size: 12px;
             color: var(--tg-theme-hint-color, #999999);
             margin-top: 8px;
             font-style: italic;
         }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin: 16px;
+            max-width: 400px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            font-size: 20px;
+            margin-bottom: 16px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .modal-details {
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-btn-cancel {
+            border: 2px solid #ddd;
+            background: white;
+            color: #333;
+        }
+
+        .modal-btn-confirm {
+            border: none;
+            background: var(--tg-theme-button-color, #3390ec);
+            color: white;
+        }
+
+        .modal-btn:active {
+            transform: scale(0.95);
+        }
+
+        .toggle-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .toggle-label input[type="checkbox"] {
+            cursor: pointer;
+            width: auto;
+        }
     </style>
 </head>
 <body>
+    <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="km">KH</button>
+    </div>
+
     <div class="container">
         <div class="header">
-            <h1>🏓 TK Pickleball</h1>
-            <p>Book your court in seconds</p>
+            <h1>🏓 <span data-i18n="title">TK Pickleball</span></h1>
+            <p data-i18n="subtitle">Book your court in seconds</p>
         </div>
 
         <div id="messageBox" class="message"></div>
-
         <div id="loadingBox" class="loading">
             <div class="spinner"></div>
-            <p>Processing your booking...</p>
+            <p data-i18n="processing">Processing your booking...</p>
         </div>
 
         <form id="bookingForm" style="display: block;">
             <div class="form-group">
-                <label for="name">Full Name <span class="required">*</span></label>
-                <input type="text" id="name" name="name" required placeholder="Enter your name">
+                <label for="name"><span data-i18n="fullName">Full Name</span> <span class="required">*</span></label>
+                <input type="text" id="name" name="name" required data-i18n-placeholder="namePlaceholder">
             </div>
 
             <div class="form-group">
-                <label for="phone">Phone Number <span class="required">*</span></label>
-                <input type="tel" id="phone" name="phone" required placeholder="123-456-7890">
+                <label for="phone"><span data-i18n="phoneNumber">Phone Number</span> <span class="required">*</span></label>
+                <input type="tel" id="phone" name="phone" required data-i18n-placeholder="phonePlaceholder">
             </div>
 
             <div class="form-group">
-                <label for="date">Date <span class="required">*</span></label>
+                <label for="date"><span data-i18n="date">Date</span> <span class="required">*</span></label>
                 <input type="date" id="date" name="date" required>
+                <div class="quick-dates">
+                    <button type="button" id="btnToday" class="quick-date-btn" data-i18n="today">Today</button>
+                    <button type="button" id="btnTomorrow" class="quick-date-btn" data-i18n="tomorrow">Tomorrow</button>
+                    <button type="button" id="btnNextWeek" class="quick-date-btn" data-i18n="nextWeek">Next Week</button>
+                </div>
             </div>
 
             <div class="form-group">
-                <label for="duration">Duration (Hours) <span class="required">*</span></label>
-                <select id="duration" name="duration" required>
-                    <option value="">Select duration</option>
-                    <option value="1">1 Hour</option>
-                    <option value="2">2 Hours</option>
-                    <option value="3">3 Hours</option>
-                    <option value="4">4 Hours</option>
-                </select>
+                <label><span data-i18n="duration">Duration (Hours)</span> <span class="required">*</span></label>
+                <div class="duration-slider-container">
+                    <div class="duration-display">
+                        <div>
+                            <div class="value"><span id="durationValue">1</span></div>
+                            <div class="label" data-i18n="hours">Hour(s)</div>
+                        </div>
+                        <div style="font-size: 40px; opacity: 0.8;">⏱️</div>
+                    </div>
+                    <input type="range" id="durationSlider" class="duration-slider" min="1" max="4" value="1" step="1">
+                    <div class="duration-marks">
+                        <span class="duration-mark">1h</span>
+                        <span class="duration-mark">2h</span>
+                        <span class="duration-mark">3h</span>
+                        <span class="duration-mark">4h</span>
+                    </div>
+                    <input type="hidden" id="duration" name="duration" value="1">
+                </div>
             </div>
 
             <div class="form-group">
-                <label for="courts">Number of Courts <span class="required">*</span></label>
+                <label for="courts"><span data-i18n="courts">Number of Courts</span> <span class="required">*</span></label>
                 <select id="courts" name="courts" required>
-                    <option value="">Select courts</option>
+                    <option value="" data-i18n="selectCourts">Select courts</option>
                     <option value="1">1 Court</option>
                     <option value="2">2 Courts</option>
                     <option value="3">3 Courts</option>
@@ -354,50 +572,57 @@
                 </select>
             </div>
 
-            <!-- ⭐ NEW: Visual Time Slot Picker -->
             <div class="form-group">
-                <label>Start Time <span class="required">*</span></label>
-                <p class="helper-text">Select date, duration, and number of courts first to see available times</p>
-                <div id="timeLoadingMessage" class="time-loading" style="display: none;">
-                    Checking availability...
+                <label><span data-i18n="startTime">Start Time</span> <span class="required">*</span></label>
+                <div class="toggle-container">
+                    <p class="helper-text" style="margin: 0;" data-i18n="selectFirst">Select date, duration, and courts first</p>
+                    <label class="toggle-label">
+                        <input type="checkbox" id="hideUnavailable">
+                        <span data-i18n="hideFull">Hide full slots</span>
+                    </label>
                 </div>
-                <div id="timeGrid" class="time-grid">
-                    <!-- Time slots will be dynamically generated here -->
-                </div>
-                <!-- Hidden input to store selected time -->
+                <div id="timeLoadingMessage" class="time-loading" style="display: none;" data-i18n="checking">Checking availability...</div>
+                <div id="timeGrid" class="time-grid"></div>
                 <input type="hidden" id="selectedTime" name="time" required>
             </div>
 
             <div class="price-display">
-                <div class="label">Total Amount</div>
+                <div class="label" data-i18n="totalAmount">Total Amount</div>
                 <div class="amount">$<span id="totalPrice">0</span></div>
-                <div class="note">Pay on arrival</div>
+                <div class="note" data-i18n="payOnArrival">Pay on arrival</div>
             </div>
 
             <div class="info-box">
-                <h3>📍 Location</h3>
-                <p>TK Pickleball Courts<br>Open daily 8:00 AM - 9:00 PM</p>
+                <h3 data-i18n="location">📍 Location</h3>
+                <p data-i18n="locationDetails">TK Pickleball Courts<br>Open daily 8:00 AM - 9:00 PM</p>
             </div>
         </form>
 
         <div class="btn-container">
-            <button type="submit" form="bookingForm" id="btnBook" class="btn-book">
-                Confirm Booking
-            </button>
+            <button type="submit" form="bookingForm" id="btnBook" class="btn-book" data-i18n="confirmBooking">Confirm Booking</button>
         </div>
     </div>
 
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <h2 class="modal-header">🏓 <span data-i18n="confirmTitle">Confirm Booking</span></h2>
+            <div id="confirmDetails" class="modal-details"></div>
+            <div class="modal-buttons">
+                <button id="confirmCancel" class="modal-btn modal-btn-cancel" data-i18n="cancel">Cancel</button>
+                <button id="confirmSubmit" class="modal-btn modal-btn-confirm" data-i18n="confirm">Confirm</button>
+            </div>
+        </div>
+    </div>
 <script>
     // ============================================
-    // CONFIGURATION
+    // CONFIGURATION & CONSTANTS
     // ============================================
     const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbySlkS8Yb3ACIfh5izbul6FfwTxgzrWg4_SnEMHsC21JyiaC1V9fak4GQFP4w3FvyjYPw/exec';
-    
-    // ⭐ Auto-refresh interval (15 seconds)
-    const AUTO_REFRESH_INTERVAL = 15000; // 15 seconds
+    const AUTO_REFRESH_INTERVAL = 15000;
+    const PRICE_PER_HOUR = 5;
     let autoRefreshTimer = null;
+    let currentLang = 'en';
 
-    // ⭐ Time slots (8 AM to 9 PM)
     const TIME_SLOTS = [
         { value: '08:00', label: '8:00 AM' },
         { value: '09:00', label: '9:00 AM' },
@@ -416,270 +641,158 @@
     ];
 
     // ============================================
-    // TELEGRAM WEB APP INITIALIZATION
+    // TRANSLATIONS
     // ============================================
-    let tg = window.Telegram.WebApp;
-    tg.expand();
-    tg.MainButton.hide();
-
-    let telegramUser = tg.initDataUnsafe?.user || null;
-    let telegramUserId = telegramUser?.id || null;
-
-    console.log('Telegram User:', telegramUser);
-    console.log('Telegram User ID:', telegramUserId);
+    const translations = {
+        en: {
+            title: 'TK Pickleball',
+            subtitle: 'Book your court in seconds',
+            fullName: 'Full Name',
+            namePlaceholder: 'Enter your name',
+            phoneNumber: 'Phone Number',
+            phonePlaceholder: '123-456-7890',
+            date: 'Date',
+            today: 'Today',
+            tomorrow: 'Tomorrow',
+            nextWeek: 'Next Week',
+            duration: 'Duration (Hours)',
+            hours: 'Hour(s)',
+            courts: 'Number of Courts',
+            selectCourts: 'Select courts',
+            court: 'Court',
+            startTime: 'Start Time',
+            selectFirst: 'Select date, duration, and courts first',
+            hideFull: 'Hide full slots',
+            checking: 'Checking availability...',
+            totalAmount: 'Total Amount',
+            payOnArrival: 'Pay on arrival',
+            location: '📍 Location',
+            locationDetails: 'TK Pickleball Courts<br>Open daily 8:00 AM - 9:00 PM',
+            confirmBooking: 'Confirm Booking',
+            processing: 'Processing your booking...',
+            confirmTitle: 'Confirm Booking',
+            cancel: 'Cancel',
+            confirm: 'Confirm',
+            courtsAvailable: 'courts',
+            full: 'Full',
+            noSlots: 'No available time slots. Try a different date or fewer courts.',
+            errorTelegram: 'Error: Telegram user data not available. Please open this app from Telegram.',
+            errorFillFields: 'Please fill in all required fields and select a time',
+            successBooked: 'Booking confirmed! See you at the court! 🎉',
+            errorDoubleBooked: 'This time slot was just booked by someone else. Please select another time.',
+            errorBookingFailed: 'Booking failed. Please try again.',
+            errorConnection: 'Connection error. Please check your internet and try again.',
+            modalDate: 'Date',
+            modalTime: 'Time',
+            modalDuration: 'Duration',
+            modalCourts: 'Courts',
+            modalName: 'Name',
+            modalPhone: 'Phone',
+            modalTotal: 'Total',
+            hour: 'hour',
+            hours: 'hours'
+        },
+        km: {
+            title: 'TK Pickleball',
+            subtitle: 'កក់ទីលានរបស់អ្នកក្នុងវិនាទី',
+            fullName: 'ឈ្មោះពេញ',
+            namePlaceholder: 'បញ្ចូលឈ្មោះរបស់អ្នក',
+            phoneNumber: 'លេខទូរស័ព្ទ',
+            phonePlaceholder: '០១២-៣៤៥-៦៧៨៩',
+            date: 'កាលបរិច្ឆេទ',
+            today: 'ថ្ងៃនេះ',
+            tomorrow: 'ថ្ងៃស្អែក',
+            nextWeek: 'សប្តាហ៍ក្រោយ',
+            duration: 'រយៈពេល (ម៉ោង)',
+            hours: 'ម៉ោង',
+            courts: 'ចំនួនទីលាន',
+            selectCourts: 'ជ្រើសរើសទីលាន',
+            court: 'ទីលាន',
+            startTime: 'ពេលចាប់ផ្តើម',
+            selectFirst: 'សូមជ្រើសរើសកាលបរិច្ឆេទ រយៈពេល និងចំនួនទីលានសិន',
+            hideFull: 'លាក់ទីលានពេញ',
+            checking: 'កំពុងពិនិត្យភាពអាចរកបាន...',
+            totalAmount: 'ចំនួនទឹកប្រាក់សរុប',
+            payOnArrival: 'បង់នៅពេលមកដល់',
+            location: '📍 ទីតាំង',
+            locationDetails: 'ទីលាន TK Pickleball<br>បើកប្រចាំថ្ងៃ ម៉ោង ៨:០០ព្រឹក - ៩:០០យប់',
+            confirmBooking: 'បញ្ជាក់ការកក់',
+            processing: 'កំពុងដំណើរការការកក់របស់អ្នក...',
+            confirmTitle: 'បញ្ជាក់ការកក់',
+            cancel: 'បោះបង់',
+            confirm: 'បញ្ជាក់',
+            courtsAvailable: 'ទីលាន',
+            full: 'ពេញ',
+            noSlots: 'គ្មានពេលវេលាអាចរកបាន។ សូមសាកល្បងកាលបរិច្ឆេទផ្សេង ឬទីលានតិចជាង។',
+            errorTelegram: 'កំហុស៖ ទិន្នន័យអ្នកប្រើ Telegram មិនអាចរកបាន។ សូមបើកកម្មវិធីនេះពី Telegram។',
+            errorFillFields: 'សូមបំពេញវាលទាំងអស់ដែលត្រូវការ និងជ្រើសរើសពេលវេលា',
+            successBooked: 'ការកក់ត្រូវបានបញ្ជាក់! ជួបគ្នានៅទីលាន! 🎉',
+            errorDoubleBooked: 'ពេលវេលានេះទើបតែត្រូវបានកក់ដោយអ្នកផ្សេង។ សូមជ្រើសរើសពេលវេលាផ្សេង។',
+            errorBookingFailed: 'ការកក់បានបរាជ័យ។ សូមសាកល្បងម្តងទៀត។',
+            errorConnection: 'កំហុសការតភ្ជាប់។ សូមពិនិត្យអ៊ីនធឺណិតរបស់អ្នក ហើយសាកល្បងម្តងទៀត។',
+            modalDate: 'កាលបរិច្ឆេទ',
+            modalTime: 'ពេលវេលា',
+            modalDuration: 'រយៈពេល',
+            modalCourts: 'ទីលាន',
+            modalName: 'ឈ្មោះ',
+            modalPhone: 'ទូរស័ព្ទ',
+            modalTotal: 'សរុប',
+            hour: 'ម៉ោង',
+            hours: 'ម៉ោង'
+        }
+    };
 
     // ============================================
-    // SET MINIMUM DATE (TODAY)
+    // LANGUAGE SWITCHING
     // ============================================
-    const dateInput = document.getElementById('date');
-    const today = new Date().toISOString().split('T')[0];
-    dateInput.min = today;
-    dateInput.value = today;
-
-    // ============================================
-    // ELEMENTS
-    // ============================================
-    const durationInput = document.getElementById('duration');
-    const courtsInput = document.getElementById('courts');
-    const priceDisplay = document.getElementById('totalPrice');
-    const timeGrid = document.getElementById('timeGrid');
-    const timeLoadingMessage = document.getElementById('timeLoadingMessage');
-    const selectedTimeInput = document.getElementById('selectedTime');
-
-    // ============================================
-    // PRICE CALCULATION
-    // ============================================
-    function calculatePrice() {
-        const duration = parseInt(durationInput.value) || 0;
-        const courts = parseInt(courtsInput.value) || 0;
-        const total = duration * courts * 15;
-        priceDisplay.textContent = total;
-    }
-
-    durationInput.addEventListener('change', () => {
-        calculatePrice();
-        fetchAvailability();
-    });
-
-    courtsInput.addEventListener('change', () => {
-        calculatePrice();
-        fetchAvailability();
-    });
-
-    dateInput.addEventListener('change', fetchAvailability);
-
-    // ============================================
-    // ⭐ START AUTO-REFRESH
-    // ============================================
-    function startAutoRefresh() {
-        // Clear any existing timer
-        stopAutoRefresh();
+    function switchLanguage(lang) {
+        currentLang = lang;
+        localStorage.setItem('preferredLang', lang);
         
-        // Start new timer
-        autoRefreshTimer = setInterval(() => {
-            const date = dateInput.value;
-            const duration = durationInput.value;
-            const courts = courtsInput.value;
-            
-            if (date && duration && courts) {
-                console.log('🔄 Auto-refreshing availability...');
-                fetchAvailability(true); // true = silent refresh
-            }
-        }, AUTO_REFRESH_INTERVAL);
+        // Update active button
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.lang === lang);
+        });
         
-        console.log('✅ Auto-refresh started (every 15 seconds)');
-    }
-
-    // ============================================
-    // ⭐ STOP AUTO-REFRESH
-    // ============================================
-    function stopAutoRefresh() {
-        if (autoRefreshTimer) {
-            clearInterval(autoRefreshTimer);
-            autoRefreshTimer = null;
-            console.log('⏹️ Auto-refresh stopped');
-        }
-    }
-
-    // ============================================
-    // ⭐ FETCH AVAILABILITY FROM BACKEND
-    // ============================================
-    async function fetchAvailability(silent = false) {
-        const date = dateInput.value;
-        const duration = durationInput.value;
-        const courts = courtsInput.value;
-
-        // Validate required fields
-        if (!date || !duration || !courts) {
-            timeGrid.innerHTML = '<p style="text-align: center; color: #999; padding: 20px; grid-column: 1 / -1;">Please select date, duration, and number of courts first</p>';
-            stopAutoRefresh(); // Stop refresh if fields are incomplete
-            return;
-        }
-
-        // Show loading (only if not silent refresh)
-        if (!silent) {
-            timeGrid.classList.add('loading');
-            timeLoadingMessage.style.display = 'block';
-            selectedTimeInput.value = ''; // Clear selection on new fetch
-        }
-
-        try {
-            const url = `${BACKEND_URL}?action=getSlots&date=${date}&duration=${duration}&courts=${courts}`;
-            console.log('Fetching availability:', url);
-
-            const response = await fetch(url, {
-                method: 'GET',
-                redirect: 'follow'
-            });
-
-            const result = await response.json();
-            console.log('Availability result:', result);
-
-            if (result.success) {
-                renderTimeSlots(result.slots, silent);
-                
-                // Start auto-refresh after first successful fetch
-                if (!autoRefreshTimer) {
-                    startAutoRefresh();
-                }
-            } else {
-                timeGrid.innerHTML = '<p style="text-align: center; color: #dc3545; padding: 20px; grid-column: 1 / -1;">❌ Error loading availability</p>';
-                stopAutoRefresh();
+        // Update all translatable elements
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (translations[lang][key]) {
+                el.innerHTML = translations[lang][key];
             }
-
-        } catch (error) {
-            console.error('Error fetching availability:', error);
-            if (!silent) {
-                timeGrid.innerHTML = '<p style="text-align: center; color: #dc3545; padding: 20px; grid-column: 1 / -1;">❌ Connection error</p>';
-            }
-            stopAutoRefresh();
-        } finally {
-            timeGrid.classList.remove('loading');
-            timeLoadingMessage.style.display = 'none';
-        }
-    }
-
-    // ============================================
-    // ⭐ RENDER TIME SLOTS (with last updated info)
-    // ============================================
-    function renderTimeSlots(availableSlots, silent = false) {
-        // Remember currently selected time
-        const currentlySelected = selectedTimeInput.value;
+        });
         
-        timeGrid.innerHTML = '';
-
-        // Create a map of available times
-        const availabilityMap = {};
-        availableSlots.forEach(slot => {
-            availabilityMap[slot.time] = slot.availableCourts;
-        });
-
-        // ⭐ Add "Last updated" header
-        const updateInfo = document.createElement('div');
-        updateInfo.style.cssText = 'grid-column: 1 / -1; text-align: center; padding: 8px; font-size: 12px; color: #999; border-bottom: 1px solid #e0e0e0; margin-bottom: 8px;';
-        updateInfo.innerHTML = `
-            🔄 Last updated: ${new Date().toLocaleTimeString()} 
-            <button id="manualRefresh" style="margin-left: 8px; padding: 4px 8px; font-size: 11px; border: 1px solid #ccc; border-radius: 4px; background: white; cursor: pointer;">↻ Refresh</button>
-        `;
-        timeGrid.appendChild(updateInfo);
-
-        // Render all time slots
-        TIME_SLOTS.forEach(slot => {
-            const div = document.createElement('div');
-            div.className = 'time-slot';
-
-            const availableCourts = availabilityMap[slot.value];
-            const isAvailable = availableCourts !== undefined && availableCourts > 0;
-
-            if (isAvailable) {
-                div.classList.add('available');
-                div.onclick = () => selectTimeSlot(slot.value, div);
-            } else {
-                div.classList.add('unavailable');
-            }
-
-            // Re-select previously selected slot if still available
-            if (currentlySelected === slot.value && isAvailable) {
-                div.classList.add('selected');
-            }
-
-            div.innerHTML = `
-                <div class="time">${slot.label}</div>
-                <div class="courts-info">${isAvailable ? `${availableCourts} courts` : 'Full'}</div>
-            `;
-
-            timeGrid.appendChild(div);
-        });
-
-        // Add manual refresh button listener
-        document.getElementById('manualRefresh').addEventListener('click', () => {
-            console.log('🔄 Manual refresh triggered');
-            fetchAvailability();
-            if (tg.HapticFeedback) {
-                tg.HapticFeedback.impactOccurred('light');
+        // Update placeholders
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-i18n-placeholder');
+            if (translations[lang][key]) {
+                el.placeholder = translations[lang][key];
             }
         });
-
-        // Show subtle notification on silent refresh
-        if (silent && !currentlySelected) {
-            updateInfo.style.color = '#3390ec';
-            setTimeout(() => {
-                updateInfo.style.color = '#999';
-            }, 2000);
-        }
     }
 
     // ============================================
-    // ⭐ SELECT TIME SLOT
+    // UTILITY FUNCTIONS
     // ============================================
-    function selectTimeSlot(time, element) {
-        // Remove previous selection
-        document.querySelectorAll('.time-slot.selected').forEach(slot => {
-            slot.classList.remove('selected');
-        });
-
-        // Select new slot
-        element.classList.add('selected');
-        selectedTimeInput.value = time;
-
-        console.log('Selected time:', time);
-
-        // Haptic feedback
-        if (tg.HapticFeedback) {
-            tg.HapticFeedback.selectionChanged();
-        }
-    }
-
-    // ============================================
-    // SHOW MESSAGE
-    // ============================================
-    function showMessage(text, type) {
+    function showMessage(message, type = 'error') {
         const messageBox = document.getElementById('messageBox');
-        messageBox.textContent = text;
+        messageBox.textContent = message;
         messageBox.className = `message ${type} show`;
         
-        if (type === 'success') {
-            setTimeout(() => {
-                messageBox.classList.remove('show');
-            }, 5000);
-        }
-        
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => {
+            messageBox.classList.remove('show');
+        }, 5000);
     }
 
-    // ============================================
-    // SHOW/HIDE LOADING
-    // ============================================
-    function showLoading(show) {
+    function showLoading(show = true) {
         const loadingBox = document.getElementById('loadingBox');
         const form = document.getElementById('bookingForm');
         const btnBook = document.getElementById('btnBook');
-
+        
         if (show) {
             loadingBox.classList.add('show');
             form.style.display = 'none';
             btnBook.disabled = true;
-            stopAutoRefresh(); // Stop refresh during booking
         } else {
             loadingBox.classList.remove('show');
             form.style.display = 'block';
@@ -687,155 +800,383 @@
         }
     }
 
-    // ============================================
-    // ⭐ FORM SUBMISSION (with final validation)
-    // ============================================
-    document.getElementById('bookingForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
+    function formatDate(date) {
+        const d = new Date(date);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
 
-        if (!telegramUserId) {
-            showMessage('❌ Error: Telegram user data not available. Please open this app from Telegram.', 'error');
+    function getTelegramUserData() {
+        if (typeof Telegram !== 'undefined' && Telegram.WebApp && Telegram.WebApp.initDataUnsafe) {
+            const user = Telegram.WebApp.initDataUnsafe.user;
+            if (user) {
+                return {
+                    telegram_id: user.id,
+                    first_name: user.first_name || '',
+                    last_name: user.last_name || '',
+                    username: user.username || ''
+                };
+            }
+        }
+        return null;
+    }
+
+    function updatePrice() {
+        const duration = parseInt(document.getElementById('duration').value) || 1;
+        const courts = parseInt(document.getElementById('courts').value) || 1;
+        const totalPrice = duration * courts * PRICE_PER_HOUR;
+        document.getElementById('totalPrice').textContent = totalPrice;
+    }
+
+    // ============================================
+    // DATE HANDLING
+    // ============================================
+    function setQuickDate(days) {
+        const dateInput = document.getElementById('date');
+        const today = new Date();
+        today.setDate(today.getDate() + days);
+        dateInput.value = formatDate(today);
+        dateInput.dispatchEvent(new Event('change'));
+    }
+
+    // ============================================
+    // DURATION SLIDER
+    // ============================================
+    function setupDurationSlider() {
+        const slider = document.getElementById('durationSlider');
+        const valueDisplay = document.getElementById('durationValue');
+        const hiddenInput = document.getElementById('duration');
+
+        slider.addEventListener('input', function() {
+            const value = this.value;
+            valueDisplay.textContent = value;
+            hiddenInput.value = value;
+            updatePrice();
+            checkAndLoadAvailability();
+        });
+    }
+
+    // ============================================
+    // AVAILABILITY CHECKING
+    // ============================================
+    async function checkAndLoadAvailability() {
+        const date = document.getElementById('date').value;
+        const duration = document.getElementById('duration').value;
+        const courts = document.getElementById('courts').value;
+
+        if (!date || !duration || !courts) {
             return;
         }
 
-        // Get form data
+        const timeGrid = document.getElementById('timeGrid');
+        const loadingMsg = document.getElementById('timeLoadingMessage');
+        
+        timeGrid.innerHTML = '';
+        loadingMsg.style.display = 'block';
+
+        try {
+            const url = `${BACKEND_URL}?action=checkAvailability&date=${date}&duration=${duration}&courts=${courts}`;
+            const response = await fetch(url);
+            const data = await response.json();
+
+            loadingMsg.style.display = 'none';
+
+            if (data.status === 'success') {
+                renderTimeSlots(data.availability);
+            } else {
+                showMessage(translations[currentLang].errorConnection, 'error');
+            }
+        } catch (error) {
+            loadingMsg.style.display = 'none';
+            showMessage(translations[currentLang].errorConnection, 'error');
+        }
+    }
+
+    function renderTimeSlots(availability) {
+        const timeGrid = document.getElementById('timeGrid');
+        const hideUnavailable = document.getElementById('hideUnavailable').checked;
+        const requestedCourts = parseInt(document.getElementById('courts').value);
+        
+        timeGrid.innerHTML = '';
+
+        if (!availability || Object.keys(availability).length === 0) {
+            timeGrid.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; padding: 20px; color: #999;">${translations[currentLang].noSlots}</p>`;
+            return;
+        }
+
+        TIME_SLOTS.forEach(slot => {
+            const availableCourts = availability[slot.value] || 0;
+            const isAvailable = availableCourts >= requestedCourts;
+
+            if (hideUnavailable && !isAvailable) {
+                return;
+            }
+
+            const slotDiv = document.createElement('div');
+            slotDiv.className = `time-slot ${isAvailable ? 'available' : 'unavailable'}`;
+            slotDiv.dataset.time = slot.value;
+
+            const courtsText = isAvailable 
+                ? `${availableCourts} ${translations[currentLang].courtsAvailable}`
+                : translations[currentLang].full;
+
+            slotDiv.innerHTML = `
+                <div class="time">${slot.label}</div>
+                <div class="courts-info">${courtsText}</div>
+            `;
+
+            if (isAvailable) {
+                slotDiv.addEventListener('click', () => selectTimeSlot(slot.value));
+            }
+
+            timeGrid.appendChild(slotDiv);
+        });
+    }
+
+    function selectTimeSlot(time) {
+        document.querySelectorAll('.time-slot').forEach(slot => {
+            slot.classList.remove('selected');
+        });
+
+        const selectedSlot = document.querySelector(`[data-time="${time}"]`);
+        if (selectedSlot) {
+            selectedSlot.classList.add('selected');
+        }
+
+        document.getElementById('selectedTime').value = time;
+        document.getElementById('btnBook').disabled = false;
+    }
+    // ============================================
+    // FORM SUBMISSION & BOOKING
+    // ============================================
+    function showConfirmationModal() {
+        const name = document.getElementById('name').value;
+        const phone = document.getElementById('phone').value;
+        const date = document.getElementById('date').value;
+        const time = document.getElementById('selectedTime').value;
+        const duration = document.getElementById('duration').value;
+        const courts = document.getElementById('courts').value;
+        const totalPrice = document.getElementById('totalPrice').textContent;
+
+        if (!name || !phone || !date || !time || !duration || !courts) {
+            showMessage(translations[currentLang].errorFillFields, 'error');
+            return false;
+        }
+
+        const timeLabel = TIME_SLOTS.find(slot => slot.value === time)?.label || time;
+        const durationText = duration === '1' ? translations[currentLang].hour : translations[currentLang].hours;
+
+        const confirmDetails = document.getElementById('confirmDetails');
+        confirmDetails.innerHTML = `
+            <strong>${translations[currentLang].modalDate}:</strong> ${date}<br>
+            <strong>${translations[currentLang].modalTime}:</strong> ${timeLabel}<br>
+            <strong>${translations[currentLang].modalDuration}:</strong> ${duration} ${durationText}<br>
+            <strong>${translations[currentLang].modalCourts}:</strong> ${courts}<br>
+            <strong>${translations[currentLang].modalName}:</strong> ${name}<br>
+            <strong>${translations[currentLang].modalPhone}:</strong> ${phone}<br>
+            <strong>${translations[currentLang].modalTotal}:</strong> $${totalPrice}
+        `;
+
+        const modal = document.getElementById('confirmModal');
+        modal.style.display = 'flex';
+        return false;
+    }
+
+    function hideConfirmationModal() {
+        const modal = document.getElementById('confirmModal');
+        modal.style.display = 'none';
+    }
+
+    async function submitBooking() {
+        hideConfirmationModal();
+        showLoading(true);
+
+        const telegramUser = getTelegramUserData();
+        if (!telegramUser) {
+            showLoading(false);
+            showMessage(translations[currentLang].errorTelegram, 'error');
+            return;
+        }
+
         const formData = {
             action: 'book',
-            name: document.getElementById('name').value.trim(),
-            phone: document.getElementById('phone').value.trim(),
+            name: document.getElementById('name').value,
+            phone: document.getElementById('phone').value,
             date: document.getElementById('date').value,
-            time: selectedTimeInput.value,
+            time: document.getElementById('selectedTime').value,
             duration: document.getElementById('duration').value,
             courts: document.getElementById('courts').value,
-            telegramUserId: telegramUserId.toString()
+            telegram_id: telegramUser.telegram_id,
+            source: 'telegram_miniapp'
         };
-
-        // Validate
-        if (!formData.name || !formData.phone || !formData.date || 
-            !formData.time || !formData.duration || !formData.courts) {
-            showMessage('❌ Please fill in all required fields and select a time', 'error');
-            return;
-        }
-
-        console.log('Submitting booking:', formData);
-        showLoading(true);
 
         try {
             const params = new URLSearchParams(formData);
-            const url = `${BACKEND_URL}?${params.toString()}`;
-
-            const response = await fetch(url, {
-                method: 'GET',
-                redirect: 'follow'
-            });
-
-            const result = await response.json();
-            console.log('Response data:', result);
+            const response = await fetch(`${BACKEND_URL}?${params.toString()}`);
+            const data = await response.json();
 
             showLoading(false);
 
-            if (result.success) {
-                showMessage('✅ ' + result.message, 'success');
+            if (data.status === 'success') {
+                showMessage(translations[currentLang].successBooked, 'success');
                 
-                if (tg.HapticFeedback) {
-                    tg.HapticFeedback.notificationOccurred('success');
-                }
-
-                // Stop auto-refresh on success
-                stopAutoRefresh();
-
+                // Reset form
+                document.getElementById('bookingForm').reset();
+                document.getElementById('timeGrid').innerHTML = '';
+                document.getElementById('selectedTime').value = '';
+                document.getElementById('totalPrice').textContent = '0';
+                document.getElementById('durationValue').textContent = '1';
+                document.getElementById('durationSlider').value = '1';
+                
+                // Close Telegram WebApp after 3 seconds
                 setTimeout(() => {
-                    document.getElementById('bookingForm').reset();
-                    dateInput.value = today;
-                    priceDisplay.textContent = '0';
-                    selectedTimeInput.value = '';
-                    timeGrid.innerHTML = '<p style="text-align: center; color: #999; padding: 20px; grid-column: 1 / -1;">Please select date, duration, and number of courts first</p>';
-                }, 2000);
-
-                setTimeout(() => {
-                    tg.close();
+                    if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
+                        Telegram.WebApp.close();
+                    }
                 }, 3000);
-
+            } else if (data.error && data.error.includes('already booked')) {
+                showMessage(translations[currentLang].errorDoubleBooked, 'error');
+                checkAndLoadAvailability(); // Refresh availability
             } else {
-                // ⭐ Handle specific error for double-booking
-                if (result.error && result.error.includes('not available')) {
-                    showMessage('❌ This time slot was just booked by someone else. Please select another time.', 'error');
-                    // Refresh availability immediately
-                    fetchAvailability();
-                } else {
-                    showMessage('❌ ' + (result.error || 'Booking failed. Please try again.'), 'error');
-                }
-                
-                if (tg.HapticFeedback) {
-                    tg.HapticFeedback.notificationOccurred('error');
-                }
-                
-                // Restart auto-refresh on error
-                startAutoRefresh();
+                showMessage(data.error || translations[currentLang].errorBookingFailed, 'error');
             }
-
         } catch (error) {
-            console.error('Fetch error:', error);
             showLoading(false);
-            showMessage('❌ Connection error. Please check your internet and try again.', 'error');
-            
-            if (tg.HapticFeedback) {
-                tg.HapticFeedback.notificationOccurred('error');
-            }
-            
-            // Restart auto-refresh on error
-            startAutoRefresh();
-        }
-    });
-
-    // ============================================
-    // ⭐ CLEANUP ON PAGE UNLOAD
-    // ============================================
-    window.addEventListener('beforeunload', () => {
-        stopAutoRefresh();
-    });
-
-    // ============================================
-    // ⭐ PAUSE AUTO-REFRESH WHEN TAB IS HIDDEN
-    // ============================================
-    document.addEventListener('visibilitychange', () => {
-        if (document.hidden) {
-            console.log('⏸️ Page hidden, pausing auto-refresh');
-            stopAutoRefresh();
-        } else {
-            console.log('▶️ Page visible, resuming auto-refresh');
-            const date = dateInput.value;
-            const duration = durationInput.value;
-            const courts = courtsInput.value;
-            
-            if (date && duration && courts) {
-                fetchAvailability(); // Immediate refresh when returning to page
-            }
-        }
-    });
-
-    // ============================================
-    // AUTO-FILL NAME
-    // ============================================
-    if (telegramUser) {
-        const firstName = telegramUser.first_name || '';
-        const lastName = telegramUser.last_name || '';
-        const fullName = `${firstName} ${lastName}`.trim();
-        
-        if (fullName) {
-            document.getElementById('name').value = fullName;
+            showMessage(translations[currentLang].errorConnection, 'error');
+            console.error('Booking error:', error);
         }
     }
 
     // ============================================
-    // INITIALIZE
+    // AUTO-REFRESH FOR AVAILABILITY
     // ============================================
-    tg.ready();
-    console.log('✅ Telegram Mini App initialized');
+    function startAutoRefresh() {
+        stopAutoRefresh();
+        autoRefreshTimer = setInterval(() => {
+            const date = document.getElementById('date').value;
+            const duration = document.getElementById('duration').value;
+            const courts = document.getElementById('courts').value;
+            
+            if (date && duration && courts) {
+                checkAndLoadAvailability();
+            }
+        }, AUTO_REFRESH_INTERVAL);
+    }
 
-    // Initialize with empty state
-    timeGrid.innerHTML = '<p style="text-align: center; color: #999; padding: 20px; grid-column: 1 / -1;">Please select date, duration, and number of courts first</p>';
+    function stopAutoRefresh() {
+        if (autoRefreshTimer) {
+            clearInterval(autoRefreshTimer);
+            autoRefreshTimer = null;
+        }
+    }
+
+    // ============================================
+    // EVENT LISTENERS
+    // ============================================
+    function setupEventListeners() {
+        // Language toggle
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                switchLanguage(btn.dataset.lang);
+            });
+        });
+
+        // Quick date buttons
+        document.getElementById('btnToday').addEventListener('click', () => setQuickDate(0));
+        document.getElementById('btnTomorrow').addEventListener('click', () => setQuickDate(1));
+        document.getElementById('btnNextWeek').addEventListener('click', () => setQuickDate(7));
+
+        // Date change
+        document.getElementById('date').addEventListener('change', () => {
+            checkAndLoadAvailability();
+            startAutoRefresh();
+        });
+
+        // Courts selection
+        document.getElementById('courts').addEventListener('change', () => {
+            updatePrice();
+            checkAndLoadAvailability();
+        });
+
+        // Hide unavailable toggle
+        document.getElementById('hideUnavailable').addEventListener('change', () => {
+            checkAndLoadAvailability();
+        });
+
+        // Form submission
+        document.getElementById('bookingForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            showConfirmationModal();
+        });
+
+        // Modal buttons
+        document.getElementById('confirmCancel').addEventListener('click', hideConfirmationModal);
+        document.getElementById('confirmSubmit').addEventListener('click', submitBooking);
+
+        // Close modal on background click
+        document.getElementById('confirmModal').addEventListener('click', (e) => {
+            if (e.target.id === 'confirmModal') {
+                hideConfirmationModal();
+            }
+        });
+    }
+
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+    function init() {
+        // Load saved language preference
+        const savedLang = localStorage.getItem('preferredLang') || 'en';
+        switchLanguage(savedLang);
+
+        // Setup all event listeners
+        setupEventListeners();
+
+        // Setup duration slider
+        setupDurationSlider();
+
+        // Set default date to today
+        const today = new Date();
+        document.getElementById('date').value = formatDate(today);
+        document.getElementById('date').setAttribute('min', formatDate(today));
+
+        // Set max date (30 days from now)
+        const maxDate = new Date();
+        maxDate.setDate(maxDate.getDate() + 30);
+        document.getElementById('date').setAttribute('max', formatDate(maxDate));
+
+        // Initialize Telegram WebApp
+        if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
+            Telegram.WebApp.ready();
+            Telegram.WebApp.expand();
+            
+            // Set theme colors
+            if (Telegram.WebApp.themeParams) {
+                document.body.style.setProperty('--tg-theme-bg-color', Telegram.WebApp.themeParams.bg_color || '#ffffff');
+                document.body.style.setProperty('--tg-theme-text-color', Telegram.WebApp.themeParams.text_color || '#000000');
+                document.body.style.setProperty('--tg-theme-button-color', Telegram.WebApp.themeParams.button_color || '#3390ec');
+            }
+        }
+
+        // Initial price update
+        updatePrice();
+
+        console.log('TK Pickleball Booking System Initialized');
+    }
+
+    // Start the app when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+        stopAutoRefresh();
+    });
 </script>
-
 </body>
 </html>
