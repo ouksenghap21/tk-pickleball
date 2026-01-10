@@ -850,37 +850,49 @@
     // AVAILABILITY CHECKING
     // ============================================
     async function checkAndLoadAvailability() {
-        const date = document.getElementById('date').value;
-        const duration = document.getElementById('duration').value;
-        const courts = document.getElementById('courts').value;
+    const date = document.getElementById('date').value;
+    const duration = document.getElementById('duration').value;
+    const courts = document.getElementById('courts').value;
 
-        if (!date || !duration || !courts) {
-            return;
-        }
+    console.log('🔍 Checking availability:', { date, duration, courts });
 
-        const timeGrid = document.getElementById('timeGrid');
-        const loadingMsg = document.getElementById('timeLoadingMessage');
-        
-        timeGrid.innerHTML = '';
-        loadingMsg.style.display = 'block';
-
-        try {
-            const url = `${BACKEND_URL}?action=checkAvailability&date=${date}&duration=${duration}&courts=${courts}`;
-            const response = await fetch(url);
-            const data = await response.json();
-
-            loadingMsg.style.display = 'none';
-
-            if (data.status === 'success') {
-                renderTimeSlots(data.availability);
-            } else {
-                showMessage(translations[currentLang].errorConnection, 'error');
-            }
-        } catch (error) {
-            loadingMsg.style.display = 'none';
-            showMessage(translations[currentLang].errorConnection, 'error');
-        }
+    if (!date || !duration || !courts) {
+        console.log('⚠️ Missing required fields');
+        return;
     }
+
+    const timeGrid = document.getElementById('timeGrid');
+    const loadingMsg = document.getElementById('timeLoadingMessage');
+    
+    timeGrid.innerHTML = '';
+    loadingMsg.style.display = 'block';
+
+    try {
+        const url = `${BACKEND_URL}?action=checkAvailability&date=${date}&duration=${duration}&courts=${courts}`;
+        console.log('📡 Fetching:', url);
+        
+        const response = await fetch(url);
+        console.log('📥 Response status:', response.status);
+        
+        const data = await response.json();
+        console.log('📦 Response data:', data);
+
+        loadingMsg.style.display = 'none';
+
+        if (data.status === 'success') {
+            console.log('✅ Success! Availability:', data.availability);
+            renderTimeSlots(data.availability);
+        } else {
+            console.log('❌ Error:', data.error || 'Unknown error');
+            showMessage(data.error || translations[currentLang].errorConnection, 'error');
+        }
+    } catch (error) {
+        console.error('💥 Fetch error:', error);
+        loadingMsg.style.display = 'none';
+        showMessage(translations[currentLang].errorConnection, 'error');
+    }
+}
+
 
     function renderTimeSlots(availability) {
         const timeGrid = document.getElementById('timeGrid');
