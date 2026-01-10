@@ -1,3 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TK Pickleball Booking</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+            padding: 16px;
+            padding-bottom: 100px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--tg-theme-text-color, #000000);
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 14px;
+            color: var(--tg-theme-hint-color, #999999);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--tg-theme-text-color, #000000);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 16px;
+            border: 1px solid var(--tg-theme-hint-color, #d0d0d0);
+            border-radius: 8px;
+            background: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--tg-theme-button-color, #3390ec);
+        }
+
+        /* ⭐ NEW: Time Slot Grid Styles */
+        .time-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .time-slot {
+            padding: 16px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--tg-theme-bg-color, #ffffff);
+            user-select: none;
+        }
+
+        .time-slot .time {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--tg-theme-text-color, #000000);
+            margin-bottom: 4px;
+        }
+
+        .time-slot .courts-info {
+            font-size: 11px;
+            color: var(--tg-theme-hint-color, #999999);
+        }
+
+        /* Available slot */
+        .time-slot.available {
+            border-color: var(--tg-theme-button-color, #3390ec);
+            background: rgba(51, 144, 236, 0.05);
+        }
+
+        .time-slot.available:hover {
+            background: rgba(51, 144, 236, 0.1);
+            transform: scale(1.02);
+        }
+
+        .time-slot.available:active {
+            transform: scale(0.98);
+        }
+
+        /* Selected slot */
+        .time-slot.selected {
+            border-color: var(--tg-theme-button-color, #3390ec);
+            background: var(--tg-theme-button-color, #3390ec);
+        }
+
+        .time-slot.selected .time {
+            color: white;
+        }
+
+        .time-slot.selected .courts-info {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Unavailable slot */
+        .time-slot.unavailable {
+            border-color: #e0e0e0;
+            background: #f5f5f5;
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .time-slot.unavailable .time {
+            color: #999999;
+        }
+
+        .time-slot.unavailable .courts-info {
+            color: #cccccc;
+        }
+
+        /* Loading state for time slots */
+        .time-grid.loading {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .time-loading {
+            text-align: center;
+            padding: 20px;
+            color: var(--tg-theme-hint-color, #999999);
+            font-size: 14px;
+        }
+
+        .info-box {
+            background: var(--tg-theme-secondary-bg-color, #f4f4f5);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .info-box h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--tg-theme-text-color, #000000);
+        }
+
+        .info-box p {
+            font-size: 14px;
+            color: var(--tg-theme-hint-color, #666666);
+            line-height: 1.5;
+        }
+
+        .price-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .price-display .label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+
+        .price-display .amount {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .price-display .note {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .btn-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--tg-theme-bg-color, #ffffff);
+            padding: 16px;
+            border-top: 1px solid var(--tg-theme-hint-color, #d0d0d0);
+        }
+
+        .btn-book {
+            width: 100%;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            background: var(--tg-theme-button-color, #3390ec);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        .btn-book:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-book:not(:disabled):active {
+            opacity: 0.8;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid var(--tg-theme-hint-color, #f3f3f3);
+            border-top: 3px solid var(--tg-theme-button-color, #3390ec);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 12px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .message {
+            display: none;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .required {
+            color: #dc3545;
+        }
+
+        /* ⭐ NEW: Helper text for time selection */
+        .helper-text {
+            font-size: 12px;
+            color: var(--tg-theme-hint-color, #999999);
+            margin-top: 8px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏓 TK Pickleball</h1>
+            <p>Book your court in seconds</p>
+        </div>
+
+        <div id="messageBox" class="message"></div>
+
+        <div id="loadingBox" class="loading">
+            <div class="spinner"></div>
+            <p>Processing your booking...</p>
+        </div>
+
+        <form id="bookingForm" style="display: block;">
+            <div class="form-group">
+                <label for="name">Full Name <span class="required">*</span></label>
+                <input type="text" id="name" name="name" required placeholder="Enter your name">
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone Number <span class="required">*</span></label>
+                <input type="tel" id="phone" name="phone" required placeholder="123-456-7890">
+            </div>
+
+            <div class="form-group">
+                <label for="date">Date <span class="required">*</span></label>
+                <input type="date" id="date" name="date" required>
+            </div>
+
+            <div class="form-group">
+                <label for="duration">Duration (Hours) <span class="required">*</span></label>
+                <select id="duration" name="duration" required>
+                    <option value="">Select duration</option>
+                    <option value="1">1 Hour</option>
+                    <option value="2">2 Hours</option>
+                    <option value="3">3 Hours</option>
+                    <option value="4">4 Hours</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="courts">Number of Courts <span class="required">*</span></label>
+                <select id="courts" name="courts" required>
+                    <option value="">Select courts</option>
+                    <option value="1">1 Court</option>
+                    <option value="2">2 Courts</option>
+                    <option value="3">3 Courts</option>
+                    <option value="4">4 Courts</option>
+                </select>
+            </div>
+
+            <!-- ⭐ NEW: Visual Time Slot Picker -->
+            <div class="form-group">
+                <label>Start Time <span class="required">*</span></label>
+                <p class="helper-text">Select date, duration, and number of courts first to see available times</p>
+                <div id="timeLoadingMessage" class="time-loading" style="display: none;">
+                    Checking availability...
+                </div>
+                <div id="timeGrid" class="time-grid">
+                    <!-- Time slots will be dynamically generated here -->
+                </div>
+                <!-- Hidden input to store selected time -->
+                <input type="hidden" id="selectedTime" name="time" required>
+            </div>
+
+            <div class="price-display">
+                <div class="label">Total Amount</div>
+                <div class="amount">$<span id="totalPrice">0</span></div>
+                <div class="note">Pay on arrival</div>
+            </div>
+
+            <div class="info-box">
+                <h3>📍 Location</h3>
+                <p>TK Pickleball Courts<br>Open daily 8:00 AM - 9:00 PM</p>
+            </div>
+        </form>
+
+        <div class="btn-container">
+            <button type="submit" form="bookingForm" id="btnBook" class="btn-book">
+                Confirm Booking
+            </button>
+        </div>
+    </div>
+
 <script>
     // ============================================
     // CONFIGURATION
@@ -447,3 +836,6 @@
     // Initialize with empty state
     timeGrid.innerHTML = '<p style="text-align: center; color: #999; padding: 20px; grid-column: 1 / -1;">Please select date, duration, and number of courts first</p>';
 </script>
+
+</body>
+</html>
