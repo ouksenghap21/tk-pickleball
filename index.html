@@ -278,6 +278,8 @@
             background-size: 200% 100%;
             animation: skeleton-loading 1.5s infinite;
             border-radius: 8px;
+            pointer-events: none;
+            cursor: default;
         }
 
         @keyframes skeleton-loading {
@@ -1273,24 +1275,28 @@ function selectTimeSlot(time) {
     // ============================================
     // ✅ ADD THIS VARIABLE AT THE TOP (around line 305)
 let isTabVisible = true;
+// ✅ ADD THIS VARIABLE AT THE TOP (around line 305, near isTabVisible)
+let visibilityListenerAdded = false;
 
 // ✅ REPLACE startAutoRefresh WITH THIS:
 function startAutoRefresh() {
     stopAutoRefresh();
     
-    // Monitor tab visibility
-    document.addEventListener('visibilitychange', () => {
-        isTabVisible = !document.hidden;
-        
-        if (isTabVisible) {
-            console.log('Tab visible - refreshing availability');
-            availabilityCache.clear();
-            checkAndLoadAvailability();
-        }
-    });
+    // Only add the visibility listener once
+    if (!visibilityListenerAdded) {
+        document.addEventListener('visibilitychange', () => {
+            isTabVisible = !document.hidden;
+            
+            if (isTabVisible) {
+                console.log('Tab visible - refreshing availability');
+                availabilityCache.clear();
+                checkAndLoadAvailability();
+            }
+        });
+        visibilityListenerAdded = true;
+    }
     
     autoRefreshTimer = setInterval(() => {
-        // Only refresh if tab is visible
         if (!isTabVisible) {
             console.log('Tab hidden - skipping refresh');
             return;
@@ -1306,6 +1312,7 @@ function startAutoRefresh() {
         }
     }, AUTO_REFRESH_INTERVAL);
 }
+
 
 
     function stopAutoRefresh() {
