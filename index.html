@@ -597,13 +597,8 @@
 
             <div class="form-group">
                 <label><span data-i18n="startTime">Start Time</span> <span class="required">*</span></label>
-                <div class="toggle-container">
-                    <p class="helper-text" style="margin: 0;" data-i18n="selectFirst">Select date, duration, and courts first</p>
-                    <label class="toggle-label">
-                        <input type="checkbox" id="hideUnavailable">
-                        <span data-i18n="hideFull">Hide full slots</span>
-                    </label>
-                </div>
+               <p class="helper-text" data-i18n="selectFirst">Select date, duration, and courts first. Only available times are shown below.</p>
+
                 <div id="timeLoadingMessage" class="time-loading" style="display: none;" data-i18n="checking">Checking availability...</div>
                 <div id="timeGrid" class="time-grid"></div>
                 <input type="hidden" id="selectedTime" name="time" required>
@@ -1014,11 +1009,8 @@ async function performAvailabilityCheck() {
 }
 
 
-
-
-    function renderTimeSlots(availability) {
+function renderTimeSlots(availability) {
     const timeGrid = document.getElementById('timeGrid');
-    const hideUnavailable = document.getElementById('hideUnavailable').checked;
     const requestedCourts = parseInt(document.getElementById('courts').value);
     const selectedDate = document.getElementById('date').value;
     
@@ -1034,76 +1026,43 @@ async function performAvailabilityCheck() {
     const todayStr = formatDate(now);
     const isToday = (selectedDate === todayStr);
     const currentHour = now.getHours();
-    
-    console.log(`📅 Date: ${selectedDate}, Today: ${todayStr}, Is Today: ${isToday}, Current Hour: ${currentHour}`);
 
     let hasAnySlots = false;
 
     TIME_SLOTS.forEach(slot => {
         const slotHour = parseInt(slot.value.split(':')[0]);
-        const availableCourts = availability[slot.value];
+        const availableCourts = availability[slot.value] ?? 0;
         
-        // ✅ FIX: Check if this slot exists in availability data
-        // If undefined, it might be a time format issue - try to find it
-        let actualAvailableCourts = availableCourts;
-        if (actualAvailableCourts === undefined) {
-            // Try alternative formats
-            console.log(`⚠️ Slot ${slot.value} not found in availability, checking alternatives...`);
-            actualAvailableCourts = 0;
-        }
-        
-        // Determine if slot is in the past (for today only)
+        // Skip past slots for today
         const isPastSlot = isToday && slotHour <= currentHour;
-        
-        // Determine if slot has enough courts
-        const hasEnoughCourts = actualAvailableCourts >= requestedCourts;
-        
-        // Slot is available only if it's not past AND has enough courts
-        const isAvailable = !isPastSlot && hasEnoughCourts;
-
-        // ✅ FIX: Only hide if checkbox is checked AND slot is unavailable
-        // Past slots on today should always be hidden
         if (isPastSlot) {
-            console.log(`⏰ Hiding past slot: ${slot.value}`);
-            return; // Don't show past slots at all
+            return; // Don't show past slots
         }
         
-        // If "Hide full slots" is checked and slot is unavailable, skip it
-        if (hideUnavailable && !isAvailable) {
-            console.log(`🙈 Hiding full slot: ${slot.value} (checkbox enabled)`);
-            return;
-        }
-
+        const isAvailable = availableCourts >= requestedCourts;
         hasAnySlots = true;
 
         const slotDiv = document.createElement('div');
         slotDiv.className = `time-slot ${isAvailable ? 'available' : 'unavailable'}`;
         slotDiv.dataset.time = slot.value;
 
-        // Urgency indicators for available slots
+        // Urgency indicators
         let urgencyClass = '';
         let urgencyEmoji = '';
         
         if (isAvailable) {
-            if (actualAvailableCourts === requestedCourts) {
+            if (availableCourts === requestedCourts) {
                 urgencyClass = 'almost-full';
                 urgencyEmoji = '⚠️ ';
-            } else if (actualAvailableCourts > requestedCourts + 2) {
+            } else if (availableCourts > requestedCourts + 2) {
                 urgencyClass = 'plenty';
                 urgencyEmoji = '✅ ';
             }
         }
 
-        // ✅ FIX: Show appropriate text for available vs unavailable
-        let courtsText;
-        if (isAvailable) {
-            courtsText = `${urgencyEmoji}${actualAvailableCourts} ${translations[currentLang].courtsAvailable}`;
-        } else if (actualAvailableCourts > 0) {
-            // Has some courts but not enough for the request
-            courtsText = `${actualAvailableCourts} ${translations[currentLang].courtsAvailable}`;
-        } else {
-            courtsText = translations[currentLang].full;
-        }
+        const courtsText = isAvailable 
+            ? `${urgencyEmoji}${availableCourts} ${translations[currentLang].courtsAvailable}`
+            : (availableCourts > 0 ? `${availableCourts} ${translations[currentLang].courtsAvailable}` : translations[currentLang].full);
 
         slotDiv.innerHTML = `
             <div class="time">${slot.label}</div>
@@ -1117,7 +1076,6 @@ async function performAvailabilityCheck() {
         timeGrid.appendChild(slotDiv);
     });
 
-    // If no slots available after filtering
     if (!hasAnySlots) {
         const message = isToday ? translations[currentLang].noSlotsToday : translations[currentLang].noSlots;
         timeGrid.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; padding: 20px; color: #999;">${message}</p>`;
@@ -1420,10 +1378,6 @@ function startAutoRefresh() {
 
         document.getElementById('courts').addEventListener('change', () => {
             updatePrice();
-            checkAndLoadAvailability();
-        });
-
-        document.getElementById('hideUnavailable').addEventListener('change', () => {
             checkAndLoadAvailability();
         });
 
