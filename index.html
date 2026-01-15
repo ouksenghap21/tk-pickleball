@@ -1029,60 +1029,81 @@ async function performAvailabilityCheck() {
         return;
     }
 
-    // ✅ IMPROVEMENT 4: Get current time for past-slot filtering
+    // Get current time for past-slot filtering
     const now = new Date();
     const todayStr = formatDate(now);
     const isToday = (selectedDate === todayStr);
     const currentHour = now.getHours();
-    const currentMinutes = now.getMinutes();
     
     console.log(`📅 Date: ${selectedDate}, Today: ${todayStr}, Is Today: ${isToday}, Current Hour: ${currentHour}`);
 
-    let hasAvailableSlots = false;
+    let hasAnySlots = false;
 
     TIME_SLOTS.forEach(slot => {
         const slotHour = parseInt(slot.value.split(':')[0]);
+        const availableCourts = availability[slot.value];
         
-        // ✅ IMPROVEMENT 4: Skip past time slots for today
-        if (isToday) {
-            // If current time is past this slot, or within the same hour, skip it
-            // We add 1 hour buffer so users can't book slots that start in < 1 hour
-            if (slotHour <= currentHour) {
-                console.log(`⏰ Skipping past slot: ${slot.value} (current hour: ${currentHour})`);
-                return; // Skip this slot
-            }
+        // ✅ FIX: Check if this slot exists in availability data
+        // If undefined, it might be a time format issue - try to find it
+        let actualAvailableCourts = availableCourts;
+        if (actualAvailableCourts === undefined) {
+            // Try alternative formats
+            console.log(`⚠️ Slot ${slot.value} not found in availability, checking alternatives...`);
+            actualAvailableCourts = 0;
         }
         
-        const availableCourts = availability[slot.value] || 0;
-        const isAvailable = availableCourts >= requestedCourts;
+        // Determine if slot is in the past (for today only)
+        const isPastSlot = isToday && slotHour <= currentHour;
+        
+        // Determine if slot has enough courts
+        const hasEnoughCourts = actualAvailableCourts >= requestedCourts;
+        
+        // Slot is available only if it's not past AND has enough courts
+        const isAvailable = !isPastSlot && hasEnoughCourts;
 
+        // ✅ FIX: Only hide if checkbox is checked AND slot is unavailable
+        // Past slots on today should always be hidden
+        if (isPastSlot) {
+            console.log(`⏰ Hiding past slot: ${slot.value}`);
+            return; // Don't show past slots at all
+        }
+        
+        // If "Hide full slots" is checked and slot is unavailable, skip it
         if (hideUnavailable && !isAvailable) {
+            console.log(`🙈 Hiding full slot: ${slot.value} (checkbox enabled)`);
             return;
         }
 
-        hasAvailableSlots = true;
+        hasAnySlots = true;
 
         const slotDiv = document.createElement('div');
         slotDiv.className = `time-slot ${isAvailable ? 'available' : 'unavailable'}`;
         slotDiv.dataset.time = slot.value;
 
-        // Urgency indicators
+        // Urgency indicators for available slots
         let urgencyClass = '';
         let urgencyEmoji = '';
         
         if (isAvailable) {
-            if (availableCourts === requestedCourts) {
+            if (actualAvailableCourts === requestedCourts) {
                 urgencyClass = 'almost-full';
                 urgencyEmoji = '⚠️ ';
-            } else if (availableCourts > requestedCourts + 2) {
+            } else if (actualAvailableCourts > requestedCourts + 2) {
                 urgencyClass = 'plenty';
                 urgencyEmoji = '✅ ';
             }
         }
 
-        const courtsText = isAvailable 
-            ? `${urgencyEmoji}${availableCourts} ${translations[currentLang].courtsAvailable}`
-            : translations[currentLang].full;
+        // ✅ FIX: Show appropriate text for available vs unavailable
+        let courtsText;
+        if (isAvailable) {
+            courtsText = `${urgencyEmoji}${actualAvailableCourts} ${translations[currentLang].courtsAvailable}`;
+        } else if (actualAvailableCourts > 0) {
+            // Has some courts but not enough for the request
+            courtsText = `${actualAvailableCourts} ${translations[currentLang].courtsAvailable}`;
+        } else {
+            courtsText = translations[currentLang].full;
+        }
 
         slotDiv.innerHTML = `
             <div class="time">${slot.label}</div>
@@ -1097,8 +1118,9 @@ async function performAvailabilityCheck() {
     });
 
     // If no slots available after filtering
-    if (!hasAvailableSlots) {
-        timeGrid.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; padding: 20px; color: #999;">${translations[currentLang].noSlots}</p>`;
+    if (!hasAnySlots) {
+        const message = isToday ? translations[currentLang].noSlotsToday : translations[currentLang].noSlots;
+        timeGrid.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; padding: 20px; color: #999;">${message}</p>`;
     }
 }
 
