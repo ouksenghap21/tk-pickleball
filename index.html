@@ -73,6 +73,39 @@
             color: var(--tg-theme-hint-color, #999999);
         }
 
+        /* ✅ NEW: Credit Balance Banner */
+        .credit-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .credit-banner.show {
+            display: block;
+        }
+
+        .credit-banner .balance {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .credit-banner .label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .credit-banner .no-credits {
+            font-size: 14px;
+        }
+
+        .credit-banner .no-credits a {
+            color: white;
+            text-decoration: underline;
+        }
+
         .form-group {
             margin-bottom: 20px;
         }
@@ -191,23 +224,21 @@
             color: #999;
         }
 
-/* ✅ ADD THESE CSS RULES HERE */
-.courts-info.almost-full {
-    color: #ff6b6b;
-    font-weight: 600;
-    animation: pulse 2s infinite;
-}
+        .courts-info.almost-full {
+            color: #ff6b6b;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
 
-.courts-info.plenty {
-    color: #4caf50;
-    font-weight: 500;
-}
+        .courts-info.plenty {
+            color: #4caf50;
+            font-weight: 500;
+        }
 
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
-}
-
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
 
         .time-grid {
             display: grid;
@@ -444,33 +475,33 @@
             justify-content: center;
         }
 
-       .modal-content {
-    background: white;
-    border-radius: 16px;
-    padding: 24px;
-    margin: 16px;
-    max-width: 400px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-    color: #000000;  /* ✅ ADD THIS */
-}
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin: 16px;
+            max-width: 400px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            color: #000000;
+        }
 
-.modal-details {
-    background: #f5f5f5;
-    border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 20px;
-    font-size: 14px;
-    line-height: 1.8;
-    color: #333333;  /* ✅ ADD THIS */
-}
+        .modal-details {
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.8;
+            color: #333333;
+        }
 
-.modal-header {
-    font-size: 20px;
-    margin-bottom: 16px;
-    text-align: center;
-    font-weight: 700;
-    color: #000000;  /* ✅ ADD THIS */
-}
+        .modal-header {
+            font-size: 20px;
+            margin-bottom: 16px;
+            text-align: center;
+            font-weight: 700;
+            color: #000000;
+        }
 
         .modal-buttons {
             display: flex;
@@ -501,6 +532,72 @@
 
         .modal-btn:active {
             transform: scale(0.95);
+        }
+
+        /* ✅ NEW: Payment Method Selection */
+        .payment-options {
+            margin-top: 16px;
+        }
+
+        .payment-option {
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .payment-option:hover {
+            border-color: var(--tg-theme-button-color, #3390ec);
+        }
+
+        .payment-option.selected {
+            border-color: var(--tg-theme-button-color, #3390ec);
+            background: rgba(51, 144, 236, 0.1);
+        }
+
+        .payment-option.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .payment-option-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .payment-option-title {
+            font-weight: 600;
+            font-size: 16px;
+            color: #000;
+        }
+
+        .payment-option-price {
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--tg-theme-button-color, #3390ec);
+        }
+
+        .payment-option-subtitle {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .payment-option-icon {
+            font-size: 24px;
+            margin-right: 12px;
+        }
+
+        .payment-option-content {
+            display: flex;
+            align-items: center;
+        }
+
+        .payment-option-details {
+            flex: 1;
         }
 
         .toggle-container {
@@ -534,6 +631,12 @@
         <div class="header">
             <h1>🏓 <span data-i18n="title">TK Pickleball</span></h1>
             <p data-i18n="subtitle">Book your court in seconds</p>
+        </div>
+
+        <!-- ✅ NEW: Credit Balance Banner -->
+        <div id="creditBanner" class="credit-banner">
+            <div class="label">💳 Your Credit Balance</div>
+            <div class="balance"><span id="creditBalanceDisplay">0</span> hours</div>
         </div>
 
         <div id="messageBox" class="message"></div>
@@ -621,16 +724,52 @@
         </div>
     </div>
 
+    <!-- ✅ UPDATED: Confirmation Modal with Payment Options -->
     <div id="confirmModal" class="modal">
         <div class="modal-content">
             <h2 class="modal-header">🏓 <span data-i18n="confirmTitle">Confirm Booking</span></h2>
             <div id="confirmDetails" class="modal-details"></div>
+            
+            <!-- ✅ NEW: Payment Method Selection -->
+            <div id="paymentOptions" class="payment-options">
+                <div id="creditPaymentOption" class="payment-option" onclick="selectPaymentMethod('credits')">
+                    <div class="payment-option-content">
+                        <span class="payment-option-icon">🎫</span>
+                        <div class="payment-option-details">
+                            <div class="payment-option-header">
+                                <span class="payment-option-title">Use Credits</span>
+                                <span class="payment-option-price">FREE</span>
+                            </div>
+                            <div class="payment-option-subtitle">
+                                Use <span id="creditsToUse">0</span> hours • Remaining: <span id="creditsRemaining">0</span> hours
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="arrivalPaymentOption" class="payment-option selected" onclick="selectPaymentMethod('arrival')">
+                    <div class="payment-option-content">
+                        <span class="payment-option-icon">💵</span>
+                        <div class="payment-option-details">
+                            <div class="payment-option-header">
+                                <span class="payment-option-title">Pay on Arrival</span>
+                                <span class="payment-option-price">$<span id="arrivalPrice">0</span></span>
+                            </div>
+                            <div class="payment-option-subtitle">Pay at the counter when you arrive</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <input type="hidden" id="selectedPaymentMethod" value="arrival">
+            
             <div class="modal-buttons">
                 <button id="confirmCancel" class="modal-btn modal-btn-cancel" data-i18n="cancel">Cancel</button>
                 <button id="confirmSubmit" class="modal-btn modal-btn-confirm" data-i18n="confirm">Confirm</button>
             </div>
         </div>
     </div>
+
 <script>
     // ============================================
     // CONFIGURATION & CONSTANTS
@@ -641,7 +780,11 @@
     let autoRefreshTimer = null;
     let currentLang = 'en';
     const availabilityCache = new Map();
-    const CACHE_DURATION = 30000; // 30 seconds
+    const CACHE_DURATION = 30000;
+
+    // ✅ NEW: Credit system variables
+    let userCreditBalance = 0;
+    let selectedPaymentMethod = 'arrival';
 
     const TIME_SLOTS = [
         { value: '08:00', label: '8:00 AM' },
@@ -661,112 +804,112 @@
     ];
 
     // ============================================
-  // ============================================
-// TRANSLATIONS
-// ============================================
-const translations = {
-    en: {
-        title: 'TK Pickleball',
-        subtitle: 'Book your court in seconds',
-        fullName: 'Full Name',
-        namePlaceholder: 'Enter your name',
-        phoneNumber: 'Phone Number',
-        phonePlaceholder: '123-456-7890',
-        date: 'Date',
-        today: 'Today',
-        tomorrow: 'Tomorrow',
-        nextWeek: 'Next Week',
-        duration: 'Duration (Hours)',
-        hours: 'Hour(s)',
-        courts: 'Number of Courts',
-        selectCourts: 'Select courts',
-        court: 'Court',
-        startTime: 'Start Time',
-        selectFirst: 'Select date, duration, and courts first. Only available times are shown below.',
-        hideFull: 'Hide full slots',
-        checking: 'Checking availability...',
-        totalAmount: 'Total Amount',
-        payOnArrival: 'Pay on arrival',
-        location: '📍 Location',
-        locationDetails: 'TK Pickleball Courts<br>Open daily 8:00 AM - 10:00 PM',
-        confirmBooking: 'Confirm Booking',
-        processing: 'Processing your booking...',
-        confirmTitle: 'Confirm Booking',
-        cancel: 'Cancel',
-        confirm: 'Confirm',
-        courtsAvailable: 'courts',
-        full: 'Full',
-        noSlots: 'No available time slots. Try a different date or fewer courts.',
-        errorTelegram: 'Error: Telegram user data not available. Please open this app from Telegram.',
-        errorFillFields: 'Please fill in all required fields and select a time',
-        successBooked: 'Booking confirmed! See you at the court! 🎉',
-        errorDoubleBooked: 'This time slot was just booked by someone else. Please select another time.',
-        errorBookingFailed: 'Booking failed. Please try again.',
-        errorConnection: 'Connection error. Please check your internet and try again.',
-        modalDate: 'Date',
-        modalTime: 'Time',
-        modalDuration: 'Duration',
-        modalCourts: 'Courts',
-        modalName: 'Name',
-        modalPhone: 'Phone',
-        modalTotal: 'Total',
-        hour: 'hour',
-        // ✅ NEW: Past time validation messages
-        pastTimeError: 'This time slot has passed. Please select a later time.',
-        noSlotsToday: 'No more available slots for today. Try tomorrow!'
-    },
-    km: {
-        title: 'TK Pickleball',
-        subtitle: 'កក់ទីលានរបស់អ្នកក្នុងពេលប៉ុន្មានវិនាទី',
-        fullName: 'ឈ្មោះពេញ',
-        namePlaceholder: 'បញ្ចូលឈ្មោះរបស់អ្នក',
-        phoneNumber: 'លេខទូរស័ព្ទ',
-        phonePlaceholder: '០១២-៣៤៥-៦៧៨៩',
-        date: 'កាលបរិច្ឆេទ',
-        today: 'ថ្ងៃនេះ',
-        tomorrow: 'ថ្ងៃស្អែក',
-        nextWeek: 'សប្តាហ៍ក្រោយ',
-        duration: 'រយៈពេល (ម៉ោង)',
-        hours: 'ម៉ោង',
-        courts: 'ចំនួនទីលាន',
-        selectCourts: 'ជ្រើសរើសទីលាន',
-        court: 'ទីលាន',
-        startTime: 'ពេលចាប់ផ្តើម',
-        selectFirst: 'សូមជ្រើសរើសកាលបរិច្ឆេទ រយៈពេល និងចំនួនទីលានសិន; មានតែពេលវេលាដែលអាចកក់បានប៉ុណ្ណោះដែលបង្ហាញខាងក្រោម។',
-        hideFull: 'លាក់ទីលានពេញ',
-        checking: 'កំពុងពិនិត្យពេលវេលាអាចកក់បាន...',
-        totalAmount: 'ចំនួនទឹកប្រាក់សរុប',
-        payOnArrival: 'បង់នៅពេលមកដល់',
-        location: '📍 ទីតាំង',
-        locationDetails: 'ទីលាន TK Pickleball<br>បើកប្រចាំថ្ងៃ ម៉ោង ៨:០០ព្រឹក - ១០:០០យប់',
-        confirmBooking: 'បញ្ជាក់ការកក់',
-        processing: 'កំពុងដំណើរការការកក់របស់អ្នក...',
-        confirmTitle: 'បញ្ជាក់ការកក់',
-        cancel: 'បោះបង់',
-        confirm: 'បញ្ជាក់',
-        courtsAvailable: 'ទីលាន',
-        full: 'ពេញ',
-        noSlots: 'គ្មានពេលវេលាអាចរកបាន។ សូមសាកល្បងកាលបរិច្ឆេទផ្សេង ឬទីលានតិចជាង។',
-        errorTelegram: 'កំហុស៖ ទិន្នន័យអ្នកប្រើ Telegram មិនអាចរកបាន។ សូមបើកកម្មវិធីនេះពី Telegram។',
-        errorFillFields: 'សូមបំពេញវាលទាំងអស់ដែលត្រូវការ និងជ្រើសរើសពេលវេលា',
-        successBooked: 'ការកក់ត្រូវបានបញ្ជាក់! ជួបគ្នានៅទីលាន! 🎉',
-        errorDoubleBooked: 'ពេលវេលានេះទើបតែត្រូវបានកក់ដោយអ្នកផ្សេង។ សូមជ្រើសរើសពេលវេលាផ្សេង។',
-        errorBookingFailed: 'ការកក់បានបរាជ័យ។ សូមសាកល្បងម្តងទៀត។',
-        errorConnection: 'កំហុសការតភ្ជាប់។ សូមពិនិត្យអ៊ីនធឺណិតរបស់អ្នក ហើយសាកល្បងម្តងទៀត។',
-        modalDate: 'កាលបរិច្ឆេទ',
-        modalTime: 'ពេលវេលា',
-        modalDuration: 'រយៈពេល',
-        modalCourts: 'ទីលាន',
-        modalName: 'ឈ្មោះ',
-        modalPhone: 'ទូរស័ព្ទ',
-        modalTotal: 'សរុប',
-        hour: 'ម៉ោង',
-        // ✅ NEW: Past time validation messages
-        pastTimeError: 'ពេលវេលានេះបានកន្លងផុតហើយ។ សូមជ្រើសរើសពេលវេលាក្រោយ។',
-        noSlotsToday: 'គ្មានពេលវេលាអាចរកបានសម្រាប់ថ្ងៃនេះទៀតទេ។ សូមសាកល្បងថ្ងៃស្អែក!'
-    }
-};
-
+    // TRANSLATIONS
+    // ============================================
+    const translations = {
+        en: {
+            title: 'TK Pickleball',
+            subtitle: 'Book your court in seconds',
+            fullName: 'Full Name',
+            namePlaceholder: 'Enter your name',
+            phoneNumber: 'Phone Number',
+            phonePlaceholder: '123-456-7890',
+            date: 'Date',
+            today: 'Today',
+            tomorrow: 'Tomorrow',
+            nextWeek: 'Next Week',
+            duration: 'Duration (Hours)',
+            hours: 'Hour(s)',
+            courts: 'Number of Courts',
+            selectCourts: 'Select courts',
+            court: 'Court',
+            startTime: 'Start Time',
+            selectFirst: 'Select date, duration, and courts first. Only available times are shown below.',
+            hideFull: 'Hide full slots',
+            checking: 'Checking availability...',
+            totalAmount: 'Total Amount',
+            payOnArrival: 'Pay on arrival',
+            location: '📍 Location',
+            locationDetails: 'TK Pickleball Courts<br>Open daily 8:00 AM - 10:00 PM',
+            confirmBooking: 'Confirm Booking',
+            processing: 'Processing your booking...',
+            confirmTitle: 'Confirm Booking',
+            cancel: 'Cancel',
+            confirm: 'Confirm',
+            courtsAvailable: 'courts',
+            full: 'Full',
+            noSlots: 'No available time slots. Try a different date or fewer courts.',
+            errorTelegram: 'Error: Telegram user data not available. Please open this app from Telegram.',
+            errorFillFields: 'Please fill in all required fields and select a time',
+            successBooked: 'Booking confirmed! See you at the court! 🎉',
+            successBookedCredits: 'Booking confirmed! Credits applied. See you at the court! 🎉',
+            errorDoubleBooked: 'This time slot was just booked by someone else. Please select another time.',
+            errorBookingFailed: 'Booking failed. Please try again.',
+            errorConnection: 'Connection error. Please check your internet and try again.',
+            modalDate: 'Date',
+            modalTime: 'Time',
+            modalDuration: 'Duration',
+            modalCourts: 'Courts',
+            modalName: 'Name',
+            modalPhone: 'Phone',
+            modalTotal: 'Total',
+            hour: 'hour',
+            pastTimeError: 'This time slot has passed. Please select a later time.',
+            noSlotsToday: 'No more available slots for today. Try tomorrow!',
+            insufficientCredits: 'Not enough credits. You need {{needed}} hours but have {{have}} hours.'
+        },
+        km: {
+            title: 'TK Pickleball',
+            subtitle: 'កក់ទីលានរបស់អ្នកក្នុងពេលប៉ុន្មានវិនាទី',
+            fullName: 'ឈ្មោះពេញ',
+            namePlaceholder: 'បញ្ចូលឈ្មោះរបស់អ្នក',
+            phoneNumber: 'លេខទូរស័ព្ទ',
+            phonePlaceholder: '០១២-៣៤៥-៦៧៨៩',
+            date: 'កាលបរិច្ឆេទ',
+            today: 'ថ្ងៃនេះ',
+            tomorrow: 'ថ្ងៃស្អែក',
+            nextWeek: 'សប្តាហ៍ក្រោយ',
+            duration: 'រយៈពេល (ម៉ោង)',
+            hours: 'ម៉ោង',
+            courts: 'ចំនួនទីលាន',
+            selectCourts: 'ជ្រើសរើសទីលាន',
+            court: 'ទីលាន',
+            startTime: 'ពេលចាប់ផ្តើម',
+            selectFirst: 'សូមជ្រើសរើសកាលបរិច្ឆេទ រយៈពេល និងចំនួនទីលានសិន; មានតែពេលវេលាដែលអាចកក់បានប៉ុណ្ណោះដែលបង្ហាញខាងក្រោម។',
+            hideFull: 'លាក់ទីលានពេញ',
+            checking: 'កំពុងពិនិត្យពេលវេលាអាចកក់បាន...',
+            totalAmount: 'ចំនួនទឹកប្រាក់សរុប',
+            payOnArrival: 'បង់នៅពេលមកដល់',
+            location: '📍 ទីតាំង',
+            locationDetails: 'ទីលាន TK Pickleball<br>បើកប្រចាំថ្ងៃ ម៉ោង ៨:០០ព្រឹក - ១០:០០យប់',
+            confirmBooking: 'បញ្ជាក់ការកក់',
+            processing: 'កំពុងដំណើរការការកក់របស់អ្នក...',
+            confirmTitle: 'បញ្ជាក់ការកក់',
+            cancel: 'បោះបង់',
+            confirm: 'បញ្ជាក់',
+            courtsAvailable: 'ទីលាន',
+            full: 'ពេញ',
+            noSlots: 'គ្មានពេលវេលាអាចរកបាន។ សូមសាកល្បងកាលបរិច្ឆេទផ្សេង ឬទីលានតិចជាង។',
+            errorTelegram: 'កំហុស៖ ទិន្នន័យអ្នកប្រើ Telegram មិនអាចរកបាន។ សូមបើកកម្មវិធីនេះពី Telegram។',
+            errorFillFields: 'សូមបំពេញវាលទាំងអស់ដែលត្រូវការ និងជ្រើសរើសពេលវេលា',
+            successBooked: 'ការកក់ត្រូវបានបញ្ជាក់! ជួបគ្នានៅទីលាន! 🎉',
+            successBookedCredits: 'ការកក់ត្រូវបានបញ្ជាក់! ឥណទានត្រូវបានអនុវត្ត។ ជួបគ្នានៅទីលាន! 🎉',
+            errorDoubleBooked: 'ពេលវេលានេះទើបតែត្រូវបានកក់ដោយអ្នកផ្សេង។ សូមជ្រើសរើសពេលវេលាផ្សេង។',
+            errorBookingFailed: 'ការកក់បានបរាជ័យ។ សូមសាកល្បងម្តងទៀត។',
+            errorConnection: 'កំហុសការតភ្ជាប់។ សូមពិនិត្យអ៊ីនធឺណិតរបស់អ្នក ហើយសាកល្បងម្តងទៀត។',
+            modalDate: 'កាលបរិច្ឆេទ',
+            modalTime: 'ពេលវេលា',
+            modalDuration: 'រយៈពេល',
+            modalCourts: 'ទីលាន',
+            modalName: 'ឈ្មោះ',
+            modalPhone: 'ទូរស័ព្ទ',
+            modalTotal: 'សរុប',
+            hour: 'ម៉ោង',
+            pastTimeError: 'ពេលវេលានេះបានកន្លងផុតហើយ។ សូមជ្រើសរើសពេលវេលាក្រោយ។',
+            noSlotsToday: 'គ្មានពេលវេលាអាចរកបានសម្រាប់ថ្ងៃនេះទៀតទេ។ សូមសាកល្បងថ្ងៃស្អែក!',
+            insufficientCredits: 'ឥណទានមិនគ្រប់គ្រាន់។ អ្នកត្រូវការ {{needed}} ម៉ោង ប៉ុន្តែមាន {{have}} ម៉ោង។'
+        }
+    };
 
     // ============================================
     // LANGUAGE SWITCHING
@@ -829,47 +972,118 @@ const translations = {
     }
 
     function getTelegramUserData() {
-    if (typeof Telegram !== 'undefined' && Telegram.WebApp && Telegram.WebApp.initDataUnsafe) {
-        const user = Telegram.WebApp.initDataUnsafe.user;
-        if (user) {
-            return {
-                telegram_id: user.id,
-                first_name: user.first_name || '',
-                last_name: user.last_name || '',
-                username: user.username || ''
-            };
+        if (typeof Telegram !== 'undefined' && Telegram.WebApp && Telegram.WebApp.initDataUnsafe) {
+            const user = Telegram.WebApp.initDataUnsafe.user;
+            if (user) {
+                return {
+                    telegram_id: user.id,
+                    first_name: user.first_name || '',
+                    last_name: user.last_name || '',
+                    username: user.username || ''
+                };
+            }
         }
+        return null;
     }
-    return null;
-}
 
-// ✅ ADD THIS NEW FUNCTION HERE
-async function prefillUserData() {
-    const telegramUser = getTelegramUserData();
-    
-    if (telegramUser) {
-        // Prefill name from Telegram
-        const fullName = `${telegramUser.first_name} ${telegramUser.last_name || ''}`.trim();
-        if (fullName) {
-            document.getElementById('name').value = fullName;
+    // ✅ NEW: Check user's credit balance
+    async function checkUserCredits() {
+        const telegramUser = getTelegramUserData();
+        if (!telegramUser) {
+            console.log('No Telegram user data available');
+            return 0;
         }
-        
-        // Try to fetch previous booking data
+
         try {
-            const url = `${BACKEND_URL}?action=getUserInfo&telegram_id=${telegramUser.telegram_id}`;
+            const url = `${BACKEND_URL}?action=checkCredits&telegram_id=${telegramUser.telegram_id}`;
             const response = await fetch(url);
             const data = await response.json();
-            
-            if (data.success && data.phone) {
-                document.getElementById('phone').value = data.phone;
-                console.log('✅ Auto-filled phone from previous booking');
+
+            if (data.success && data.balance > 0) {
+                userCreditBalance = data.balance;
+                updateCreditBanner();
+                console.log('✅ User has ' + userCreditBalance + ' credit hours');
+                return data.balance;
             }
         } catch (e) {
-            console.log('Could not prefill user data:', e);
+            console.log('Could not check credits:', e);
+        }
+
+        userCreditBalance = 0;
+        updateCreditBanner();
+        return 0;
+    }
+
+    // ✅ NEW: Update credit banner display
+    function updateCreditBanner() {
+        const banner = document.getElementById('creditBanner');
+        const balanceDisplay = document.getElementById('creditBalanceDisplay');
+
+        if (userCreditBalance > 0) {
+            banner.classList.add('show');
+            balanceDisplay.textContent = userCreditBalance;
+        } else {
+            banner.classList.remove('show');
         }
     }
-}
 
+    // ✅ NEW: Select payment method
+    function selectPaymentMethod(method) {
+        const duration = parseInt(document.getElementById('duration').value) || 1;
+        const courts = parseInt(document.getElementById('courts').value) || 1;
+        const totalHours = duration * courts;
+
+        // Check if user has enough credits
+        if (method === 'credits' && userCreditBalance < totalHours) {
+            showMessage(translations[currentLang].insufficientCredits
+                .replace('{{needed}}', totalHours)
+                .replace('{{have}}', userCreditBalance), 'error');
+            return;
+        }
+
+        selectedPaymentMethod = method;
+        document.getElementById('selectedPaymentMethod').value = method;
+
+        // Update UI
+        document.querySelectorAll('.payment-option').forEach(opt => {
+            opt.classList.remove('selected');
+        });
+
+        if (method === 'credits') {
+            document.getElementById('creditPaymentOption').classList.add('selected');
+        } else {
+            document.getElementById('arrivalPaymentOption').classList.add('selected');
+        }
+
+        // Haptic feedback
+        if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
+            Telegram.WebApp.HapticFeedback.impactOccurred('light');
+        }
+    }
+
+    async function prefillUserData() {
+        const telegramUser = getTelegramUserData();
+        
+        if (telegramUser) {
+            const fullName = `${telegramUser.first_name} ${telegramUser.last_name || ''}`.trim();
+            if (fullName) {
+                document.getElementById('name').value = fullName;
+            }
+            
+            try {
+                const url = `${BACKEND_URL}?action=getUserInfo&telegram_id=${telegramUser.telegram_id}`;
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.success && data.phone) {
+                    document.getElementById('phone').value = data.phone;
+                    console.log('✅ Auto-filled phone from previous booking');
+                }
+            } catch (e) {
+                console.log('Could not prefill user data:', e);
+            }
+        }
+    }
 
     function updatePrice() {
         const duration = parseInt(document.getElementById('duration').value) || 1;
@@ -878,43 +1092,40 @@ async function prefillUserData() {
         document.getElementById('totalPrice').textContent = totalPrice;
     }
 
-// ✅ ADD THIS FUNCTION HERE
-function addQuickRebookButton() {
-    const lastBooking = localStorage.getItem('lastBooking');
-    
-    if (lastBooking) {
-        const data = JSON.parse(lastBooking);
-        const quickDatesDiv = document.querySelector('.quick-dates');
+    function addQuickRebookButton() {
+        const lastBooking = localStorage.getItem('lastBooking');
         
-        // Check if button already exists
-        if (document.getElementById('rebookBtn')) return;
-        
-        const rebookBtn = document.createElement('button');
-        rebookBtn.id = 'rebookBtn';
-        rebookBtn.type = 'button';
-        rebookBtn.className = 'quick-date-btn';
-        rebookBtn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-        rebookBtn.style.color = 'white';
-        rebookBtn.style.gridColumn = '1 / -1';
-        rebookBtn.innerHTML = '🔄 Same as Last Time';
-        
-        rebookBtn.onclick = () => {
-            document.getElementById('duration').value = data.duration;
-            document.getElementById('durationSlider').value = data.duration;
-            document.getElementById('durationValue').textContent = data.duration;
-            document.getElementById('courts').value = data.courts;
-            updatePrice();
-            checkAndLoadAvailability();
+        if (lastBooking) {
+            const data = JSON.parse(lastBooking);
+            const quickDatesDiv = document.querySelector('.quick-dates');
             
-            if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
-                Telegram.WebApp.HapticFeedback.impactOccurred('light');
-            }
-        };
-        
-        quickDatesDiv.appendChild(rebookBtn);
+            if (document.getElementById('rebookBtn')) return;
+            
+            const rebookBtn = document.createElement('button');
+            rebookBtn.id = 'rebookBtn';
+            rebookBtn.type = 'button';
+            rebookBtn.className = 'quick-date-btn';
+            rebookBtn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            rebookBtn.style.color = 'white';
+            rebookBtn.style.gridColumn = '1 / -1';
+            rebookBtn.innerHTML = '🔄 Same as Last Time';
+            
+            rebookBtn.onclick = () => {
+                document.getElementById('duration').value = data.duration;
+                document.getElementById('durationSlider').value = data.duration;
+                document.getElementById('durationValue').textContent = data.duration;
+                document.getElementById('courts').value = data.courts;
+                updatePrice();
+                checkAndLoadAvailability();
+                
+                if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
+                    Telegram.WebApp.HapticFeedback.impactOccurred('light');
+                }
+            };
+            
+            quickDatesDiv.appendChild(rebookBtn);
+        }
     }
-}
-
 
     function setQuickDate(days) {
         const dateInput = document.getElementById('date');
@@ -938,248 +1149,260 @@ function addQuickRebookButton() {
         });
     }
 
-   // ✅ REPLACE THE ENTIRE checkAndLoadAvailability FUNCTION WITH THIS:
+    let availabilityCheckTimeout = null;
 
-// Add timeout variable at the top of the script section
-let availabilityCheckTimeout = null;
-
-function checkAndLoadAvailability() {
-    // Clear previous timeout
-    clearTimeout(availabilityCheckTimeout);
-    
-    // Show loading immediately
-    const loadingMsg = document.getElementById('timeLoadingMessage');
-    loadingMsg.style.display = 'block';
-    
-    // Debounce: wait 500ms after last change
-    availabilityCheckTimeout = setTimeout(async () => {
-        await performAvailabilityCheck();
-    }, 500);
-}
-
-async function performAvailabilityCheck() {
-    const date = document.getElementById('date').value;
-    const duration = document.getElementById('duration').value;
-    const courts = document.getElementById('courts').value;
-
-    if (!date || !duration || !courts) {
-        document.getElementById('timeLoadingMessage').style.display = 'none';
-        return;
+    function checkAndLoadAvailability() {
+        clearTimeout(availabilityCheckTimeout);
+        
+        const loadingMsg = document.getElementById('timeLoadingMessage');
+        loadingMsg.style.display = 'block';
+        
+        availabilityCheckTimeout = setTimeout(async () => {
+            await performAvailabilityCheck();
+        }, 500);
     }
 
-    // Create cache key
-    const cacheKey = `${date}_${duration}_${courts}`;
-    
-    // Check cache
-    const cached = availabilityCache.get(cacheKey);
-    if (cached && (Date.now() - cached.timestamp < CACHE_DURATION)) {
-        console.log('✅ Using cached availability');
-        renderTimeSlots(cached.data);
-        document.getElementById('timeLoadingMessage').style.display = 'none';
-        return;
-    }
+    async function performAvailabilityCheck() {
+        const date = document.getElementById('date').value;
+        const duration = document.getElementById('duration').value;
+        const courts = document.getElementById('courts').value;
 
-    // ✅ OPTIMIZATION 7: Show Skeleton Loading (instead of innerHTML = '')
-    showSkeletonSlots();
-
-    try {
-        const url = `${BACKEND_URL}?action=checkAvailability&date=${date}&duration=${duration}&courts=${courts}`;
-        const response = await fetch(url);
-        const data = await response.json();
-
-        document.getElementById('timeLoadingMessage').style.display = 'none';
-
-        if (data.status === 'success') {
-            // Store in cache
-            availabilityCache.set(cacheKey, {
-                timestamp: Date.now(),
-                data: data.availability
-            });
-            
-            console.log('✅ Cached availability for:', cacheKey);
-            renderTimeSlots(data.availability);
-        } else {
-            showMessage(data.error || translations[currentLang].errorConnection, 'error');
+        if (!date || !duration || !courts) {
+            document.getElementById('timeLoadingMessage').style.display = 'none';
+            return;
         }
-    } catch (error) {
-        console.error('💥 Fetch error:', error);
-        document.getElementById('timeLoadingMessage').style.display = 'none';
-        showMessage(translations[currentLang].errorConnection, 'error');
-    }
-}
 
-
-function renderTimeSlots(availability) {
-    const timeGrid = document.getElementById('timeGrid');
-    const requestedCourts = parseInt(document.getElementById('courts').value);
-    const selectedDate = document.getElementById('date').value;
-    
-    timeGrid.innerHTML = '';
-
-    if (!availability || Object.keys(availability).length === 0) {
-        timeGrid.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; padding: 20px; color: #999;">${translations[currentLang].noSlots}</p>`;
-        return;
-    }
-
-    // Get current time for past-slot filtering
-    const now = new Date();
-    const todayStr = formatDate(now);
-    const isToday = (selectedDate === todayStr);
-    const currentHour = now.getHours();
-
-    let hasAnySlots = false;
-
-    TIME_SLOTS.forEach(slot => {
-        const slotHour = parseInt(slot.value.split(':')[0]);
-        const availableCourts = availability[slot.value] ?? 0;
+        const cacheKey = `${date}_${duration}_${courts}`;
         
-        // Skip past slots for today
-        const isPastSlot = isToday && slotHour <= currentHour;
-        if (isPastSlot) {
-            return; // Don't show past slots
+        const cached = availabilityCache.get(cacheKey);
+        if (cached && (Date.now() - cached.timestamp < CACHE_DURATION)) {
+            console.log('✅ Using cached availability');
+            renderTimeSlots(cached.data);
+            document.getElementById('timeLoadingMessage').style.display = 'none';
+            return;
         }
-        
-        const isAvailable = availableCourts >= requestedCourts;
-        hasAnySlots = true;
 
-        const slotDiv = document.createElement('div');
-        slotDiv.className = `time-slot ${isAvailable ? 'available' : 'unavailable'}`;
-        slotDiv.dataset.time = slot.value;
+        showSkeletonSlots();
 
-        // Urgency indicators
-        let urgencyClass = '';
-        let urgencyEmoji = '';
-        
-        if (isAvailable) {
-            if (availableCourts === requestedCourts) {
-                urgencyClass = 'almost-full';
-                urgencyEmoji = '⚠️ ';
-            } else if (availableCourts > requestedCourts + 2) {
-                urgencyClass = 'plenty';
-                urgencyEmoji = '✅ ';
+        try {
+            const url = `${BACKEND_URL}?action=checkAvailability&date=${date}&duration=${duration}&courts=${courts}`;
+            const response = await fetch(url);
+            const data = await response.json();
+
+            document.getElementById('timeLoadingMessage').style.display = 'none';
+
+            if (data.status === 'success') {
+                availabilityCache.set(cacheKey, {
+                    timestamp: Date.now(),
+                    data: data.availability
+                });
+                
+                console.log('✅ Cached availability for:', cacheKey);
+                renderTimeSlots(data.availability);
+            } else {
+                showMessage(data.error || translations[currentLang].errorConnection, 'error');
             }
+        } catch (error) {
+            console.error('💥 Fetch error:', error);
+            document.getElementById('timeLoadingMessage').style.display = 'none';
+            showMessage(translations[currentLang].errorConnection, 'error');
+        }
+    }
+
+    function renderTimeSlots(availability) {
+        const timeGrid = document.getElementById('timeGrid');
+        const requestedCourts = parseInt(document.getElementById('courts').value);
+        const selectedDate = document.getElementById('date').value;
+        
+        timeGrid.innerHTML = '';
+
+        if (!availability || Object.keys(availability).length === 0) {
+            timeGrid.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; padding: 20px; color: #999;">${translations[currentLang].noSlots}</p>`;
+            return;
         }
 
-        const courtsText = isAvailable 
-            ? `${urgencyEmoji}${availableCourts} ${translations[currentLang].courtsAvailable}`
-            : (availableCourts > 0 ? `${availableCourts} ${translations[currentLang].courtsAvailable}` : translations[currentLang].full);
+        const now = new Date();
+        const todayStr = formatDate(now);
+        const isToday = (selectedDate === todayStr);
+        const currentHour = now.getHours();
 
-        slotDiv.innerHTML = `
-            <div class="time">${slot.label}</div>
-            <div class="courts-info ${urgencyClass}">${courtsText}</div>
-        `;
+        let hasAnySlots = false;
 
-        if (isAvailable) {
-            slotDiv.addEventListener('click', () => selectTimeSlot(slot.value));
+        TIME_SLOTS.forEach(slot => {
+            const slotHour = parseInt(slot.value.split(':')[0]);
+            const availableCourts = availability[slot.value] ?? 0;
+            
+            const isPastSlot = isToday && slotHour <= currentHour;
+            if (isPastSlot) {
+                return;
+            }
+            
+            const isAvailable = availableCourts >= requestedCourts;
+            hasAnySlots = true;
+
+            const slotDiv = document.createElement('div');
+            slotDiv.className = `time-slot ${isAvailable ? 'available' : 'unavailable'}`;
+            slotDiv.dataset.time = slot.value;
+
+            let urgencyClass = '';
+            let urgencyEmoji = '';
+            
+            if (isAvailable) {
+                if (availableCourts === requestedCourts) {
+                    urgencyClass = 'almost-full';
+                    urgencyEmoji = '⚠️ ';
+                } else if (availableCourts > requestedCourts + 2) {
+                    urgencyClass = 'plenty';
+                    urgencyEmoji = '✅ ';
+                }
+            }
+
+            const courtsText = isAvailable 
+                ? `${urgencyEmoji}${availableCourts} ${translations[currentLang].courtsAvailable}`
+                : (availableCourts > 0 ? `${availableCourts} ${translations[currentLang].courtsAvailable}` : translations[currentLang].full);
+
+            slotDiv.innerHTML = `
+                <div class="time">${slot.label}</div>
+                <div class="courts-info ${urgencyClass}">${courtsText}</div>
+            `;
+
+            if (isAvailable) {
+                slotDiv.addEventListener('click', () => selectTimeSlot(slot.value));
+            }
+
+            timeGrid.appendChild(slotDiv);
+        });
+
+        if (!hasAnySlots) {
+            const message = isToday ? translations[currentLang].noSlotsToday : translations[currentLang].noSlots;
+            timeGrid.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; padding: 20px; color: #999;">${message}</p>`;
+        }
+    }
+
+    function showSkeletonSlots() {
+        const timeGrid = document.getElementById('timeGrid');
+        timeGrid.innerHTML = '';
+        
+        for (let i = 0; i < 14; i++) {
+            const skeleton = document.createElement('div');
+            skeleton.className = 'time-slot skeleton';
+            skeleton.innerHTML = `
+                <div class="time" style="background: #e0e0e0; border-radius: 4px; height: 20px; width: 60%; margin: 0 auto;"></div>
+                <div class="courts-info" style="background: #e0e0e0; border-radius: 4px; height: 14px; width: 80%; margin: 4px auto 0;"></div>
+            `;
+            timeGrid.appendChild(skeleton);
+        }
+    }
+
+    function selectTimeSlot(time) {
+        if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
+            Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+        }
+        
+        document.querySelectorAll('.time-slot').forEach(slot => {
+            slot.classList.remove('selected');
+        });
+
+        const selectedSlot = document.querySelector(`[data-time="${time}"]`);
+        if (selectedSlot) {
+            selectedSlot.classList.add('selected');
         }
 
-        timeGrid.appendChild(slotDiv);
-    });
-
-    if (!hasAnySlots) {
-        const message = isToday ? translations[currentLang].noSlotsToday : translations[currentLang].noSlots;
-        timeGrid.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; padding: 20px; color: #999;">${message}</p>`;
+        document.getElementById('selectedTime').value = time;
+        document.getElementById('btnBook').disabled = false;
     }
-}
-
-
-// ✅ ADD THIS NEW FUNCTION HERE
-function showSkeletonSlots() {
-    const timeGrid = document.getElementById('timeGrid');
-    timeGrid.innerHTML = '';
-    
-    // Show 14 skeleton slots (8 AM to 9 PM)
-    for (let i = 0; i < 14; i++) {
-        const skeleton = document.createElement('div');
-        skeleton.className = 'time-slot skeleton';
-        skeleton.innerHTML = `
-            <div class="time" style="background: #e0e0e0; border-radius: 4px; height: 20px; width: 60%; margin: 0 auto;"></div>
-            <div class="courts-info" style="background: #e0e0e0; border-radius: 4px; height: 14px; width: 80%; margin: 4px auto 0;"></div>
-        `;
-        timeGrid.appendChild(skeleton);
-    }
-}
-
-// ✅ CORRECTED VERSION - Replace lines 70-88 with this:
-function selectTimeSlot(time) {
-    // ✅ Haptic feedback
-    if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
-        Telegram.WebApp.HapticFeedback.impactOccurred('medium');
-    }
-    
-    document.querySelectorAll('.time-slot').forEach(slot => {
-        slot.classList.remove('selected');
-    });
-
-    const selectedSlot = document.querySelector(`[data-time="${time}"]`);
-    if (selectedSlot) {
-        selectedSlot.classList.add('selected');
-    }
-
-    document.getElementById('selectedTime').value = time;
-    document.getElementById('btnBook').disabled = false;
-}
-
 
     // ============================================
     // FORM SUBMISSION & BOOKING
     // ============================================
     function showConfirmationModal() {
-    const name = document.getElementById('name').value;
-    const phone = document.getElementById('phone').value;
-    const date = document.getElementById('date').value;
-    const time = document.getElementById('selectedTime').value;
-    const duration = document.getElementById('duration').value;
-    const courts = document.getElementById('courts').value;
-    const totalPrice = document.getElementById('totalPrice').textContent;
+        const name = document.getElementById('name').value;
+        const phone = document.getElementById('phone').value;
+        const date = document.getElementById('date').value;
+        const time = document.getElementById('selectedTime').value;
+        const duration = parseInt(document.getElementById('duration').value);
+        const courts = parseInt(document.getElementById('courts').value);
+        const totalPrice = document.getElementById('totalPrice').textContent;
+        const totalHours = duration * courts;
 
-    if (!name || !phone || !date || !time || !duration || !courts) {
-        showMessage(translations[currentLang].errorFillFields, 'error');
-        return false;
-    }
-
-    // ✅ IMPROVEMENT 4: Double-check time hasn't passed while user was filling form
-    const now = new Date();
-    const todayStr = formatDate(now);
-    const isToday = (date === todayStr);
-    
-    if (isToday) {
-        const selectedHour = parseInt(time.split(':')[0]);
-        const currentHour = now.getHours();
-        
-        if (selectedHour <= currentHour) {
-            showMessage('⚠️ This time slot has passed. Please select a later time.', 'error');
-            // Refresh availability to show updated slots
-            availabilityCache.clear();
-            checkAndLoadAvailability();
+        if (!name || !phone || !date || !time || !duration || !courts) {
+            showMessage(translations[currentLang].errorFillFields, 'error');
             return false;
         }
+
+        const now = new Date();
+        const todayStr = formatDate(now);
+        const isToday = (date === todayStr);
+        
+        if (isToday) {
+            const selectedHour = parseInt(time.split(':')[0]);
+            const currentHour = now.getHours();
+            
+            if (selectedHour <= currentHour) {
+                showMessage('⚠️ This time slot has passed. Please select a later time.', 'error');
+                availabilityCache.clear();
+                checkAndLoadAvailability();
+                return false;
+            }
+        }
+
+        if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
+            Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+        }
+
+        const timeLabel = TIME_SLOTS.find(slot => slot.value === time)?.label || time;
+        const durationText = duration === 1 ? translations[currentLang].hour : translations[currentLang].hours;
+
+        const confirmDetails = document.getElementById('confirmDetails');
+        confirmDetails.innerHTML = `
+            <strong>${translations[currentLang].modalDate}:</strong> ${date}<br>
+            <strong>${translations[currentLang].modalTime}:</strong> ${timeLabel}<br>
+            <strong>${translations[currentLang].modalDuration}:</strong> ${duration} ${durationText}<br>
+            <strong>${translations[currentLang].modalCourts}:</strong> ${courts}<br>
+            <strong>${translations[currentLang].modalName}:</strong> ${name}<br>
+            <strong>${translations[currentLang].modalPhone}:</strong> ${phone}
+        `;
+
+        // ✅ NEW: Setup payment options
+        const creditOption = document.getElementById('creditPaymentOption');
+        const creditsToUseSpan = document.getElementById('creditsToUse');
+        const creditsRemainingSpan = document.getElementById('creditsRemaining');
+        const arrivalPriceSpan = document.getElementById('arrivalPrice');
+
+        creditsToUseSpan.textContent = totalHours;
+        arrivalPriceSpan.textContent = totalPrice;
+
+        if (userCreditBalance >= totalHours) {
+            // User has enough credits
+            creditOption.classList.remove('disabled');
+            creditsRemainingSpan.textContent = userCreditBalance - totalHours;
+            creditOption.onclick = () => selectPaymentMethod('credits');
+        } else if (userCreditBalance > 0) {
+            // User has some credits but not enough
+            creditOption.classList.add('disabled');
+            creditsRemainingSpan.textContent = `Need ${totalHours}, have ${userCreditBalance}`;
+            creditOption.onclick = null;
+        } else {
+            // User has no credits - hide option
+            creditOption.style.display = 'none';
+        }
+
+        // Show credits option if user has any credits
+        if (userCreditBalance > 0) {
+            creditOption.style.display = 'block';
+        } else {
+            creditOption.style.display = 'none';
+        }
+
+        // Default to arrival if not enough credits
+        if (userCreditBalance < totalHours) {
+            selectPaymentMethod('arrival');
+        }
+
+        const modal = document.getElementById('confirmModal');
+        modal.style.display = 'flex';
+        return false;
     }
-
-    // Haptic feedback
-    if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
-        Telegram.WebApp.HapticFeedback.notificationOccurred('success');
-    }
-
-    const timeLabel = TIME_SLOTS.find(slot => slot.value === time)?.label || time;
-    const durationText = duration === '1' ? translations[currentLang].hour : translations[currentLang].hours;
-
-    const confirmDetails = document.getElementById('confirmDetails');
-    confirmDetails.innerHTML = `
-        <strong>${translations[currentLang].modalDate}:</strong> ${date}<br>
-        <strong>${translations[currentLang].modalTime}:</strong> ${timeLabel}<br>
-        <strong>${translations[currentLang].modalDuration}:</strong> ${duration} ${durationText}<br>
-        <strong>${translations[currentLang].modalCourts}:</strong> ${courts}<br>
-        <strong>${translations[currentLang].modalName}:</strong> ${name}<br>
-        <strong>${translations[currentLang].modalPhone}:</strong> ${phone}<br>
-        <strong>${translations[currentLang].modalTotal}:</strong> $${totalPrice}
-    `;
-
-    const modal = document.getElementById('confirmModal');
-    modal.style.display = 'flex';
-    return false;
-}
-
 
     function hideConfirmationModal() {
         const modal = document.getElementById('confirmModal');
@@ -1187,170 +1410,189 @@ function selectTimeSlot(time) {
     }
 
     async function submitBooking() {
-    hideConfirmationModal();
-    
-    // ✅ OPTIMIZATION 5: Offline Detection
-    if (!navigator.onLine) {
-        showMessage('❌ No internet connection. Cannot book.', 'error');
-        return;
-    }
-    
-    showLoading(true);
-
-    const telegramUser = getTelegramUserData();
-    if (!telegramUser) {
-        showLoading(false);
-        showMessage(translations[currentLang].errorTelegram, 'error');
-        return;
-    }
-
-    // Get form values
-    const name = document.getElementById('name').value;
-    const phone = document.getElementById('phone').value;
-    const date = document.getElementById('date').value;
-    const time = document.getElementById('selectedTime').value;
-    const duration = document.getElementById('duration').value;
-    const courts = document.getElementById('courts').value;
-
-    console.log('📤 Submitting booking:', {
-        name, phone, date, time, duration, courts,
-        telegram_id: telegramUser.telegram_id
-    });
-
-    const formData = {
-        action: 'book',
-        name: name,
-        phone: phone,
-        date: date,
-        time: time,
-        duration: duration,
-        courts: courts,
-        telegram_id: telegramUser.telegram_id,
-        source: 'telegram_miniapp'
-    };
-
-    try {
-        const params = new URLSearchParams(formData);
-        const url = `${BACKEND_URL}?${params.toString()}`;
+        hideConfirmationModal();
         
-        console.log('🌐 Booking URL:', url);
+        if (!navigator.onLine) {
+            showMessage('❌ No internet connection. Cannot book.', 'error');
+            return;
+        }
         
-        const response = await fetch(url);
-        console.log('📡 Response status:', response.status);
-        
-        const data = await response.json();
-        console.log('📦 Response data:', data);
+        showLoading(true);
 
-        showLoading(false);
+        const telegramUser = getTelegramUserData();
+        if (!telegramUser) {
+            showLoading(false);
+            showMessage(translations[currentLang].errorTelegram, 'error');
+            return;
+        }
 
-        // Check for different response formats
-        if (data.success === true || data.status === 'success') {
-            // ✅ OPTIMIZATION 6: Haptic Feedback
-            if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
-                Telegram.WebApp.HapticFeedback.notificationOccurred('success');
-            }
-            
-            // ✅ OPTIMIZATION 9: Save Last Booking for Quick Rebooking
-            const lastBooking = {
-                duration: duration,
-                courts: courts,
-                time: time
-            };
-            localStorage.setItem('lastBooking', JSON.stringify(lastBooking));
-            console.log('💾 Saved last booking for quick rebook');
-            
-            // ✅ OPTIMIZATION 3: Clear Availability Cache
-            availabilityCache.clear();
-            console.log('🗑️ Cleared availability cache');
-            
-            showMessage(translations[currentLang].successBooked, 'success');
-            
-            // Reset form
-            document.getElementById('bookingForm').reset();
-            document.getElementById('timeGrid').innerHTML = '';
-            document.getElementById('selectedTime').value = '';
-            document.getElementById('totalPrice').textContent = '0';
-            document.getElementById('durationValue').textContent = '1';
-            document.getElementById('durationSlider').value = '1';
-            document.getElementById('duration').value = '1';
-            
-            // Reload initial state
-            const today = new Date();
-            document.getElementById('date').value = formatDate(today);
-            document.getElementById('courts').value = '1';
-            
-            // Close Telegram WebApp after 3 seconds
-            setTimeout(() => {
-                if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
-                    Telegram.WebApp.close();
+        const name = document.getElementById('name').value;
+        const phone = document.getElementById('phone').value;
+        const date = document.getElementById('date').value;
+        const time = document.getElementById('selectedTime').value;
+        const duration = document.getElementById('duration').value;
+        const courts = document.getElementById('courts').value;
+        const paymentMethod = document.getElementById('selectedPaymentMethod').value;
+        const totalHours = parseInt(duration) * parseInt(courts);
+
+        console.log('📤 Submitting booking:', {
+            name, phone, date, time, duration, courts,
+            telegram_id: telegramUser.telegram_id,
+            paymentMethod: paymentMethod
+        });
+
+        // ✅ NEW: If using credits, deduct first
+        if (paymentMethod === 'credits') {
+            try {
+                const useCreditsUrl = `${BACKEND_URL}?action=useCredits&telegram_id=${telegramUser.telegram_id}&hours=${totalHours}&booking_id=pending`;
+                const creditsResponse = await fetch(useCreditsUrl);
+                const creditsData = await creditsResponse.json();
+
+                if (!creditsData.success) {
+                    showLoading(false);
+                    showMessage(creditsData.error || 'Failed to use credits', 'error');
+                    return;
                 }
-            }, 3000);
-        } else {
-            // Show the actual error message from backend
-            const errorMsg = data.error || data.message || translations[currentLang].errorBookingFailed;
-            console.error('❌ Booking error:', errorMsg);
-            showMessage(errorMsg, 'error');
-            
-            // If it's a double booking, refresh availability
-            if (errorMsg.includes('already booked') || errorMsg.includes('not available')) {
-                // ✅ Clear cache before refreshing
-                availabilityCache.clear();
-                checkAndLoadAvailability();
+
+                console.log('✅ Credits deducted:', creditsData);
+                userCreditBalance = creditsData.newBalance;
+                updateCreditBanner();
+
+            } catch (error) {
+                showLoading(false);
+                showMessage('Failed to process credits. Please try again.', 'error');
+                return;
             }
         }
-    } catch (error) {
-        showLoading(false);
-        console.error('💥 Network error:', error);
-        showMessage(translations[currentLang].errorConnection + ': ' + error.message, 'error');
+
+        const formData = {
+            action: 'book',
+            name: name,
+            phone: phone,
+            date: date,
+            time: time,
+            duration: duration,
+            courts: courts,
+            telegram_id: telegramUser.telegram_id,
+            payment_method: paymentMethod,
+            source: 'telegram_miniapp'
+        };
+
+        try {
+            const params = new URLSearchParams(formData);
+            const url = `${BACKEND_URL}?${params.toString()}`;
+            
+            console.log('🌐 Booking URL:', url);
+            
+            const response = await fetch(url);
+            console.log('📡 Response status:', response.status);
+            
+            const data = await response.json();
+            console.log('📦 Response data:', data);
+
+            showLoading(false);
+
+            if (data.success === true || data.status === 'success') {
+                if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
+                    Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+                }
+                
+                const lastBooking = {
+                    duration: duration,
+                    courts: courts,
+                    time: time
+                };
+                localStorage.setItem('lastBooking', JSON.stringify(lastBooking));
+                console.log('💾 Saved last booking for quick rebook');
+                
+                availabilityCache.clear();
+                console.log('🗑️ Cleared availability cache');
+                
+                // Show appropriate success message
+                const successMsg = paymentMethod === 'credits' 
+                    ? translations[currentLang].successBookedCredits 
+                    : translations[currentLang].successBooked;
+                showMessage(successMsg, 'success');
+                
+                document.getElementById('bookingForm').reset();
+                document.getElementById('timeGrid').innerHTML = '';
+                document.getElementById('selectedTime').value = '';
+                document.getElementById('totalPrice').textContent = '0';
+                document.getElementById('durationValue').textContent = '1';
+                document.getElementById('durationSlider').value = '1';
+                document.getElementById('duration').value = '1';
+                
+                const today = new Date();
+                document.getElementById('date').value = formatDate(today);
+                document.getElementById('courts').value = '1';
+                
+                setTimeout(() => {
+                    if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
+                        Telegram.WebApp.close();
+                    }
+                }, 3000);
+            } else {
+                // ✅ If booking failed but credits were used, we should refund
+                // (In production, you might want to handle this more carefully)
+                if (paymentMethod === 'credits') {
+                    console.log('⚠️ Booking failed after credits deducted - credits should be refunded');
+                    // The backend should handle refund, or you can call refundCredits here
+                }
+                
+                const errorMsg = data.error || data.message || translations[currentLang].errorBookingFailed;
+                console.error('❌ Booking error:', errorMsg);
+                showMessage(errorMsg, 'error');
+                
+                if (errorMsg.includes('already booked') || errorMsg.includes('not available')) {
+                    availabilityCache.clear();
+                    checkAndLoadAvailability();
+                }
+            }
+        } catch (error) {
+            showLoading(false);
+            console.error('💥 Network error:', error);
+            showMessage(translations[currentLang].errorConnection + ': ' + error.message, 'error');
+        }
     }
-}
-
-
 
     // ============================================
     // AUTO-REFRESH
     // ============================================
-    // ✅ ADD THIS VARIABLE AT THE TOP (around line 305)
-let isTabVisible = true;
-// ✅ ADD THIS VARIABLE AT THE TOP (around line 305, near isTabVisible)
-let visibilityListenerAdded = false;
+    let isTabVisible = true;
+    let visibilityListenerAdded = false;
 
-// ✅ REPLACE startAutoRefresh WITH THIS:
-function startAutoRefresh() {
-    stopAutoRefresh();
-    
-    // Only add the visibility listener once
-    if (!visibilityListenerAdded) {
-        document.addEventListener('visibilitychange', () => {
-            isTabVisible = !document.hidden;
+    function startAutoRefresh() {
+        stopAutoRefresh();
+        
+        if (!visibilityListenerAdded) {
+            document.addEventListener('visibilitychange', () => {
+                isTabVisible = !document.hidden;
+                
+                if (isTabVisible) {
+                    console.log('Tab visible - refreshing availability');
+                    availabilityCache.clear();
+                    checkAndLoadAvailability();
+                }
+            });
+            visibilityListenerAdded = true;
+        }
+        
+        autoRefreshTimer = setInterval(() => {
+            if (!isTabVisible) {
+                console.log('Tab hidden - skipping refresh');
+                return;
+            }
             
-            if (isTabVisible) {
-                console.log('Tab visible - refreshing availability');
+            const date = document.getElementById('date').value;
+            const duration = document.getElementById('duration').value;
+            const courts = document.getElementById('courts').value;
+            
+            if (date && duration && courts) {
                 availabilityCache.clear();
                 checkAndLoadAvailability();
             }
-        });
-        visibilityListenerAdded = true;
+        }, AUTO_REFRESH_INTERVAL);
     }
-    
-    autoRefreshTimer = setInterval(() => {
-        if (!isTabVisible) {
-            console.log('Tab hidden - skipping refresh');
-            return;
-        }
-        
-        const date = document.getElementById('date').value;
-        const duration = document.getElementById('duration').value;
-        const courts = document.getElementById('courts').value;
-        
-        if (date && duration && courts) {
-            availabilityCache.clear();
-            checkAndLoadAvailability();
-        }
-    }, AUTO_REFRESH_INTERVAL);
-}
-
-
 
     function stopAutoRefresh() {
         if (autoRefreshTimer) {
@@ -1399,7 +1641,7 @@ function startAutoRefresh() {
     // ============================================
     // INITIALIZATION
     // ============================================
-    function init() {
+    async function init() {
         const savedLang = localStorage.getItem('preferredLang') || 'en';
         switchLanguage(savedLang);
 
@@ -1407,6 +1649,9 @@ function startAutoRefresh() {
         setupDurationSlider();
         prefillUserData();
         addQuickRebookButton();
+
+        // ✅ NEW: Check user credits on load
+        await checkUserCredits();
 
         const today = new Date();
         document.getElementById('date').value = formatDate(today);
@@ -1433,20 +1678,18 @@ function startAutoRefresh() {
         checkAndLoadAvailability();
         startAutoRefresh();
 
-    // ✅ ADD THESE LISTENERS HERE
-    window.addEventListener('online', () => {
-        showMessage('✅ Back online! Refreshing availability...', 'success');
-        availabilityCache.clear();
-        checkAndLoadAvailability();
-    });
+        window.addEventListener('online', () => {
+            showMessage('✅ Back online! Refreshing availability...', 'success');
+            availabilityCache.clear();
+            checkAndLoadAvailability();
+        });
 
-    window.addEventListener('offline', () => {
-        showMessage('⚠️ No internet connection. Please check your network.', 'error');
-    });
+        window.addEventListener('offline', () => {
+            showMessage('⚠️ No internet connection. Please check your network.', 'error');
+        });
 
-    console.log('TK Pickleball Booking System Initialized ✅');
-}
-
+        console.log('TK Pickleball Booking System Initialized ✅');
+    }
 
     // ============================================
     // START THE APPLICATION
