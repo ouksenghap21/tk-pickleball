@@ -1441,30 +1441,7 @@
             paymentMethod: paymentMethod
         });
 
-        // ✅ NEW: If using credits, deduct first
-        if (paymentMethod === 'credits') {
-            try {
-                const useCreditsUrl = `${BACKEND_URL}?action=useCredits&telegram_id=${telegramUser.telegram_id}&hours=${totalHours}&booking_id=pending`;
-                const creditsResponse = await fetch(useCreditsUrl);
-                const creditsData = await creditsResponse.json();
-
-                if (!creditsData.success) {
-                    showLoading(false);
-                    showMessage(creditsData.error || 'Failed to use credits', 'error');
-                    return;
-                }
-
-                console.log('✅ Credits deducted:', creditsData);
-                userCreditBalance = creditsData.newBalance;
-                updateCreditBanner();
-
-            } catch (error) {
-                showLoading(false);
-                showMessage('Failed to process credits. Please try again.', 'error');
-                return;
-            }
-        }
-
+       
         const formData = {
             action: 'book',
             name: name,
