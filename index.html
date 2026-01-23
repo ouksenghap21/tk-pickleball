@@ -1046,6 +1046,35 @@ const PRICING = {
 /**
  * Calculate dynamic price based on date, time, duration, courts
  */
+function calculateDynamicPrice(dateStr, startTime, hours, courts) {
+    const bookingDate = new Date(dateStr);
+    const startHour = parseInt(String(startTime).split(':')[0]);
+    const dayOfWeek = bookingDate.getDay(); // 0 = Sunday, 6 = Saturday
+    const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+    
+    let totalPrice = 0;
+    
+    for (let h = 0; h < hours; h++) {
+        const slotHour = startHour + h;
+        let rate;
+        
+        if (isWeekend) {
+            rate = PRICING.WEEKEND;
+        } else if (slotHour >= PRICING.PEAK_START_HOUR) {
+            rate = PRICING.WEEKDAY_PEAK;
+        } else {
+            rate = PRICING.WEEKDAY_OFFPEAK;
+        }
+        
+        totalPrice += rate * courts;
+    }
+    
+    return totalPrice;
+}
+
+/**
+ * Calculate dynamic price based on date, time, duration, courts
+ */
 function calculateCashDueForRemainingHours(dateStr, startTime, duration, courts, creditsUsed) {
     const bookingDate = new Date(dateStr);
     const startHour = parseInt(String(startTime).split(':')[0]);
