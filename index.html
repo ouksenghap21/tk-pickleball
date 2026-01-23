@@ -600,6 +600,22 @@
             flex: 1;
         }
 
+        .payment-option-icon {
+            font-size: 24px;
+            margin-right: 12px;
+        }
+
+        /* Partial payment option styling */
+        .payment-option.partial-highlight {
+            border-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        .payment-option.partial-highlight.selected {
+            border-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.2);
+        }
+
         .toggle-container {
             display: flex;
             justify-content: space-between;
@@ -730,23 +746,41 @@
             <h2 class="modal-header">🏓 <span data-i18n="confirmTitle">Confirm Booking</span></h2>
             <div id="confirmDetails" class="modal-details"></div>
             
-            <!-- ✅ NEW: Payment Method Selection -->
+            <!-- ✅ UPDATED: Payment Method Selection with Partial Support -->
             <div id="paymentOptions" class="payment-options">
+                <!-- Full Credits Option -->
                 <div id="creditPaymentOption" class="payment-option" onclick="selectPaymentMethod('credits')">
                     <div class="payment-option-content">
-                        <span class="payment-option-icon">🎫</span>
+                        <span class="payment-option-icon">💳</span>
                         <div class="payment-option-details">
                             <div class="payment-option-header">
-                                <span class="payment-option-title">Use Credits</span>
-                                <span class="payment-option-price">FREE</span>
+                                <span class="payment-option-title">Pay with Credits</span>
+                                <span class="payment-option-price" id="creditOptionPrice">FREE</span>
                             </div>
                             <div class="payment-option-subtitle">
-                                Use <span id="creditsToUse">0</span> hours • Remaining: <span id="creditsRemaining">0</span> hours
+                                Use <span id="creditsToUse">0</span> hrs • Balance: <span id="creditsRemaining">0</span> hrs left
                             </div>
                         </div>
                     </div>
                 </div>
                 
+                <!-- Partial Credits Option (NEW) -->
+                <div id="partialPaymentOption" class="payment-option" onclick="selectPaymentMethod('partial')" style="display: none;">
+                    <div class="payment-option-content">
+                        <span class="payment-option-icon">💳+💵</span>
+                        <div class="payment-option-details">
+                            <div class="payment-option-header">
+                                <span class="payment-option-title">Credits + Cash</span>
+                                <span class="payment-option-price" id="partialOptionPrice">$0</span>
+                            </div>
+                            <div class="payment-option-subtitle">
+                                Use <span id="partialCreditsToUse">0</span> hrs credits + $<span id="partialCashDue">0</span> on arrival
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Cash on Arrival Option -->
                 <div id="arrivalPaymentOption" class="payment-option selected" onclick="selectPaymentMethod('arrival')">
                     <div class="payment-option-content">
                         <span class="payment-option-icon">💵</span>
@@ -755,7 +789,7 @@
                                 <span class="payment-option-title">Pay on Arrival</span>
                                 <span class="payment-option-price">$<span id="arrivalPrice">0</span></span>
                             </div>
-                            <div class="payment-option-subtitle">Pay at the counter when you arrive</div>
+                            <div class="payment-option-subtitle">Pay full amount at the counter</div>
                         </div>
                     </div>
                 </div>
@@ -1027,13 +1061,13 @@
         }
     }
 
-    // ✅ NEW: Select payment method
+    // ✅ UPDATED: Select payment method (with partial support)
     function selectPaymentMethod(method) {
         const duration = parseInt(document.getElementById('duration').value) || 1;
         const courts = parseInt(document.getElementById('courts').value) || 1;
         const totalHours = duration * courts;
 
-        // Check if user has enough credits
+        // Check if user has enough credits for full payment
         if (method === 'credits' && userCreditBalance < totalHours) {
             showMessage(translations[currentLang].insufficientCredits
                 .replace('{{needed}}', totalHours)
@@ -1044,13 +1078,16 @@
         selectedPaymentMethod = method;
         document.getElementById('selectedPaymentMethod').value = method;
 
-        // Update UI
+        // Update UI - remove selected from all
         document.querySelectorAll('.payment-option').forEach(opt => {
             opt.classList.remove('selected');
         });
 
+        // Add selected to chosen option
         if (method === 'credits') {
             document.getElementById('creditPaymentOption').classList.add('selected');
+        } else if (method === 'partial') {
+            document.getElementById('partialPaymentOption').classList.add('selected');
         } else {
             document.getElementById('arrivalPaymentOption').classList.add('selected');
         }
@@ -1363,39 +1400,76 @@
             <strong>${translations[currentLang].modalPhone}:</strong> ${phone}
         `;
 
-        // ✅ NEW: Setup payment options
+        // ✅ UPDATED: Setup payment options (with partial support)
         const creditOption = document.getElementById('creditPaymentOption');
+        const partialOption = document.getElementById('partialPaymentOption');
+        const arrivalOption = document.getElementById('arrivalPaymentOption');
+        
         const creditsToUseSpan = document.getElementById('creditsToUse');
         const creditsRemainingSpan = document.getElementById('creditsRemaining');
         const arrivalPriceSpan = document.getElementById('arrivalPrice');
+        const creditOptionPrice = document.getElementById('creditOptionPrice');
+        
+        // Partial payment elements
+        const partialCreditsSpan = document.getElementById('partialCreditsToUse');
+        const partialCashSpan = document.getElementById('partialCashDue');
+        const partialOptionPrice = document.getElementById('partialOptionPrice');
 
-        creditsToUseSpan.textContent = totalHours;
+        // Set arrival price
         arrivalPriceSpan.textContent = totalPrice;
 
-        if (userCreditBalance >= totalHours) {
-            // User has enough credits
-            creditOption.classList.remove('disabled');
-            creditsRemainingSpan.textContent = userCreditBalance - totalHours;
-            creditOption.onclick = () => selectPaymentMethod('credits');
-        } else if (userCreditBalance > 0) {
-            // User has some credits but not enough
-            creditOption.classList.add('disabled');
-            creditsRemainingSpan.textContent = `Need ${totalHours}, have ${userCreditBalance}`;
-            creditOption.onclick = null;
-        } else {
-            // User has no credits - hide option
-            creditOption.style.display = 'none';
-        }
+        // Calculate payment scenarios
+        const hasEnoughCredits = userCreditBalance >= totalHours;
+        const hasPartialCredits = userCreditBalance > 0 && userCreditBalance < totalHours;
+        const hasNoCredits = userCreditBalance <= 0;
 
-        // Show credits option if user has any credits
-        if (userCreditBalance > 0) {
+        // Reset all options
+        creditOption.style.display = 'none';
+        partialOption.style.display = 'none';
+        creditOption.classList.remove('selected', 'disabled');
+        partialOption.classList.remove('selected', 'disabled');
+        arrivalOption.classList.remove('selected');
+
+        if (hasEnoughCredits) {
+            // ✅ FULL CREDITS: User has enough credits for full payment
             creditOption.style.display = 'block';
-        } else {
+            creditsToUseSpan.textContent = totalHours;
+            creditsRemainingSpan.textContent = userCreditBalance - totalHours;
+            creditOptionPrice.textContent = 'FREE';
+            creditOption.onclick = () => selectPaymentMethod('credits');
+            
+            // Hide partial option
+            partialOption.style.display = 'none';
+            
+            // Default to credits
+            selectPaymentMethod('credits');
+            
+        } else if (hasPartialCredits) {
+            // ⚡ PARTIAL CREDITS: User has some credits but not enough
+            
+            // Hide full credits option
             creditOption.style.display = 'none';
-        }
-
-        // Default to arrival if not enough credits
-        if (userCreditBalance < totalHours) {
+            
+            // Show partial option
+            partialOption.style.display = 'block';
+            const partialCreditsUsed = userCreditBalance;
+            const hoursRemaining = totalHours - partialCreditsUsed;
+            const cashDue = hoursRemaining * PRICE_PER_HOUR;
+            
+            partialCreditsSpan.textContent = partialCreditsUsed;
+            partialCashSpan.textContent = cashDue;
+            partialOptionPrice.textContent = '$' + cashDue;
+            partialOption.onclick = () => selectPaymentMethod('partial');
+            
+            // Default to partial (use credits by default)
+            selectPaymentMethod('partial');
+            
+        } else {
+            // ❌ NO CREDITS: Hide all credit options
+            creditOption.style.display = 'none';
+            partialOption.style.display = 'none';
+            
+            // Default to arrival
             selectPaymentMethod('arrival');
         }
 
@@ -1455,6 +1529,11 @@
             source: 'telegram_miniapp'
         };
 
+        // For partial payment, tell backend to use available credits
+        if (paymentMethod === 'partial') {
+            formData.use_credits = 'true';
+        }
+
         try {
             const params = new URLSearchParams(formData);
             const url = `${BACKEND_URL}?${params.toString()}`;
@@ -1485,10 +1564,24 @@
                 availabilityCache.clear();
                 console.log('🗑️ Cleared availability cache');
                 
+                // Update credit balance locally if credits were used
+                if (data.creditsUsed) {
+                    userCreditBalance = data.newCreditBalance !== undefined ? data.newCreditBalance : (userCreditBalance - data.creditsUsed);
+                    updateCreditBanner();
+                }
+                
                 // Show appropriate success message
-                const successMsg = paymentMethod === 'credits' 
-                    ? translations[currentLang].successBookedCredits 
-                    : translations[currentLang].successBooked;
+                let successMsg;
+                if (paymentMethod === 'credits') {
+                    successMsg = translations[currentLang].successBookedCredits;
+                } else if (paymentMethod === 'partial' && data.creditsUsed > 0) {
+                    // Partial payment success
+                    const creditsUsed = data.creditsUsed;
+                    const cashDue = data.cashDue || ((totalHours - creditsUsed) * PRICE_PER_HOUR);
+                    successMsg = `✅ Booking confirmed! ${creditsUsed} hrs credits used, $${cashDue} due on arrival. 🎉`;
+                } else {
+                    successMsg = translations[currentLang].successBooked;
+                }
                 showMessage(successMsg, 'success');
                 
                 document.getElementById('bookingForm').reset();
