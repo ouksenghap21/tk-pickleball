@@ -936,7 +936,7 @@
                     <div class="price-breakdown">
                         <div class="price-breakdown-left">
                             <span id="priceBreakdown">1 hour × 1 court</span>
-                            @ $15/hour per court
+<span id="rateLabel">@ $13-$15/hour per court</span>
                         </div>
                         <div class="price-hours-badge"><span id="totalHours">1</span> total hrs</div>
                     </div>
@@ -1035,7 +1035,59 @@
     // ============================================
     const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbySlkS8Yb3ACIfh5izbul6FfwTxgzrWg4_SnEMHsC21JyiaC1V9fak4GQFP4w3FvyjYPw/exec';
     const AUTO_REFRESH_INTERVAL = 30000;
-    const PRICE_PER_HOUR = 15;
+    // Dynamic Pricing Configuration
+const PRICING = {
+    WEEKDAY_OFFPEAK: 13,  // Weekdays 8am-5pm
+    WEEKDAY_PEAK: 15,     // Weekdays 5pm-10pm
+    WEEKEND: 15,          // Weekends all day
+    PEAK_START_HOUR: 17   // 5pm = hour 17
+};
+
+/**
+ * Calculate dynamic price based on date, time, duration, courts
+ */
+function calculateDynamicPrice(dateStr, startTime, hours, courts) {
+    const bookingDate = new Date(dateStr);
+    const startHour = parseInt(String(startTime).split(':')[0]);
+    const dayOfWeek = bookingDate.getDay(); // 0 = Sunday, 6 = Saturday
+    const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+    
+    let totalPrice = 0;
+    
+    for (let h = 0; h < hours; h++) {
+        const slotHour = startHour + h;
+        let rate;
+        
+        if (isWeekend) {
+            rate = PRICING.WEEKEND;
+        } else if (slotHour >= PRICING.PEAK_START_HOUR) {
+            rate = PRICING.WEEKDAY_PEAK;
+        } else {
+            rate = PRICING.WEEKDAY_OFFPEAK;
+        }
+        
+        totalPrice += rate * courts;
+    }
+    
+    return totalPrice;
+}
+
+/**
+ * Get rate label for display
+ */
+function getRateLabel(dateStr, startTime) {
+    const bookingDate = new Date(dateStr);
+    const startHour = parseInt(String(startTime).split(':')[0]);
+    const dayOfWeek = bookingDate.getDay();
+    const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+    
+    if (isWeekend) {
+        return { en: 'Weekend Rate: $15/hr', km: 'តម្លៃចុងសប្តាហ៍: $15/ម៉ោង' };
+    } else if (startHour >= PRICING.PEAK_START_HOUR) {
+        return { en: 'Peak Rate: $15/hr', km: 'តម្លៃម៉ោងកំពូល: $15/ម៉ោង' };
+    }
+    return { en: 'Off-Peak Rate: $13/hr', km: 'តម្លៃម៉ោងធម្មតា: $13/ម៉ោង' };
+}
     let autoRefreshTimer = null;
     let currentLang = 'en';
     const availabilityCache = new Map();
@@ -1349,17 +1401,41 @@
     // ============================================
     // PRICE & SELECTION FUNCTIONS
     // ============================================
-    function updatePrice() {
-        const duration = parseInt(document.getElementById('duration').value) || 1;
-        const courts = parseInt(document.getElementById('courts').value) || 1;
-        const totalPrice = duration * courts * PRICE_PER_HOUR;
-        const totalHours = duration * courts;
-        
-        document.getElementById('totalPrice').textContent = totalPrice;
-        document.getElementById('totalHours').textContent = totalHours;
-        document.getElementById('priceBreakdown').textContent = 
-            `${duration} ${duration === 1 ? 'hour' : 'hours'} × ${courts} ${courts === 1 ? 'court' : 'courts'}`;
+  function updatePrice() {
+    const duration = parseInt(document.getElementById('duration').value) || 1;
+    const courts = parseInt(document.getElementById('courts').value) || 1;
+    const totalHours = duration * courts;
+    
+    const dateInput = document.getElementById('date');
+    const selectedTime = document.querySelector('.time-slot.selected');
+    
+    let totalPrice;
+    let rateText = '@ $15/hour per court';
+    
+    if (dateInput && dateInput.value && selectedTime) {
+        const time = selectedTime.dataset.time;
+        totalPrice = calculateDynamicPrice(dateInput.value, time, duration, courts);
+        const rateInfo = getRateLabel(dateInput.value, time);
+        rateText = rateInfo[currentLang] || rateInfo.en;
+    } else if (dateInput && dateInput.value) {
+        // No time selected yet - show range or default
+        totalPrice = duration * courts * PRICING.WEEKDAY_OFFPEAK; // Show minimum
+        rateText = currentLang === 'km' ? '$13-$15/ម៉ោង' : '$13-$15/hr';
+    } else {
+        totalPrice = duration * courts * PRICING.WEEKDAY_PEAK; // Default to peak
     }
+    
+    document.getElementById('totalPrice').textContent = totalPrice;
+    document.getElementById('totalHours').textContent = totalHours;
+    document.getElementById('priceBreakdown').textContent = 
+        `${duration} ${duration === 1 ? 'hour' : 'hours'} × ${courts} ${courts === 1 ? 'court' : 'courts'}`;
+    
+    // Update rate label if element exists
+    const rateLabel = document.getElementById('rateLabel');
+    if (rateLabel) {
+        rateLabel.textContent = rateText;
+    }
+}
 
     function selectDuration(value) {
         document.getElementById('duration').value = value;
@@ -1584,23 +1660,26 @@
         }
     }
 
-    function selectTimeSlot(time) {
-        if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
-            Telegram.WebApp.HapticFeedback.impactOccurred('medium');
-        }
-        
-        document.querySelectorAll('.time-slot').forEach(slot => {
-            slot.classList.remove('selected');
-        });
-
-        const selectedSlot = document.querySelector(`[data-time="${time}"]`);
-        if (selectedSlot) {
-            selectedSlot.classList.add('selected');
-        }
-
-        document.getElementById('selectedTime').value = time;
-        document.getElementById('btnBook').disabled = false;
+   function selectTimeSlot(time) {
+    if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
+        Telegram.WebApp.HapticFeedback.impactOccurred('medium');
     }
+    
+    document.querySelectorAll('.time-slot').forEach(slot => {
+        slot.classList.remove('selected');
+    });
+
+    const selectedSlot = document.querySelector(`[data-time="${time}"]`);
+    if (selectedSlot) {
+        selectedSlot.classList.add('selected');
+    }
+
+    document.getElementById('selectedTime').value = time;
+    document.getElementById('btnBook').disabled = false;
+    
+    // Update price based on selected time (for dynamic pricing)
+    updatePrice();
+}
 
     // ============================================
     // FORM SUBMISSION & BOOKING
@@ -1692,7 +1771,10 @@
             partialOption.style.display = 'block';
             const partialCreditsUsed = userCreditBalance;
             const hoursRemaining = totalHours - partialCreditsUsed;
-            const cashDue = hoursRemaining * PRICE_PER_HOUR;
+            // Get total price and subtract credit value
+const totalPrice = parseInt(document.getElementById('totalPrice').textContent);
+const creditValue = partialCreditsUsed * PRICING.WEEKDAY_PEAK; // Credits valued at $15/hr
+const cashDue = Math.max(0, totalPrice - creditValue);
             
             partialCreditsSpan.textContent = partialCreditsUsed;
             partialCashSpan.textContent = cashDue;
@@ -1805,7 +1887,7 @@
                     successMsg = translations[currentLang].successBookedCredits;
                 } else if (paymentMethod === 'partial' && data.creditsUsed > 0) {
                     const creditsUsed = data.creditsUsed;
-                    const cashDue = data.cashDue || ((totalHours - creditsUsed) * PRICE_PER_HOUR);
+                    const cashDue = data.cashDue || ((totalHours - creditsUsed) * PRICING.WEEKDAY_PEAK);
                     successMsg = `✅ Booking confirmed! ${creditsUsed} hrs credits used, $${cashDue} due on arrival. 🎉`;
                 } else {
                     successMsg = translations[currentLang].successBooked;
@@ -1816,7 +1898,7 @@
                 document.getElementById('bookingForm').reset();
                 document.getElementById('timeGrid').innerHTML = '';
                 document.getElementById('selectedTime').value = '';
-                document.getElementById('totalPrice').textContent = '15';
+                document.getElementById('totalPrice').textContent = '13';
                 document.getElementById('totalHours').textContent = '1';
                 document.getElementById('priceBreakdown').textContent = '1 hour × 1 court';
                 
@@ -1911,9 +1993,10 @@
 
         // Date change
         document.getElementById('date').addEventListener('change', () => {
-            checkAndLoadAvailability();
-            startAutoRefresh();
-        });
+    checkAndLoadAvailability();
+    startAutoRefresh();
+    updatePrice();  // Recalculate price for new date
+});
 
         // Duration buttons
         document.querySelectorAll('.duration-btn').forEach(btn => {
