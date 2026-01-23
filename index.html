@@ -1049,7 +1049,7 @@ const PRICING = {
 function calculateCashDueForRemainingHours(dateStr, startTime, duration, courts, creditsUsed) {
     const bookingDate = new Date(dateStr);
     const startHour = parseInt(String(startTime).split(':')[0]);
-    const dayOfWeek = bookingDate.getDay();
+    const dayOfWeek = bookingDate.getDay(); // 0 = Sunday, 6 = Saturday
     const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
     
     const totalHours = duration * courts;
@@ -1057,6 +1057,7 @@ function calculateCashDueForRemainingHours(dateStr, startTime, duration, courts,
     
     if (remainingHours <= 0) return 0;
     
+    // Build array of all court-hours in chronological order
     const courtHours = [];
     
     for (let h = 0; h < duration; h++) {
@@ -1064,18 +1065,21 @@ function calculateCashDueForRemainingHours(dateStr, startTime, duration, courts,
         let rate;
         
         if (isWeekend) {
-            rate = PRICING.WEEKEND;
+            rate = PRICING.WEEKEND; // $15
         } else if (slotHour >= PRICING.PEAK_START_HOUR) {
-            rate = PRICING.WEEKDAY_PEAK;
+            rate = PRICING.WEEKDAY_PEAK; // $15
         } else {
-            rate = PRICING.WEEKDAY_OFFPEAK;
+            rate = PRICING.WEEKDAY_OFFPEAK; // $13
         }
         
+        // Add one entry per court for this time slot
         for (let c = 0; c < courts; c++) {
             courtHours.push({ slot: h, hour: slotHour, court: c, rate: rate });
         }
     }
     
+    // Credits cover the FIRST N court-hours
+    // Customer pays for the LAST (remainingHours) court-hours
     const paidHours = courtHours.slice(-remainingHours);
     
     let cashDue = 0;
@@ -1083,11 +1087,15 @@ function calculateCashDueForRemainingHours(dateStr, startTime, duration, courts,
         cashDue += ch.rate;
     }
     
-    console.log('Hours-based calculation:', courtHours.length, 'total,', creditsUsed, 'credits,', remainingHours, 'remaining = $' + cashDue);
+    console.log('calculateCashDueForRemainingHours:');
+    console.log('  Total court-hours:', totalHours);
+    console.log('  Credits used:', creditsUsed);
+    console.log('  Remaining hours:', remainingHours);
+    console.log('  Paid by customer:', paidHours.map(ch => '$' + ch.rate));
+    console.log('  Cash due: $' + cashDue);
     
     return cashDue;
 }
-
 /**
  * Get rate label for display
  */
@@ -1707,7 +1715,8 @@ function getRateLabel(dateStr, startTime) {
         const time = document.getElementById('selectedTime').value;
         const duration = parseInt(document.getElementById('duration').value);
         const courts = parseInt(document.getElementById('courts').value);
-        const totalPrice = document.getElementById('totalPrice').textContent;
+        const totalPrice = calculateDynamicPrice(date, time, duration, courts);
+document.getElementById('totalPrice').textContent = totalPrice;
         const totalHours = duration * courts;
 
         if (!name || !phone || !date || !time || !duration || !courts) {
@@ -1783,20 +1792,17 @@ function getRateLabel(dateStr, startTime) {
             selectPaymentMethod('credits');
             
         } else if (hasPartialCredits) {
-            creditOption.style.display = 'none';
-            partialOption.style.display = 'block';
-            const partialCreditsUsed = userCreditBalance;
-            
-            // FIXED: Hours-based calculation
-            const cashDue = calculateCashDueForRemainingHours(date, time, duration, courts, partialCreditsUsed);
-            
-            partialCreditsSpan.textContent = partialCreditsUsed;
-            partialCashSpan.textContent = cashDue;
-            partialOptionPrice.textContent = '$' + cashDue;
-            partialOption.onclick = () => selectPaymentMethod('partial');
-            selectPaymentMethod('partial');
-            
-        } else {
+    creditOption.style.display = 'none';
+    partialOption.style.display = 'block';
+    const partialCreditsUsed = userCreditBalance;
+    const cashDue = calculateCashDueForRemainingHours(date, time, duration, courts, partialCreditsUsed);
+    
+    partialCreditsSpan.textContent = partialCreditsUsed;
+    partialCashSpan.textContent = cashDue;
+    partialOptionPrice.textContent = '$' + cashDue;
+    partialOption.onclick = () => selectPaymentMethod('partial');
+    selectPaymentMethod('partial');
+} else {
             creditOption.style.display = 'none';
             partialOption.style.display = 'none';
             selectPaymentMethod('arrival');
