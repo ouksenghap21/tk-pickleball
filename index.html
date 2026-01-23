@@ -6,17 +6,30 @@
     <title>TK Pickleball Booking</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-     * {
-    margin: 0;
+        * {
+            margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        :root {
+            --primary: #1e40af;
+            --primary-light: #3b82f6;
+            --accent: #f97316;
+            --accent-light: #fb923c;
+            --dark: #0f172a;
+            --gray: #64748b;
+            --light-gray: #f1f5f9;
+            --white: #ffffff;
+            --success: #22c55e;
+            --warning: #eab308;
+            --danger: #ef4444;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: var(--tg-theme-bg-color, #ffffff);
-            color: var(--tg-theme-text-color, #000000);
-            padding: 16px;
+            background: var(--light-gray);
+            color: var(--dark);
             padding-bottom: 100px;
             min-height: 100vh;
         }
@@ -24,132 +37,233 @@
         .container {
             max-width: 600px;
             margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        /* Header Banner */
+        .header-banner {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            padding: 20px 16px 30px;
+            border-radius: 0 0 24px 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-banner::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 120px;
+            height: 120px;
+            background: var(--accent);
+            border-radius: 50%;
+            opacity: 0.2;
+        }
+
+        .header-banner::after {
+            content: '';
+            position: absolute;
+            bottom: -30px;
+            left: 20%;
+            width: 80px;
+            height: 80px;
+            background: var(--accent);
+            border-radius: 50%;
+            opacity: 0.15;
         }
 
         .lang-toggle {
-            position: absolute;
-            top: 16px;
-            right: 16px;
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .lang-toggle-inner {
             display: flex;
             gap: 4px;
-            background: #f0f0f0;
+            background: rgba(255,255,255,0.2);
             border-radius: 20px;
-            padding: 4px;
-            z-index: 100;
+            padding: 3px;
         }
 
         .lang-btn {
-            padding: 6px 14px;
+            padding: 5px 12px;
             border: none;
             border-radius: 16px;
             background: transparent;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
+            color: rgba(255,255,255,0.8);
             transition: all 0.3s;
-            color: #666;
         }
 
         .lang-btn.active {
-            background: var(--tg-theme-button-color, #3390ec);
-            color: white;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 24px;
-            margin-top: 40px;
-        }
-
-        .header h1 {
-            font-size: 24px;
+            background: white;
+            color: var(--primary);
             font-weight: 700;
-            color: var(--tg-theme-text-color, #000000);
-            margin-bottom: 8px;
         }
 
-        .header p {
-            font-size: 14px;
-            color: var(--tg-theme-hint-color, #999999);
+        .header-content {
+            text-align: center;
+            position: relative;
+            z-index: 1;
         }
 
-        /* ✅ NEW: Credit Balance Banner */
-        .credit-banner {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .logo-box {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px;
+            height: 56px;
+            background: var(--accent);
+            border-radius: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+        }
+
+        .logo-box span {
+            font-size: 28px;
+        }
+
+        .header-content h1 {
+            font-size: 22px;
+            font-weight: 800;
             color: white;
-            border-radius: 12px;
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
+        }
+
+        .header-content p {
+            font-size: 13px;
+            color: rgba(255,255,255,0.85);
+            font-weight: 500;
+        }
+
+        /* Credit Banner */
+        .credit-banner {
+            background: white;
+            border-radius: 16px;
             padding: 16px;
+            margin-top: -20px;
             margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
             display: none;
+            align-items: center;
+            justify-content: space-between;
+            border: 2px solid var(--accent);
+            position: relative;
+            z-index: 10;
         }
 
         .credit-banner.show {
-            display: block;
+            display: flex;
         }
 
-        .credit-banner .balance {
-            font-size: 24px;
-            font-weight: 700;
+        .credit-banner-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        .credit-banner .label {
+        .credit-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .credit-info .label {
             font-size: 12px;
-            opacity: 0.9;
+            color: var(--gray);
+            font-weight: 500;
         }
 
-        .credit-banner .no-credits {
-            font-size: 14px;
+        .credit-info .balance {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--dark);
         }
 
-        .credit-banner .no-credits a {
-            color: white;
-            text-decoration: underline;
+        .credit-status {
+            background: var(--light-gray);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--success);
+        }
+
+        /* Form Card */
+        .form-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
-        .form-group label {
-            display: block;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--tg-theme-text-color, #000000);
-        }
-
-        .form-group input,
-        .form-group select {
+        .form-input {
             width: 100%;
-            padding: 12px 16px;
-            font-size: 16px;
-            border: 1px solid var(--tg-theme-hint-color, #d0d0d0);
-            border-radius: 8px;
-            background: var(--tg-theme-bg-color, #ffffff);
-            color: var(--tg-theme-text-color, #000000);
-            transition: border-color 0.3s;
+            padding: 14px 16px;
+            font-size: 15px;
+            border: 2px solid var(--light-gray);
+            border-radius: 12px;
+            background: var(--light-gray);
+            color: var(--dark);
+            font-weight: 500;
+            transition: all 0.2s;
+            outline: none;
         }
 
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--tg-theme-button-color, #3390ec);
+        .form-input:focus {
+            border-color: var(--primary-light);
+            background: white;
         }
 
         .quick-dates {
             display: flex;
             gap: 8px;
-            margin-top: 8px;
+            margin-top: 10px;
         }
 
         .quick-date-btn {
             flex: 1;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
+            padding: 10px 8px;
+            border: 2px solid var(--light-gray);
+            border-radius: 10px;
             background: white;
-            font-size: 14px;
+            font-size: 13px;
+            font-weight: 600;
             cursor: pointer;
+            color: var(--gray);
             transition: all 0.2s;
         }
 
@@ -157,136 +271,136 @@
             transform: scale(0.95);
         }
 
-        .duration-slider-container {
-            margin-top: 12px;
-        }
-
-        .duration-display {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            padding: 12px 16px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 8px;
+        .quick-date-btn.active {
+            border-color: var(--primary);
+            background: var(--primary);
             color: white;
         }
 
-        .duration-display .value {
-            font-size: 32px;
-            font-weight: 700;
+        /* Duration & Courts Buttons */
+        .selector-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
         }
 
-        .duration-display .label {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-
-        .duration-slider {
-            -webkit-appearance: none;
-            width: 100%;
-            height: 8px;
-            border-radius: 4px;
-            background: #e0e0e0;
-            outline: none;
-        }
-
-        .duration-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: var(--tg-theme-button-color, #3390ec);
+        .selector-btn {
+            padding: 16px 8px;
+            border: 2px solid var(--light-gray);
+            border-radius: 14px;
+            background: white;
             cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: all 0.2s;
+            text-align: center;
         }
 
-        .duration-slider::-moz-range-thumb {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: var(--tg-theme-button-color, #3390ec);
-            cursor: pointer;
+        .selector-btn:active {
+            transform: scale(0.95);
+        }
+
+        .selector-btn.selected {
             border: none;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transform: scale(1.02);
         }
 
-        .duration-marks {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 4px;
-            padding: 0 4px;
+        .selector-btn.duration-btn.selected {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
         }
 
-        .duration-mark {
+        .selector-btn.court-btn.selected {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+        }
+
+        .selector-btn .value {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--dark);
+            line-height: 1;
+        }
+
+        .selector-btn.selected .value {
+            color: white;
+        }
+
+        .selector-btn .unit {
             font-size: 11px;
-            color: #999;
-        }
-
-        .courts-info.almost-full {
-            color: #ff6b6b;
             font-weight: 600;
-            animation: pulse 2s infinite;
+            color: var(--gray);
+            margin-top: 2px;
         }
 
-        .courts-info.plenty {
-            color: #4caf50;
-            font-weight: 500;
+        .selector-btn.selected .unit {
+            color: rgba(255,255,255,0.9);
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
+        /* Time Slots Card */
+        .time-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .time-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .time-count {
+            font-size: 11px;
+            color: var(--gray);
+            background: var(--light-gray);
+            padding: 4px 10px;
+            border-radius: 12px;
         }
 
         .time-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
-            margin-top: 12px;
         }
 
         .time-slot {
-            padding: 16px 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
+            padding: 14px 10px;
+            border: 2px solid var(--primary-light);
+            border-radius: 12px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s ease;
-            background: var(--tg-theme-bg-color, #ffffff);
-            user-select: none;
+            background: white;
+            transition: all 0.2s;
+        }
+
+        .time-slot:active {
+            transform: scale(0.95);
         }
 
         .time-slot .time {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--tg-theme-text-color, #000000);
-            margin-bottom: 4px;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 3px;
         }
 
         .time-slot .courts-info {
-            font-size: 11px;
-            color: var(--tg-theme-hint-color, #999999);
-        }
-
-        .time-slot.available {
-            border-color: var(--tg-theme-button-color, #3390ec);
-            background: rgba(51, 144, 236, 0.05);
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--gray);
         }
 
         .time-slot.available:hover {
-            background: rgba(51, 144, 236, 0.1);
-            transform: scale(1.02);
-        }
-
-        .time-slot.available:active {
-            transform: scale(0.98);
+            background: rgba(59, 130, 246, 0.05);
         }
 
         .time-slot.selected {
-            border-color: var(--tg-theme-button-color, #3390ec);
-            background: var(--tg-theme-button-color, #3390ec);
+            border: none;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.25);
         }
 
         .time-slot.selected .time {
@@ -294,23 +408,41 @@
         }
 
         .time-slot.selected .courts-info {
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255,255,255,0.85);
         }
 
         .time-slot.unavailable {
-            border-color: #e0e0e0;
-            background: #f5f5f5;
+            border-color: #e2e8f0;
+            background: #f8fafc;
             opacity: 0.5;
             cursor: not-allowed;
+        }
+
+        .time-slot.almost-full {
+            border-color: var(--warning);
+        }
+
+        .time-slot.almost-full .courts-info {
+            color: var(--warning);
+        }
+
+        .time-slot.plenty .courts-info {
+            color: var(--success);
+        }
+
+        .time-loading {
+            text-align: center;
+            padding: 20px;
+            color: var(--gray);
+            font-size: 14px;
         }
 
         .skeleton {
             background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
             background-size: 200% 100%;
             animation: skeleton-loading 1.5s infinite;
-            border-radius: 8px;
+            border-radius: 12px;
             pointer-events: none;
-            cursor: default;
         }
 
         @keyframes skeleton-loading {
@@ -318,79 +450,150 @@
             100% { background-position: -200% 0; }
         }
 
-        .time-loading {
-            text-align: center;
-            padding: 20px;
-            color: var(--tg-theme-hint-color, #999999);
-            font-size: 14px;
+        /* Price Card */
+        .price-card {
+            background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+            border-radius: 20px;
+            padding: 24px;
+            margin-top: 16px;
+            position: relative;
+            overflow: hidden;
         }
 
-        .info-box {
-            background: var(--tg-theme-secondary-bg-color, #f4f4f5);
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 20px;
+        .price-card::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 100px;
+            height: 100px;
+            background: var(--accent);
+            border-radius: 50%;
+            opacity: 0.1;
         }
 
-        .info-box h3 {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 8px;
+        .price-card-inner {
+            position: relative;
+            z-index: 1;
         }
 
-        .info-box p {
-            font-size: 14px;
-            color: var(--tg-theme-hint-color, #666666);
-            line-height: 1.5;
+        .price-breakdown {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
-        .price-display {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 24px;
-        }
-
-        .price-display .label {
-            font-size: 14px;
-            opacity: 0.9;
-            margin-bottom: 4px;
-        }
-
-        .price-display .amount {
-            font-size: 36px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .price-display .note {
+        .price-breakdown-left {
             font-size: 12px;
-            opacity: 0.8;
+            color: rgba(255,255,255,0.6);
         }
 
+        .price-breakdown-left span {
+            display: block;
+            font-size: 13px;
+            color: rgba(255,255,255,0.8);
+            margin-top: 4px;
+        }
+
+        .price-hours-badge {
+            background: var(--accent);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .price-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .price-total-left .label {
+            font-size: 12px;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 4px;
+        }
+
+        .price-total-left .amount {
+            font-size: 36px;
+            font-weight: 800;
+            color: white;
+            line-height: 1;
+        }
+
+        .price-pay-badge {
+            font-size: 12px;
+            color: var(--accent);
+            font-weight: 600;
+            background: rgba(249, 115, 22, 0.15);
+            padding: 6px 12px;
+            border-radius: 8px;
+        }
+
+        /* Location Card */
+        .location-card {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .location-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--light-gray);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .location-info h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .location-info p {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        /* Bottom Button */
         .btn-container {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: var(--tg-theme-bg-color, #ffffff);
-            padding: 16px;
-            border-top: 1px solid var(--tg-theme-hint-color, #d0d0d0);
+            background: white;
+            padding: 12px 16px 20px;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
         }
 
         .btn-book {
             width: 100%;
-            padding: 16px;
+            padding: 18px;
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 700;
             border: none;
-            border-radius: 8px;
-            background: var(--tg-theme-button-color, #3390ec);
-            color: var(--tg-theme-button-text-color, #ffffff);
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            color: white;
             cursor: pointer;
-            transition: opacity 0.3s;
+            box-shadow: 0 4px 16px rgba(249, 115, 22, 0.35);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            transition: all 0.2s;
         }
 
         .btn-book:disabled {
@@ -399,13 +602,41 @@
         }
 
         .btn-book:not(:disabled):active {
-            opacity: 0.8;
+            transform: scale(0.98);
+            opacity: 0.9;
         }
 
+        /* Messages */
+        .message {
+            display: none;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message.success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .message.error {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        /* Loading */
         .loading {
             display: none;
             text-align: center;
-            padding: 20px;
+            padding: 40px 20px;
         }
 
         .loading.show {
@@ -413,8 +644,8 @@
         }
 
         .spinner {
-            border: 3px solid var(--tg-theme-hint-color, #f3f3f3);
-            border-top: 3px solid var(--tg-theme-button-color, #3390ec);
+            border: 3px solid var(--light-gray);
+            border-top: 3px solid var(--accent);
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -427,41 +658,7 @@
             100% { transform: rotate(360deg); }
         }
 
-        .message {
-            display: none;
-            padding: 16px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-
-        .message.show {
-            display: block;
-        }
-
-        .message.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .message.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .required {
-            color: #dc3545;
-        }
-
-        .helper-text {
-            font-size: 12px;
-            color: var(--tg-theme-hint-color, #999999);
-            margin-top: 8px;
-            font-style: italic;
-        }
-
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -477,30 +674,29 @@
 
         .modal-content {
             background: white;
-            border-radius: 16px;
+            border-radius: 20px;
             padding: 24px;
             margin: 16px;
             max-width: 400px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            color: #000000;
-        }
-
-        .modal-details {
-            background: #f5f5f5;
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            line-height: 1.8;
-            color: #333333;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.2);
         }
 
         .modal-header {
             font-size: 20px;
             margin-bottom: 16px;
             text-align: center;
-            font-weight: 700;
-            color: #000000;
+            font-weight: 800;
+            color: var(--dark);
+        }
+
+        .modal-details {
+            background: var(--light-gray);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.8;
+            color: var(--dark);
         }
 
         .modal-buttons {
@@ -511,55 +707,69 @@
         .modal-btn {
             flex: 1;
             padding: 14px;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
         }
 
-        .modal-btn-cancel {
-            border: 2px solid #ddd;
-            background: white;
-            color: #333;
-        }
-
-        .modal-btn-confirm {
-            border: none;
-            background: var(--tg-theme-button-color, #3390ec);
-            color: white;
-        }
-
         .modal-btn:active {
             transform: scale(0.95);
         }
 
-        /* ✅ NEW: Payment Method Selection */
+        .modal-btn-cancel {
+            border: 2px solid var(--light-gray);
+            background: white;
+            color: var(--gray);
+        }
+
+        .modal-btn-confirm {
+            border: none;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            color: white;
+        }
+
+        /* Payment Options */
         .payment-options {
             margin-top: 16px;
         }
 
         .payment-option {
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
+            border: 2px solid var(--light-gray);
+            border-radius: 14px;
             padding: 16px;
             margin-bottom: 12px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
         }
 
         .payment-option:hover {
-            border-color: var(--tg-theme-button-color, #3390ec);
+            border-color: var(--primary-light);
         }
 
         .payment-option.selected {
-            border-color: var(--tg-theme-button-color, #3390ec);
-            background: rgba(51, 144, 236, 0.1);
+            border-color: var(--primary);
+            background: rgba(59, 130, 246, 0.08);
         }
 
         .payment-option.disabled {
             opacity: 0.5;
             cursor: not-allowed;
+        }
+
+        .payment-option-content {
+            display: flex;
+            align-items: center;
+        }
+
+        .payment-option-icon {
+            font-size: 24px;
+            margin-right: 12px;
+        }
+
+        .payment-option-details {
+            flex: 1;
         }
 
         .payment-option-header {
@@ -570,89 +780,61 @@
         }
 
         .payment-option-title {
-            font-weight: 600;
-            font-size: 16px;
-            color: #000;
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--dark);
         }
 
         .payment-option-price {
-            font-weight: 700;
-            font-size: 18px;
-            color: var(--tg-theme-button-color, #3390ec);
+            font-weight: 800;
+            font-size: 16px;
+            color: var(--primary);
         }
 
         .payment-option-subtitle {
-            font-size: 13px;
-            color: #666;
+            font-size: 12px;
+            color: var(--gray);
         }
 
-        .payment-option-icon {
-            font-size: 24px;
-            margin-right: 12px;
+        .helper-text {
+            font-size: 12px;
+            color: var(--gray);
+            margin-top: 8px;
+            font-style: italic;
         }
 
-        .payment-option-content {
-            display: flex;
-            align-items: center;
-        }
-
-        .payment-option-details {
-            flex: 1;
-        }
-
-        .payment-option-icon {
-            font-size: 24px;
-            margin-right: 12px;
-        }
-
-        /* Partial payment option styling */
-        .payment-option.partial-highlight {
-            border-color: #f59e0b;
-            background: rgba(245, 158, 11, 0.1);
-        }
-
-        .payment-option.partial-highlight.selected {
-            border-color: #f59e0b;
-            background: rgba(245, 158, 11, 0.2);
-        }
-
-        .toggle-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .toggle-label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            cursor: pointer;
-        }
-
-        .toggle-label input[type="checkbox"] {
-            cursor: pointer;
-            width: auto;
+        .required {
+            color: var(--danger);
         }
     </style>
 </head>
 <body>
-    <div class="lang-toggle">
-        <button class="lang-btn active" data-lang="en">EN</button>
-        <button class="lang-btn" data-lang="km">KH</button>
+    <!-- Header Banner -->
+    <div class="header-banner">
+        <div class="lang-toggle">
+            <div class="lang-toggle-inner">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="km">KH</button>
+            </div>
+        </div>
+        <div class="header-content">
+            <div class="logo-box"><span>🏓</span></div>
+            <h1 data-i18n="title">TK PICKLEBALL</h1>
+            <p data-i18n="subtitle">Book your court in seconds</p>
+        </div>
     </div>
 
     <div class="container">
-        <div class="header">
-            <h1>🏓 <span data-i18n="title">TK Pickleball</span></h1>
-            <p data-i18n="subtitle">Book your court in seconds</p>
-        </div>
-
-        <!-- ✅ NEW: Credit Balance Banner -->
+        <!-- Credit Banner -->
         <div id="creditBanner" class="credit-banner">
-            <div class="label">💳 Your Credit Balance</div>
-            <div class="balance"><span id="creditBalanceDisplay">0</span> hours</div>
+            <div class="credit-banner-left">
+                <div class="credit-icon">💳</div>
+                <div class="credit-info">
+                    <div class="label">Credit Balance</div>
+                    <div class="balance"><span id="creditBalanceDisplay">0</span> hours</div>
+                </div>
+            </div>
+            <div class="credit-status">● Active</div>
         </div>
 
         <div id="messageBox" class="message"></div>
@@ -662,91 +844,134 @@
         </div>
 
         <form id="bookingForm" style="display: block;">
-            <div class="form-group">
-                <label for="name"><span data-i18n="fullName">Full Name</span> <span class="required">*</span></label>
-                <input type="text" id="name" name="name" required data-i18n-placeholder="namePlaceholder">
-            </div>
-
-            <div class="form-group">
-                <label for="phone"><span data-i18n="phoneNumber">Phone Number</span> <span class="required">*</span></label>
-                <input type="tel" id="phone" name="phone" required data-i18n-placeholder="phonePlaceholder">
-            </div>
-
-            <div class="form-group">
-                <label for="date"><span data-i18n="date">Date</span> <span class="required">*</span></label>
-                <input type="date" id="date" name="date" required>
-                <div class="quick-dates">
-                    <button type="button" id="btnToday" class="quick-date-btn" data-i18n="today">Today</button>
-                    <button type="button" id="btnTomorrow" class="quick-date-btn" data-i18n="tomorrow">Tomorrow</button>
-                    <button type="button" id="btnNextWeek" class="quick-date-btn" data-i18n="nextWeek">Next Week</button>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label><span data-i18n="duration">Duration (Hours)</span> <span class="required">*</span></label>
-                <div class="duration-slider-container">
-                    <div class="duration-display">
-                        <div>
-                            <div class="value"><span id="durationValue">1</span></div>
-                            <div class="label" data-i18n="hours">Hour(s)</div>
-                        </div>
-                        <div style="font-size: 40px; opacity: 0.8;">⏱️</div>
+            <!-- Form Card -->
+            <div class="form-card">
+                <!-- Name & Phone Row -->
+                <div class="form-row">
+                    <div>
+                        <label class="form-label" for="name"><span data-i18n="fullName">Name</span></label>
+                        <input type="text" id="name" name="name" class="form-input" required data-i18n-placeholder="namePlaceholder">
                     </div>
-                    <input type="range" id="durationSlider" class="duration-slider" min="1" max="4" value="1" step="1">
-                    <div class="duration-marks">
-                        <span class="duration-mark">1h</span>
-                        <span class="duration-mark">2h</span>
-                        <span class="duration-mark">3h</span>
-                        <span class="duration-mark">4h</span>
+                    <div>
+                        <label class="form-label" for="phone"><span data-i18n="phoneNumber">Phone</span></label>
+                        <input type="tel" id="phone" name="phone" class="form-input" required data-i18n-placeholder="phonePlaceholder">
+                    </div>
+                </div>
+
+                <!-- Date Field -->
+                <div class="form-group">
+                    <label class="form-label" for="date"><span data-i18n="date">Date</span></label>
+                    <input type="date" id="date" name="date" class="form-input" required>
+                    <div class="quick-dates">
+                        <button type="button" id="btnToday" class="quick-date-btn" data-i18n="today">Today</button>
+                        <button type="button" id="btnTomorrow" class="quick-date-btn" data-i18n="tomorrow">Tomorrow</button>
+                        <button type="button" id="btnNextWeek" class="quick-date-btn" data-i18n="nextWeek">Next Week</button>
+                    </div>
+                </div>
+
+                <!-- Duration Buttons -->
+                <div class="form-group">
+                    <label class="form-label"><span data-i18n="duration">Duration</span></label>
+                    <div class="selector-grid" id="durationSelector">
+                        <button type="button" class="selector-btn duration-btn selected" data-value="1">
+                            <div class="value">1</div>
+                            <div class="unit">hour</div>
+                        </button>
+                        <button type="button" class="selector-btn duration-btn" data-value="2">
+                            <div class="value">2</div>
+                            <div class="unit">hours</div>
+                        </button>
+                        <button type="button" class="selector-btn duration-btn" data-value="3">
+                            <div class="value">3</div>
+                            <div class="unit">hours</div>
+                        </button>
+                        <button type="button" class="selector-btn duration-btn" data-value="4">
+                            <div class="value">4</div>
+                            <div class="unit">hours</div>
+                        </button>
                     </div>
                     <input type="hidden" id="duration" name="duration" value="1">
                 </div>
+
+                <!-- Courts Buttons -->
+                <div class="form-group">
+                    <label class="form-label"><span data-i18n="courts">Courts</span></label>
+                    <div class="selector-grid" id="courtsSelector">
+                        <button type="button" class="selector-btn court-btn selected" data-value="1">
+                            <div class="value">1</div>
+                            <div class="unit">court</div>
+                        </button>
+                        <button type="button" class="selector-btn court-btn" data-value="2">
+                            <div class="value">2</div>
+                            <div class="unit">courts</div>
+                        </button>
+                        <button type="button" class="selector-btn court-btn" data-value="3">
+                            <div class="value">3</div>
+                            <div class="unit">courts</div>
+                        </button>
+                        <button type="button" class="selector-btn court-btn" data-value="4">
+                            <div class="value">4</div>
+                            <div class="unit">courts</div>
+                        </button>
+                    </div>
+                    <input type="hidden" id="courts" name="courts" value="1">
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="courts"><span data-i18n="courts">Number of Courts</span> <span class="required">*</span></label>
-                <select id="courts" name="courts" required>
-                    <option value="" data-i18n="selectCourts">Select courts</option>
-                    <option value="1">1 Court</option>
-                    <option value="2">2 Courts</option>
-                    <option value="3">3 Courts</option>
-                    <option value="4">4 Courts</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label><span data-i18n="startTime">Start Time</span> <span class="required">*</span></label>
-               <p class="helper-text" data-i18n="selectFirst">Select date, duration, and courts first. Only available times are shown below.</p>
-
+            <!-- Time Slots Card -->
+            <div class="time-card">
+                <div class="time-header">
+                    <label class="form-label" style="margin-bottom: 0;"><span data-i18n="startTime">Select Time</span></label>
+                    <span id="availableCount" class="time-count"></span>
+                </div>
+                <p class="helper-text" style="margin-top: 0; margin-bottom: 12px;" data-i18n="selectFirst">Select date, duration, and courts first.</p>
                 <div id="timeLoadingMessage" class="time-loading" style="display: none;" data-i18n="checking">Checking availability...</div>
                 <div id="timeGrid" class="time-grid"></div>
                 <input type="hidden" id="selectedTime" name="time" required>
             </div>
 
-            <div class="price-display">
-                <div class="label" data-i18n="totalAmount">Total Amount</div>
-                <div class="amount">$<span id="totalPrice">0</span></div>
-                <div class="note" data-i18n="payOnArrival">Pay on arrival</div>
+            <!-- Price Card -->
+            <div class="price-card">
+                <div class="price-card-inner">
+                    <div class="price-breakdown">
+                        <div class="price-breakdown-left">
+                            <span id="priceBreakdown">1 hour × 1 court</span>
+                            @ $15/hour per court
+                        </div>
+                        <div class="price-hours-badge"><span id="totalHours">1</span> total hrs</div>
+                    </div>
+                    <div class="price-total">
+                        <div class="price-total-left">
+                            <div class="label" data-i18n="totalAmount">Total Amount</div>
+                            <div class="amount">$<span id="totalPrice">15</span></div>
+                        </div>
+                        <div class="price-pay-badge" data-i18n="payOnArrival">💵 Pay on arrival</div>
+                    </div>
+                </div>
             </div>
 
-            <div class="info-box">
-                <h3 data-i18n="location">📍 Location</h3>
-                <p data-i18n="locationDetails">TK Pickleball Courts<br>Open daily 8:00 AM - 10:00 PM</p>
+            <!-- Location Card -->
+            <div class="location-card">
+                <div class="location-icon">📍</div>
+                <div class="location-info">
+                    <h3 data-i18n="location">TK Pickleball Courts</h3>
+                    <p data-i18n="locationDetails">Open daily 8:00 AM - 10:00 PM</p>
+                </div>
             </div>
         </form>
 
         <div class="btn-container">
-            <button type="submit" form="bookingForm" id="btnBook" class="btn-book" data-i18n="confirmBooking">Confirm Booking</button>
+            <button type="submit" form="bookingForm" id="btnBook" class="btn-book" data-i18n="confirmBooking">🏓 Confirm Booking</button>
         </div>
     </div>
 
-    <!-- ✅ UPDATED: Confirmation Modal with Payment Options -->
+    <!-- Confirmation Modal -->
     <div id="confirmModal" class="modal">
         <div class="modal-content">
             <h2 class="modal-header">🏓 <span data-i18n="confirmTitle">Confirm Booking</span></h2>
             <div id="confirmDetails" class="modal-details"></div>
             
-            <!-- ✅ UPDATED: Payment Method Selection with Partial Support -->
+            <!-- Payment Options -->
             <div id="paymentOptions" class="payment-options">
                 <!-- Full Credits Option -->
                 <div id="creditPaymentOption" class="payment-option" onclick="selectPaymentMethod('credits')">
@@ -764,7 +989,7 @@
                     </div>
                 </div>
                 
-                <!-- Partial Credits Option (NEW) -->
+                <!-- Partial Credits Option -->
                 <div id="partialPaymentOption" class="payment-option" onclick="selectPaymentMethod('partial')" style="display: none;">
                     <div class="payment-option-content">
                         <span class="payment-option-icon">💳+💵</span>
@@ -816,7 +1041,7 @@
     const availabilityCache = new Map();
     const CACHE_DURATION = 30000;
 
-    // ✅ NEW: Credit system variables
+    // Credit system variables
     let userCreditBalance = 0;
     let selectedPaymentMethod = 'arrival';
 
@@ -842,44 +1067,44 @@
     // ============================================
     const translations = {
         en: {
-            title: 'TK Pickleball',
+            title: 'TK PICKLEBALL',
             subtitle: 'Book your court in seconds',
-            fullName: 'Full Name',
+            fullName: 'Name',
             namePlaceholder: 'Enter your name',
-            phoneNumber: 'Phone Number',
-            phonePlaceholder: '123-456-7890',
+            phoneNumber: 'Phone',
+            phonePlaceholder: '012-345-6789',
             date: 'Date',
             today: 'Today',
             tomorrow: 'Tomorrow',
             nextWeek: 'Next Week',
-            duration: 'Duration (Hours)',
+            duration: 'Duration',
             hours: 'Hour(s)',
-            courts: 'Number of Courts',
+            courts: 'Courts',
             selectCourts: 'Select courts',
             court: 'Court',
-            startTime: 'Start Time',
-            selectFirst: 'Select date, duration, and courts first. Only available times are shown below.',
+            startTime: 'Select Time',
+            selectFirst: 'Select date, duration, and courts first.',
             hideFull: 'Hide full slots',
             checking: 'Checking availability...',
             totalAmount: 'Total Amount',
-            payOnArrival: 'Pay on arrival',
-            location: '📍 Location',
-            locationDetails: 'TK Pickleball Courts<br>Open daily 8:00 AM - 10:00 PM',
-            confirmBooking: 'Confirm Booking',
+            payOnArrival: '💵 Pay on arrival',
+            location: 'TK Pickleball Courts',
+            locationDetails: 'Open daily 8:00 AM - 10:00 PM',
+            confirmBooking: '🏓 Confirm Booking',
             processing: 'Processing your booking...',
             confirmTitle: 'Confirm Booking',
             cancel: 'Cancel',
             confirm: 'Confirm',
-            courtsAvailable: 'courts',
+            courtsAvailable: 'open',
             full: 'Full',
             noSlots: 'No available time slots. Try a different date or fewer courts.',
-            errorTelegram: 'Error: Telegram user data not available. Please open this app from Telegram.',
-            errorFillFields: 'Please fill in all required fields and select a time',
+            errorTelegram: 'Error: Please open this app from Telegram.',
+            errorFillFields: 'Please fill in all fields and select a time',
             successBooked: 'Booking confirmed! See you at the court! 🎉',
-            successBookedCredits: 'Booking confirmed! Credits applied. See you at the court! 🎉',
-            errorDoubleBooked: 'This time slot was just booked by someone else. Please select another time.',
+            successBookedCredits: 'Booking confirmed! Credits applied. See you! 🎉',
+            errorDoubleBooked: 'This slot was just booked. Please select another time.',
             errorBookingFailed: 'Booking failed. Please try again.',
-            errorConnection: 'Connection error. Please check your internet and try again.',
+            errorConnection: 'Connection error. Please check your internet.',
             modalDate: 'Date',
             modalTime: 'Time',
             modalDuration: 'Duration',
@@ -888,49 +1113,49 @@
             modalPhone: 'Phone',
             modalTotal: 'Total',
             hour: 'hour',
-            pastTimeError: 'This time slot has passed. Please select a later time.',
-            noSlotsToday: 'No more available slots for today. Try tomorrow!',
-            insufficientCredits: 'Not enough credits. You need {{needed}} hours but have {{have}} hours.'
+            pastTimeError: 'This time slot has passed.',
+            noSlotsToday: 'No more slots today. Try tomorrow!',
+            insufficientCredits: 'Not enough credits. Need {{needed}} hrs, have {{have}} hrs.'
         },
         km: {
-            title: 'TK Pickleball',
+            title: 'TK PICKLEBALL',
             subtitle: 'កក់ទីលានរបស់អ្នកក្នុងពេលប៉ុន្មានវិនាទី',
-            fullName: 'ឈ្មោះពេញ',
+            fullName: 'ឈ្មោះ',
             namePlaceholder: 'បញ្ចូលឈ្មោះរបស់អ្នក',
-            phoneNumber: 'លេខទូរស័ព្ទ',
+            phoneNumber: 'ទូរស័ព្ទ',
             phonePlaceholder: '០១២-៣៤៥-៦៧៨៩',
             date: 'កាលបរិច្ឆេទ',
             today: 'ថ្ងៃនេះ',
             tomorrow: 'ថ្ងៃស្អែក',
             nextWeek: 'សប្តាហ៍ក្រោយ',
-            duration: 'រយៈពេល (ម៉ោង)',
+            duration: 'រយៈពេល',
             hours: 'ម៉ោង',
-            courts: 'ចំនួនទីលាន',
+            courts: 'ទីលាន',
             selectCourts: 'ជ្រើសរើសទីលាន',
             court: 'ទីលាន',
-            startTime: 'ពេលចាប់ផ្តើម',
-            selectFirst: 'សូមជ្រើសរើសកាលបរិច្ឆេទ រយៈពេល និងចំនួនទីលានសិន; មានតែពេលវេលាដែលអាចកក់បានប៉ុណ្ណោះដែលបង្ហាញខាងក្រោម។',
+            startTime: 'ជ្រើសរើសពេលវេលា',
+            selectFirst: 'សូមជ្រើសរើសកាលបរិច្ឆេទ រយៈពេល និងទីលានសិន។',
             hideFull: 'លាក់ទីលានពេញ',
-            checking: 'កំពុងពិនិត្យពេលវេលាអាចកក់បាន...',
-            totalAmount: 'ចំនួនទឹកប្រាក់សរុប',
-            payOnArrival: 'បង់នៅពេលមកដល់',
-            location: '📍 ទីតាំង',
-            locationDetails: 'ទីលាន TK Pickleball<br>បើកប្រចាំថ្ងៃ ម៉ោង ៨:០០ព្រឹក - ១០:០០យប់',
-            confirmBooking: 'បញ្ជាក់ការកក់',
-            processing: 'កំពុងដំណើរការការកក់របស់អ្នក...',
+            checking: 'កំពុងពិនិត្យ...',
+            totalAmount: 'ចំនួនសរុប',
+            payOnArrival: '💵 បង់នៅពេលមកដល់',
+            location: 'ទីលាន TK Pickleball',
+            locationDetails: 'បើកប្រចាំថ្ងៃ ម៉ោង ៨ព្រឹក - ១០យប់',
+            confirmBooking: '🏓 បញ្ជាក់ការកក់',
+            processing: 'កំពុងដំណើរការ...',
             confirmTitle: 'បញ្ជាក់ការកក់',
             cancel: 'បោះបង់',
             confirm: 'បញ្ជាក់',
-            courtsAvailable: 'ទីលាន',
+            courtsAvailable: 'ទំនេរ',
             full: 'ពេញ',
-            noSlots: 'គ្មានពេលវេលាអាចរកបាន។ សូមសាកល្បងកាលបរិច្ឆេទផ្សេង ឬទីលានតិចជាង។',
-            errorTelegram: 'កំហុស៖ ទិន្នន័យអ្នកប្រើ Telegram មិនអាចរកបាន។ សូមបើកកម្មវិធីនេះពី Telegram។',
-            errorFillFields: 'សូមបំពេញវាលទាំងអស់ដែលត្រូវការ និងជ្រើសរើសពេលវេលា',
-            successBooked: 'ការកក់ត្រូវបានបញ្ជាក់! ជួបគ្នានៅទីលាន! 🎉',
-            successBookedCredits: 'ការកក់ត្រូវបានបញ្ជាក់! ឥណទានត្រូវបានអនុវត្ត។ ជួបគ្នានៅទីលាន! 🎉',
-            errorDoubleBooked: 'ពេលវេលានេះទើបតែត្រូវបានកក់ដោយអ្នកផ្សេង។ សូមជ្រើសរើសពេលវេលាផ្សេង។',
-            errorBookingFailed: 'ការកក់បានបរាជ័យ។ សូមសាកល្បងម្តងទៀត។',
-            errorConnection: 'កំហុសការតភ្ជាប់។ សូមពិនិត្យអ៊ីនធឺណិតរបស់អ្នក ហើយសាកល្បងម្តងទៀត។',
+            noSlots: 'គ្មានពេលវេលាទំនេរ។ សូមសាកល្បងថ្ងៃផ្សេង។',
+            errorTelegram: 'កំហុស៖ សូមបើកកម្មវិធីនេះពី Telegram។',
+            errorFillFields: 'សូមបំពេញវាលទាំងអស់ និងជ្រើសរើសពេលវេលា',
+            successBooked: 'ការកក់បានបញ្ជាក់! ជួបគ្នានៅទីលាន! 🎉',
+            successBookedCredits: 'ការកក់បានបញ្ជាក់! ឥណទានត្រូវបានអនុវត្ត។ 🎉',
+            errorDoubleBooked: 'ពេលវេលានេះទើបត្រូវបានកក់។ សូមជ្រើសរើសពេលផ្សេង។',
+            errorBookingFailed: 'ការកក់បរាជ័យ។ សូមសាកល្បងម្តងទៀត។',
+            errorConnection: 'កំហុសការតភ្ជាប់។ សូមពិនិត្យអ៊ីនធឺណិត។',
             modalDate: 'កាលបរិច្ឆេទ',
             modalTime: 'ពេលវេលា',
             modalDuration: 'រយៈពេល',
@@ -939,9 +1164,9 @@
             modalPhone: 'ទូរស័ព្ទ',
             modalTotal: 'សរុប',
             hour: 'ម៉ោង',
-            pastTimeError: 'ពេលវេលានេះបានកន្លងផុតហើយ។ សូមជ្រើសរើសពេលវេលាក្រោយ។',
-            noSlotsToday: 'គ្មានពេលវេលាអាចរកបានសម្រាប់ថ្ងៃនេះទៀតទេ។ សូមសាកល្បងថ្ងៃស្អែក!',
-            insufficientCredits: 'ឥណទានមិនគ្រប់គ្រាន់។ អ្នកត្រូវការ {{needed}} ម៉ោង ប៉ុន្តែមាន {{have}} ម៉ោង។'
+            pastTimeError: 'ពេលវេលានេះបានកន្លងផុតហើយ។',
+            noSlotsToday: 'គ្មានពេលវេលាសម្រាប់ថ្ងៃនេះទៀតទេ។ សូមសាកល្បងថ្ងៃស្អែក!',
+            insufficientCredits: 'ឥណទានមិនគ្រប់គ្រាន់។ ត្រូវការ {{needed}} ម៉ោង មាន {{have}} ម៉ោង។'
         }
     };
 
@@ -1020,7 +1245,9 @@
         return null;
     }
 
-    // ✅ NEW: Check user's credit balance
+    // ============================================
+    // CREDIT FUNCTIONS
+    // ============================================
     async function checkUserCredits() {
         const telegramUser = getTelegramUserData();
         if (!telegramUser) {
@@ -1048,7 +1275,6 @@
         return 0;
     }
 
-    // ✅ NEW: Update credit banner display
     function updateCreditBanner() {
         const banner = document.getElementById('creditBanner');
         const balanceDisplay = document.getElementById('creditBalanceDisplay');
@@ -1061,13 +1287,11 @@
         }
     }
 
-    // ✅ UPDATED: Select payment method (with partial support)
     function selectPaymentMethod(method) {
         const duration = parseInt(document.getElementById('duration').value) || 1;
         const courts = parseInt(document.getElementById('courts').value) || 1;
         const totalHours = duration * courts;
 
-        // Check if user has enough credits for full payment
         if (method === 'credits' && userCreditBalance < totalHours) {
             showMessage(translations[currentLang].insufficientCredits
                 .replace('{{needed}}', totalHours)
@@ -1078,12 +1302,10 @@
         selectedPaymentMethod = method;
         document.getElementById('selectedPaymentMethod').value = method;
 
-        // Update UI - remove selected from all
         document.querySelectorAll('.payment-option').forEach(opt => {
             opt.classList.remove('selected');
         });
 
-        // Add selected to chosen option
         if (method === 'credits') {
             document.getElementById('creditPaymentOption').classList.add('selected');
         } else if (method === 'partial') {
@@ -1092,12 +1314,14 @@
             document.getElementById('arrivalPaymentOption').classList.add('selected');
         }
 
-        // Haptic feedback
         if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
             Telegram.WebApp.HapticFeedback.impactOccurred('light');
         }
     }
 
+    // ============================================
+    // USER DATA FUNCTIONS
+    // ============================================
     async function prefillUserData() {
         const telegramUser = getTelegramUserData();
         
@@ -1122,11 +1346,57 @@
         }
     }
 
+    // ============================================
+    // PRICE & SELECTION FUNCTIONS
+    // ============================================
     function updatePrice() {
         const duration = parseInt(document.getElementById('duration').value) || 1;
-        const courts = parseInt(document.getElementById('courts').value) || 0;
+        const courts = parseInt(document.getElementById('courts').value) || 1;
         const totalPrice = duration * courts * PRICE_PER_HOUR;
+        const totalHours = duration * courts;
+        
         document.getElementById('totalPrice').textContent = totalPrice;
+        document.getElementById('totalHours').textContent = totalHours;
+        document.getElementById('priceBreakdown').textContent = 
+            `${duration} ${duration === 1 ? 'hour' : 'hours'} × ${courts} ${courts === 1 ? 'court' : 'courts'}`;
+    }
+
+    function selectDuration(value) {
+        document.getElementById('duration').value = value;
+        
+        document.querySelectorAll('.duration-btn').forEach(btn => {
+            btn.classList.toggle('selected', btn.dataset.value === String(value));
+        });
+        
+        if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
+            Telegram.WebApp.HapticFeedback.impactOccurred('light');
+        }
+        
+        updatePrice();
+        checkAndLoadAvailability();
+    }
+
+    function selectCourts(value) {
+        document.getElementById('courts').value = value;
+        
+        document.querySelectorAll('.court-btn').forEach(btn => {
+            btn.classList.toggle('selected', btn.dataset.value === String(value));
+        });
+        
+        if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
+            Telegram.WebApp.HapticFeedback.impactOccurred('light');
+        }
+        
+        updatePrice();
+        checkAndLoadAvailability();
+    }
+
+    function setQuickDate(days) {
+        const dateInput = document.getElementById('date');
+        const today = new Date();
+        today.setDate(today.getDate() + days);
+        dateInput.value = formatDate(today);
+        dateInput.dispatchEvent(new Event('change'));
     }
 
     function addQuickRebookButton() {
@@ -1142,18 +1412,14 @@
             rebookBtn.id = 'rebookBtn';
             rebookBtn.type = 'button';
             rebookBtn.className = 'quick-date-btn';
-            rebookBtn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            rebookBtn.style.background = 'linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%)';
             rebookBtn.style.color = 'white';
-            rebookBtn.style.gridColumn = '1 / -1';
-            rebookBtn.innerHTML = '🔄 Same as Last Time';
+            rebookBtn.style.border = 'none';
+            rebookBtn.innerHTML = '🔄 Same as Last';
             
             rebookBtn.onclick = () => {
-                document.getElementById('duration').value = data.duration;
-                document.getElementById('durationSlider').value = data.duration;
-                document.getElementById('durationValue').textContent = data.duration;
-                document.getElementById('courts').value = data.courts;
-                updatePrice();
-                checkAndLoadAvailability();
+                selectDuration(parseInt(data.duration));
+                selectCourts(parseInt(data.courts));
                 
                 if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
                     Telegram.WebApp.HapticFeedback.impactOccurred('light');
@@ -1164,28 +1430,9 @@
         }
     }
 
-    function setQuickDate(days) {
-        const dateInput = document.getElementById('date');
-        const today = new Date();
-        today.setDate(today.getDate() + days);
-        dateInput.value = formatDate(today);
-        dateInput.dispatchEvent(new Event('change'));
-    }
-
-    function setupDurationSlider() {
-        const slider = document.getElementById('durationSlider');
-        const valueDisplay = document.getElementById('durationValue');
-        const hiddenInput = document.getElementById('duration');
-
-        slider.addEventListener('input', function() {
-            const value = this.value;
-            valueDisplay.textContent = value;
-            hiddenInput.value = value;
-            updatePrice();
-            checkAndLoadAvailability();
-        });
-    }
-
+    // ============================================
+    // AVAILABILITY FUNCTIONS
+    // ============================================
     let availabilityCheckTimeout = null;
 
     function checkAndLoadAvailability() {
@@ -1254,7 +1501,8 @@
         timeGrid.innerHTML = '';
 
         if (!availability || Object.keys(availability).length === 0) {
-            timeGrid.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; padding: 20px; color: #999;">${translations[currentLang].noSlots}</p>`;
+            timeGrid.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--gray);">${translations[currentLang].noSlots}</p>`;
+            document.getElementById('availableCount').textContent = '0 available';
             return;
         }
 
@@ -1264,6 +1512,7 @@
         const currentHour = now.getHours();
 
         let hasAnySlots = false;
+        let availableSlotCount = 0;
 
         TIME_SLOTS.forEach(slot => {
             const slotHour = parseInt(slot.value.split(':')[0]);
@@ -1276,31 +1525,33 @@
             
             const isAvailable = availableCourts >= requestedCourts;
             hasAnySlots = true;
+            if (isAvailable) availableSlotCount++;
 
             const slotDiv = document.createElement('div');
-            slotDiv.className = `time-slot ${isAvailable ? 'available' : 'unavailable'}`;
+            
+            let slotClass = 'time-slot';
+            if (!isAvailable) {
+                slotClass += ' unavailable';
+            } else if (availableCourts === requestedCourts) {
+                slotClass += ' available almost-full';
+            } else if (availableCourts > requestedCourts + 2) {
+                slotClass += ' available plenty';
+            } else {
+                slotClass += ' available';
+            }
+            
+            slotDiv.className = slotClass;
             slotDiv.dataset.time = slot.value;
 
-            let urgencyClass = '';
-            let urgencyEmoji = '';
-            
-            if (isAvailable) {
-                if (availableCourts === requestedCourts) {
-                    urgencyClass = 'almost-full';
-                    urgencyEmoji = '⚠️ ';
-                } else if (availableCourts > requestedCourts + 2) {
-                    urgencyClass = 'plenty';
-                    urgencyEmoji = '✅ ';
-                }
-            }
-
             const courtsText = isAvailable 
-                ? `${urgencyEmoji}${availableCourts} ${translations[currentLang].courtsAvailable}`
-                : (availableCourts > 0 ? `${availableCourts} ${translations[currentLang].courtsAvailable}` : translations[currentLang].full);
+                ? (availableCourts > requestedCourts + 2 ? `✓ ${availableCourts} ${translations[currentLang].courtsAvailable}` :
+                   availableCourts === requestedCourts ? `! ${availableCourts} left` :
+                   `${availableCourts} ${translations[currentLang].courtsAvailable}`)
+                : (availableCourts > 0 ? `${availableCourts} ${translations[currentLang].courtsAvailable}` : `● ${translations[currentLang].full}`);
 
             slotDiv.innerHTML = `
                 <div class="time">${slot.label}</div>
-                <div class="courts-info ${urgencyClass}">${courtsText}</div>
+                <div class="courts-info">${courtsText}</div>
             `;
 
             if (isAvailable) {
@@ -1310,9 +1561,11 @@
             timeGrid.appendChild(slotDiv);
         });
 
+        document.getElementById('availableCount').textContent = `${availableSlotCount} available`;
+
         if (!hasAnySlots) {
             const message = isToday ? translations[currentLang].noSlotsToday : translations[currentLang].noSlots;
-            timeGrid.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; padding: 20px; color: #999;">${message}</p>`;
+            timeGrid.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--gray);">${message}</p>`;
         }
     }
 
@@ -1320,12 +1573,12 @@
         const timeGrid = document.getElementById('timeGrid');
         timeGrid.innerHTML = '';
         
-        for (let i = 0; i < 14; i++) {
+        for (let i = 0; i < 12; i++) {
             const skeleton = document.createElement('div');
             skeleton.className = 'time-slot skeleton';
             skeleton.innerHTML = `
-                <div class="time" style="background: #e0e0e0; border-radius: 4px; height: 20px; width: 60%; margin: 0 auto;"></div>
-                <div class="courts-info" style="background: #e0e0e0; border-radius: 4px; height: 14px; width: 80%; margin: 4px auto 0;"></div>
+                <div class="time" style="background: #e0e0e0; border-radius: 4px; height: 18px; width: 60%; margin: 0 auto;"></div>
+                <div class="courts-info" style="background: #e0e0e0; border-radius: 4px; height: 12px; width: 70%; margin: 6px auto 0;"></div>
             `;
             timeGrid.appendChild(skeleton);
         }
@@ -1376,7 +1629,7 @@
             const currentHour = now.getHours();
             
             if (selectedHour <= currentHour) {
-                showMessage('⚠️ This time slot has passed. Please select a later time.', 'error');
+                showMessage('⚠️ ' + translations[currentLang].pastTimeError, 'error');
                 availabilityCache.clear();
                 checkAndLoadAvailability();
                 return false;
@@ -1400,7 +1653,7 @@
             <strong>${translations[currentLang].modalPhone}:</strong> ${phone}
         `;
 
-        // ✅ UPDATED: Setup payment options (with partial support)
+        // Setup payment options
         const creditOption = document.getElementById('creditPaymentOption');
         const partialOption = document.getElementById('partialPaymentOption');
         const arrivalOption = document.getElementById('arrivalPaymentOption');
@@ -1410,20 +1663,15 @@
         const arrivalPriceSpan = document.getElementById('arrivalPrice');
         const creditOptionPrice = document.getElementById('creditOptionPrice');
         
-        // Partial payment elements
         const partialCreditsSpan = document.getElementById('partialCreditsToUse');
         const partialCashSpan = document.getElementById('partialCashDue');
         const partialOptionPrice = document.getElementById('partialOptionPrice');
 
-        // Set arrival price
         arrivalPriceSpan.textContent = totalPrice;
 
-        // Calculate payment scenarios
         const hasEnoughCredits = userCreditBalance >= totalHours;
         const hasPartialCredits = userCreditBalance > 0 && userCreditBalance < totalHours;
-        const hasNoCredits = userCreditBalance <= 0;
 
-        // Reset all options
         creditOption.style.display = 'none';
         partialOption.style.display = 'none';
         creditOption.classList.remove('selected', 'disabled');
@@ -1431,26 +1679,16 @@
         arrivalOption.classList.remove('selected');
 
         if (hasEnoughCredits) {
-            // ✅ FULL CREDITS: User has enough credits for full payment
             creditOption.style.display = 'block';
             creditsToUseSpan.textContent = totalHours;
             creditsRemainingSpan.textContent = userCreditBalance - totalHours;
             creditOptionPrice.textContent = 'FREE';
             creditOption.onclick = () => selectPaymentMethod('credits');
-            
-            // Hide partial option
             partialOption.style.display = 'none';
-            
-            // Default to credits
             selectPaymentMethod('credits');
             
         } else if (hasPartialCredits) {
-            // ⚡ PARTIAL CREDITS: User has some credits but not enough
-            
-            // Hide full credits option
             creditOption.style.display = 'none';
-            
-            // Show partial option
             partialOption.style.display = 'block';
             const partialCreditsUsed = userCreditBalance;
             const hoursRemaining = totalHours - partialCreditsUsed;
@@ -1460,16 +1698,11 @@
             partialCashSpan.textContent = cashDue;
             partialOptionPrice.textContent = '$' + cashDue;
             partialOption.onclick = () => selectPaymentMethod('partial');
-            
-            // Default to partial (use credits by default)
             selectPaymentMethod('partial');
             
         } else {
-            // ❌ NO CREDITS: Hide all credit options
             creditOption.style.display = 'none';
             partialOption.style.display = 'none';
-            
-            // Default to arrival
             selectPaymentMethod('arrival');
         }
 
@@ -1487,7 +1720,7 @@
         hideConfirmationModal();
         
         if (!navigator.onLine) {
-            showMessage('❌ No internet connection. Cannot book.', 'error');
+            showMessage('❌ No internet connection.', 'error');
             return;
         }
         
@@ -1515,7 +1748,6 @@
             paymentMethod: paymentMethod
         });
 
-       
         const formData = {
             action: 'book',
             name: name,
@@ -1529,7 +1761,6 @@
             source: 'telegram_miniapp'
         };
 
-        // For partial payment, tell backend to use available credits
         if (paymentMethod === 'partial') {
             formData.use_credits = 'true';
         }
@@ -1564,18 +1795,15 @@
                 availabilityCache.clear();
                 console.log('🗑️ Cleared availability cache');
                 
-                // Update credit balance locally if credits were used
                 if (data.creditsUsed) {
                     userCreditBalance = data.newCreditBalance !== undefined ? data.newCreditBalance : (userCreditBalance - data.creditsUsed);
                     updateCreditBanner();
                 }
                 
-                // Show appropriate success message
                 let successMsg;
                 if (paymentMethod === 'credits') {
                     successMsg = translations[currentLang].successBookedCredits;
                 } else if (paymentMethod === 'partial' && data.creditsUsed > 0) {
-                    // Partial payment success
                     const creditsUsed = data.creditsUsed;
                     const cashDue = data.cashDue || ((totalHours - creditsUsed) * PRICE_PER_HOUR);
                     successMsg = `✅ Booking confirmed! ${creditsUsed} hrs credits used, $${cashDue} due on arrival. 🎉`;
@@ -1584,17 +1812,20 @@
                 }
                 showMessage(successMsg, 'success');
                 
+                // Reset form
                 document.getElementById('bookingForm').reset();
                 document.getElementById('timeGrid').innerHTML = '';
                 document.getElementById('selectedTime').value = '';
-                document.getElementById('totalPrice').textContent = '0';
-                document.getElementById('durationValue').textContent = '1';
-                document.getElementById('durationSlider').value = '1';
-                document.getElementById('duration').value = '1';
+                document.getElementById('totalPrice').textContent = '15';
+                document.getElementById('totalHours').textContent = '1';
+                document.getElementById('priceBreakdown').textContent = '1 hour × 1 court';
+                
+                // Reset duration and courts buttons
+                selectDuration(1);
+                selectCourts(1);
                 
                 const today = new Date();
                 document.getElementById('date').value = formatDate(today);
-                document.getElementById('courts').value = '1';
                 
                 setTimeout(() => {
                     if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
@@ -1602,13 +1833,6 @@
                     }
                 }, 3000);
             } else {
-                // ✅ If booking failed but credits were used, we should refund
-                // (In production, you might want to handle this more carefully)
-                if (paymentMethod === 'credits') {
-                    console.log('⚠️ Booking failed after credits deducted - credits should be refunded');
-                    // The backend should handle refund, or you can call refundCredits here
-                }
-                
                 const errorMsg = data.error || data.message || translations[currentLang].errorBookingFailed;
                 console.error('❌ Booking error:', errorMsg);
                 showMessage(errorMsg, 'error');
@@ -1675,32 +1899,43 @@
     // EVENT LISTENERS
     // ============================================
     function setupEventListeners() {
+        // Language buttons
         document.querySelectorAll('.lang-btn').forEach(btn => {
             btn.addEventListener('click', () => switchLanguage(btn.dataset.lang));
         });
 
+        // Quick date buttons
         document.getElementById('btnToday').addEventListener('click', () => setQuickDate(0));
         document.getElementById('btnTomorrow').addEventListener('click', () => setQuickDate(1));
         document.getElementById('btnNextWeek').addEventListener('click', () => setQuickDate(7));
 
+        // Date change
         document.getElementById('date').addEventListener('change', () => {
             checkAndLoadAvailability();
             startAutoRefresh();
         });
 
-        document.getElementById('courts').addEventListener('change', () => {
-            updatePrice();
-            checkAndLoadAvailability();
+        // Duration buttons
+        document.querySelectorAll('.duration-btn').forEach(btn => {
+            btn.addEventListener('click', () => selectDuration(parseInt(btn.dataset.value)));
         });
 
+        // Court buttons
+        document.querySelectorAll('.court-btn').forEach(btn => {
+            btn.addEventListener('click', () => selectCourts(parseInt(btn.dataset.value)));
+        });
+
+        // Form submission
         document.getElementById('bookingForm').addEventListener('submit', (e) => {
             e.preventDefault();
             showConfirmationModal();
         });
 
+        // Modal buttons
         document.getElementById('confirmCancel').addEventListener('click', hideConfirmationModal);
         document.getElementById('confirmSubmit').addEventListener('click', submitBooking);
 
+        // Modal backdrop click
         document.getElementById('confirmModal').addEventListener('click', (e) => {
             if (e.target.id === 'confirmModal') {
                 hideConfirmationModal();
@@ -1716,11 +1951,9 @@
         switchLanguage(savedLang);
 
         setupEventListeners();
-        setupDurationSlider();
         prefillUserData();
         addQuickRebookButton();
 
-        // ✅ NEW: Check user credits on load
         await checkUserCredits();
 
         const today = new Date();
@@ -1731,8 +1964,6 @@
         maxDate.setDate(maxDate.getDate() + 30);
         document.getElementById('date').setAttribute('max', formatDate(maxDate));
 
-        document.getElementById('courts').value = '1';
-
         if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
             Telegram.WebApp.ready();
             Telegram.WebApp.expand();
@@ -1740,7 +1971,6 @@
             if (Telegram.WebApp.themeParams) {
                 document.body.style.setProperty('--tg-theme-bg-color', Telegram.WebApp.themeParams.bg_color || '#ffffff');
                 document.body.style.setProperty('--tg-theme-text-color', Telegram.WebApp.themeParams.text_color || '#000000');
-                document.body.style.setProperty('--tg-theme-button-color', Telegram.WebApp.themeParams.button_color || '#3390ec');
             }
         }
 
@@ -1749,13 +1979,13 @@
         startAutoRefresh();
 
         window.addEventListener('online', () => {
-            showMessage('✅ Back online! Refreshing availability...', 'success');
+            showMessage('✅ Back online! Refreshing...', 'success');
             availabilityCache.clear();
             checkAndLoadAvailability();
         });
 
         window.addEventListener('offline', () => {
-            showMessage('⚠️ No internet connection. Please check your network.', 'error');
+            showMessage('⚠️ No internet connection.', 'error');
         });
 
         console.log('TK Pickleball Booking System Initialized ✅');
