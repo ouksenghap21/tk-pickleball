@@ -1046,15 +1046,20 @@ const PRICING = {
 /**
  * Calculate dynamic price based on date, time, duration, courts
  */
-function calculateDynamicPrice(dateStr, startTime, hours, courts) {
+function calculateCashDueForRemainingHours(dateStr, startTime, duration, courts, creditsUsed) {
     const bookingDate = new Date(dateStr);
     const startHour = parseInt(String(startTime).split(':')[0]);
-    const dayOfWeek = bookingDate.getDay(); // 0 = Sunday, 6 = Saturday
+    const dayOfWeek = bookingDate.getDay();
     const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
     
-    let totalPrice = 0;
+    const totalHours = duration * courts;
+    const remainingHours = totalHours - creditsUsed;
     
-    for (let h = 0; h < hours; h++) {
+    if (remainingHours <= 0) return 0;
+    
+    const courtHours = [];
+    
+    for (let h = 0; h < duration; h++) {
         const slotHour = startHour + h;
         let rate;
         
@@ -1066,10 +1071,21 @@ function calculateDynamicPrice(dateStr, startTime, hours, courts) {
             rate = PRICING.WEEKDAY_OFFPEAK;
         }
         
-        totalPrice += rate * courts;
+        for (let c = 0; c < courts; c++) {
+            courtHours.push({ slot: h, hour: slotHour, court: c, rate: rate });
+        }
     }
     
-    return totalPrice;
+    const paidHours = courtHours.slice(-remainingHours);
+    
+    let cashDue = 0;
+    for (const ch of paidHours) {
+        cashDue += ch.rate;
+    }
+    
+    console.log('Hours-based calculation:', courtHours.length, 'total,', creditsUsed, 'credits,', remainingHours, 'remaining = $' + cashDue);
+    
+    return cashDue;
 }
 
 /**
@@ -1770,11 +1786,9 @@ function getRateLabel(dateStr, startTime) {
             creditOption.style.display = 'none';
             partialOption.style.display = 'block';
             const partialCreditsUsed = userCreditBalance;
-            const hoursRemaining = totalHours - partialCreditsUsed;
-            // Get total price and subtract credit value
-const totalPrice = parseInt(document.getElementById('totalPrice').textContent);
-const creditValue = partialCreditsUsed * PRICING.WEEKDAY_PEAK; // Credits valued at $15/hr
-const cashDue = Math.max(0, totalPrice - creditValue);
+            
+            // FIXED: Hours-based calculation
+            const cashDue = calculateCashDueForRemainingHours(date, time, duration, courts, partialCreditsUsed);
             
             partialCreditsSpan.textContent = partialCreditsUsed;
             partialCashSpan.textContent = cashDue;
