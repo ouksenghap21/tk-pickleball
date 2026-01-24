@@ -1,391 +1,221 @@
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TK Pickleball Booking</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root {
-            /* Premium Dark Theme Palette */
-            --bg-primary: #0F0F1A;
-            --bg-secondary: #1A1A2E;
-            --bg-card: #252540;
-            --bg-elevated: #2D2D4A;
-
-            /* Vibrant Accent Colors */
-            --primary: #6366F1;
-            --primary-light: #818CF8;
-            --primary-dark: #4F46E5;
-            --primary-glow: rgba(99, 102, 241, 0.5);
-
-            --accent: #F97316;
-            --accent-light: #FB923C;
-            --accent-glow: rgba(249, 115, 22, 0.5);
-
-            --emerald: #10B981;
-            --emerald-light: #34D399;
-            --emerald-glow: rgba(16, 185, 129, 0.5);
-
-            --pink: #EC4899;
-            --pink-glow: rgba(236, 72, 153, 0.5);
-
-            /* Text Colors */
-            --text-primary: #FFFFFF;
-            --text-secondary: rgba(255, 255, 255, 0.7);
-            --text-muted: rgba(255, 255, 255, 0.5);
-
-            /* Semantic Colors */
-            --success: #10B981;
-            --success-light: rgba(16, 185, 129, 0.2);
-            --warning: #F59E0B;
-            --warning-light: rgba(245, 158, 11, 0.2);
-            --danger: #EF4444;
-            --danger-light: rgba(239, 68, 68, 0.2);
-
-            /* Court Status Colors */
-            --court-available: #10B981;
-            --court-selected: #F97316;
-            --court-full: #6B7280;
-
-            /* Glass Effect */
-            --glass-bg: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --glass-glow: rgba(255, 255, 255, 0.05);
-
-            /* Design Tokens */
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
-            --radius-xl: 20px;
-            --radius-2xl: 24px;
-            --radius-full: 9999px;
-
-            --shadow-glow: 0 0 40px rgba(99, 102, 241, 0.3);
-            --shadow-lg: 0 25px 50px rgba(0, 0, 0, 0.5);
-
-            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-spring: 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        :root {
+            --primary: #1e40af;
+            --primary-light: #3b82f6;
+            --accent: #f97316;
+            --accent-light: #fb923c;
+            --dark: #0f172a;
+            --gray: #64748b;
+            --light-gray: #f1f5f9;
+            --white: #ffffff;
+            --success: #22c55e;
+            --warning: #eab308;
+            --danger: #ef4444;
+        }
+
         body {
-            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--light-gray);
+            color: var(--dark);
+            padding-bottom: 100px;
             min-height: 100vh;
-            padding-bottom: 120px;
-            -webkit-font-smoothing: antialiased;
-            overflow-x: hidden;
-        }
-
-        /* Animated Gradient Background */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background:
-                radial-gradient(ellipse at 20% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 80%, rgba(236, 72, 153, 0.1) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 50%, rgba(249, 115, 22, 0.08) 0%, transparent 60%);
-            animation: gradientMesh 15s ease infinite alternate;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        @keyframes gradientMesh {
-            0% {
-                opacity: 1;
-                transform: scale(1) rotate(0deg);
-            }
-
-            50% {
-                opacity: 0.8;
-                transform: scale(1.1) rotate(5deg);
-            }
-
-            100% {
-                opacity: 1;
-                transform: scale(1) rotate(0deg);
-            }
         }
 
         .container {
-            max-width: 520px;
+            max-width: 600px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 16px;
         }
 
-        /* ============================================
-           HEADER - Premium Dark Glass Style
-           ============================================ */
+        /* Header Banner */
         .header-banner {
-            background: rgba(15, 15, 26, 0.8);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            padding: 16px 20px 28px;
-            border-bottom: 1px solid var(--glass-border);
-            position: sticky;
-            top: 0;
-            z-index: 50;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            padding: 20px 16px 30px;
+            border-radius: 0 0 24px 24px;
+            position: relative;
+            overflow: hidden;
         }
 
         .header-banner::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--primary-glow), transparent);
+            top: -20px;
+            right: -20px;
+            width: 120px;
+            height: 120px;
+            background: var(--accent);
+            border-radius: 50%;
+            opacity: 0.2;
         }
 
         .header-banner::after {
-            display: none;
-        }
-
-        .header-banner .header-content::before {
-            display: none;
+            content: '';
+            position: absolute;
+            bottom: -30px;
+            left: 20%;
+            width: 80px;
+            height: 80px;
+            background: var(--accent);
+            border-radius: 50%;
+            opacity: 0.15;
         }
 
         .lang-toggle {
             display: flex;
             justify-content: flex-end;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             position: relative;
             z-index: 10;
         }
 
         .lang-toggle-inner {
             display: flex;
-            gap: 2px;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-full);
-            padding: 4px;
+            gap: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 3px;
         }
 
         .lang-btn {
-            padding: 8px 16px;
+            padding: 5px 12px;
             border: none;
-            border-radius: var(--radius-full);
+            border-radius: 16px;
             background: transparent;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
-            color: var(--text-muted);
-            transition: var(--transition-fast);
-        }
-
-        .lang-btn:hover:not(.active) {
-            color: var(--text-secondary);
+            color: rgba(255,255,255,0.8);
+            transition: all 0.3s;
         }
 
         .lang-btn.active {
-            background: var(--primary);
-            color: white;
+            background: white;
+            color: var(--primary);
             font-weight: 700;
-            box-shadow: 0 0 20px var(--primary-glow);
         }
 
         .header-content {
             text-align: center;
             position: relative;
+            z-index: 1;
         }
 
         .logo-box {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 72px;
-            height: 72px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--pink) 100%);
-            border-radius: var(--radius-xl);
-            margin-bottom: 16px;
-            box-shadow: 0 0 40px var(--primary-glow), 0 20px 40px rgba(0, 0, 0, 0.3);
-            transition: var(--transition-spring);
-            animation: logoPulse 3s ease-in-out infinite;
-        }
-
-        @keyframes logoPulse {
-
-            0%,
-            100% {
-                box-shadow: 0 0 40px var(--primary-glow), 0 20px 40px rgba(0, 0, 0, 0.3);
-            }
-
-            50% {
-                box-shadow: 0 0 60px var(--primary-glow), 0 25px 50px rgba(0, 0, 0, 0.4);
-            }
-        }
-
-        .logo-box:hover {
-            transform: scale(1.08) rotate(5deg);
-        }
-
-        .logo-box::after {
-            display: none;
+            width: 56px;
+            height: 56px;
+            background: var(--accent);
+            border-radius: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
         }
 
         .logo-box span {
-            font-size: 36px;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+            font-size: 28px;
         }
 
         .header-content h1 {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 800;
-            color: var(--text-primary);
-            margin-bottom: 6px;
+            color: white;
+            margin-bottom: 4px;
             letter-spacing: -0.5px;
-            background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.8) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
         .header-content p {
-            font-size: 14px;
-            color: var(--text-muted);
+            font-size: 13px;
+            color: rgba(255,255,255,0.85);
             font-weight: 500;
         }
 
-        /* ============================================
-           CREDIT BANNER - Premium Glass Card
-           ============================================ */
+        /* Credit Banner */
         .credit-banner {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: var(--radius-xl);
-            padding: 18px 20px;
-            margin-top: 20px;
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-top: -20px;
             margin-bottom: 20px;
-            border: 1px solid var(--glass-border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
             display: none;
             align-items: center;
             justify-content: space-between;
+            border: 2px solid var(--accent);
             position: relative;
-        }
-
-        .credit-banner::before {
-            display: none;
+            z-index: 10;
         }
 
         .credit-banner.show {
             display: flex;
-            animation: slideUp 0.4s var(--transition-spring);
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .credit-banner-left {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
         }
 
         .credit-icon {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(135deg, var(--emerald) 0%, var(--emerald-light) 100%);
-            border-radius: var(--radius-md);
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
-            box-shadow: 0 0 20px var(--emerald-glow);
-        }
-
-        .credit-icon::after {
-            display: none;
+            font-size: 20px;
         }
 
         .credit-info .label {
             font-size: 12px;
-            color: var(--text-muted);
+            color: var(--gray);
             font-weight: 500;
-            margin-bottom: 2px;
         }
 
         .credit-info .balance {
             font-size: 20px;
-            font-weight: 700;
-            color: var(--text-primary);
+            font-weight: 800;
+            color: var(--dark);
         }
 
         .credit-status {
-            background: var(--success-light);
-            padding: 8px 14px;
-            border-radius: var(--radius-full);
-            font-size: 12px;
+            background: var(--light-gray);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
             font-weight: 600;
             color: var(--success);
-            display: flex;
-            align-items: center;
-            gap: 6px;
         }
 
-        .credit-status::before {
-            content: '';
-            width: 8px;
-            height: 8px;
-            background: var(--success);
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-
-            0%,
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-
-            50% {
-                opacity: 0.5;
-                transform: scale(0.8);
-            }
-        }
-
-        /* ============================================
-           FORM CARD - Premium Glass Style
-           ============================================ */
+        /* Form Card */
         .form-card {
-            background: var(--bg-card);
-            border-radius: var(--radius-2xl);
-            padding: 28px;
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--shadow-lg);
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
         }
 
         .form-label {
             display: block;
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--gray);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -393,80 +223,62 @@
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 24px;
+            gap: 12px;
+            margin-bottom: 16px;
         }
 
         .form-group {
-            margin-bottom: 24px;
+            margin-bottom: 16px;
         }
 
         .form-input {
             width: 100%;
             padding: 14px 16px;
             font-size: 15px;
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-md);
-            background: var(--bg-elevated);
-            color: var(--text-primary);
+            border: 2px solid var(--light-gray);
+            border-radius: 12px;
+            background: var(--light-gray);
+            color: var(--dark);
             font-weight: 500;
-            transition: var(--transition-fast);
+            transition: all 0.2s;
             outline: none;
         }
 
-        .form-input::placeholder {
-            color: var(--text-muted);
-        }
-
-        .form-input:hover {
-            border-color: rgba(255, 255, 255, 0.2);
-        }
-
         .form-input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-glow), 0 0 20px var(--primary-glow);
+            border-color: var(--primary-light);
+            background: white;
         }
 
-        /* Date Pills with Glow */
         .quick-dates {
             display: flex;
-            gap: 10px;
-            margin-top: 14px;
+            gap: 8px;
+            margin-top: 10px;
         }
 
         .quick-date-btn {
             flex: 1;
-            padding: 12px 14px;
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-md);
-            background: var(--bg-elevated);
+            padding: 10px 8px;
+            border: 2px solid var(--light-gray);
+            border-radius: 10px;
+            background: white;
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
-            color: var(--text-secondary);
-            transition: var(--transition-base);
-        }
-
-        .quick-date-btn:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            background: rgba(99, 102, 241, 0.1);
+            color: var(--gray);
+            transition: all 0.2s;
         }
 
         .quick-date-btn:active {
-            transform: scale(0.97);
+            transform: scale(0.95);
         }
 
         .quick-date-btn.active {
             border-color: var(--primary);
             background: var(--primary);
             color: white;
-            box-shadow: 0 0 25px var(--primary-glow);
         }
 
-        /* ============================================
-           DURATION & COURT SELECTORS - Neon Tiles
-           ============================================ */
+        /* Duration & Courts Buttons */
         .selector-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -475,108 +287,77 @@
 
         .selector-btn {
             padding: 16px 8px;
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-lg);
-            background: var(--bg-elevated);
+            border: 2px solid var(--light-gray);
+            border-radius: 14px;
+            background: white;
             cursor: pointer;
-            transition: var(--transition-base);
+            transition: all 0.2s;
             text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .selector-btn::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), transparent);
-            opacity: 0;
-            transition: var(--transition-fast);
-        }
-
-        .selector-btn:hover {
-            border-color: var(--primary-light);
-            transform: translateY(-2px);
-        }
-
-        .selector-btn:hover::before {
-            opacity: 1;
         }
 
         .selector-btn:active {
-            transform: scale(0.97);
+            transform: scale(0.95);
         }
 
         .selector-btn.selected {
-            border-color: var(--accent);
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
-            box-shadow: 0 0 30px var(--accent-glow), 0 10px 30px rgba(0, 0, 0, 0.3);
-            transform: translateY(-3px);
+            border: none;
+            transform: scale(1.02);
         }
 
-        .selector-btn.duration-btn.selected,
-        .selector-btn.court-btn.selected {
+        .selector-btn.duration-btn.selected {
             background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
-            border-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+        }
+
+        .selector-btn.court-btn.selected {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
         }
 
         .selector-btn .value {
-            font-size: 26px;
+            font-size: 24px;
             font-weight: 800;
-            color: var(--text-primary);
+            color: var(--dark);
             line-height: 1;
-            transition: var(--transition-fast);
         }
 
         .selector-btn.selected .value {
             color: white;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
 
         .selector-btn .unit {
             font-size: 11px;
-            font-weight: 500;
-            color: var(--text-muted);
-            margin-top: 6px;
-            transition: var(--transition-fast);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-weight: 600;
+            color: var(--gray);
+            margin-top: 2px;
         }
 
         .selector-btn.selected .unit {
-            color: rgba(255, 255, 255, 0.9);
+            color: rgba(255,255,255,0.9);
         }
 
-        /* ============================================
-           TIME SLOTS - Cinema Style Grid
-           ============================================ */
+        /* Time Slots Card */
         .time-card {
-            background: var(--bg-card);
-            border-radius: var(--radius-2xl);
-            padding: 28px;
-            margin-top: 24px;
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--shadow-lg);
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
         }
 
         .time-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 20px;
+            margin-bottom: 14px;
         }
 
         .time-count {
-            font-size: 12px;
-            color: var(--emerald);
-            background: var(--success-light);
-            padding: 8px 14px;
-            border-radius: var(--radius-full);
-            font-weight: 600;
-        }
-
-        .helper-text {
-            color: var(--text-muted) !important;
+            font-size: 11px;
+            color: var(--gray);
+            background: var(--light-gray);
+            padding: 4px 10px;
+            border-radius: 12px;
         }
 
         .time-grid {
@@ -587,96 +368,59 @@
 
         .time-slot {
             padding: 14px 10px;
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-lg);
+            border: 2px solid var(--primary-light);
+            border-radius: 12px;
             text-align: center;
             cursor: pointer;
-            background: var(--bg-elevated);
-            transition: var(--transition-base);
-            position: relative;
-        }
-
-        /* Peak hour fire indicator */
-        .time-slot.peak::after {
-            content: '🔥';
-            position: absolute;
-            top: -6px;
-            right: -6px;
-            font-size: 12px;
+            background: white;
+            transition: all 0.2s;
         }
 
         .time-slot:active {
-            transform: scale(0.97);
+            transform: scale(0.95);
         }
 
         .time-slot .time {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 4px;
+            color: var(--dark);
+            margin-bottom: 3px;
         }
 
         .time-slot .courts-info {
-            font-size: 11px;
-            font-weight: 500;
-            color: var(--text-muted);
-        }
-
-        /* Available state */
-        .time-slot.available {
-            border-color: var(--emerald);
-            background: rgba(16, 185, 129, 0.1);
-        }
-
-        .time-slot.available .courts-info {
-            color: var(--emerald);
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--gray);
         }
 
         .time-slot.available:hover {
-            border-color: var(--emerald-light);
-            background: rgba(16, 185, 129, 0.2);
-            transform: translateY(-3px);
-            box-shadow: 0 0 20px var(--emerald-glow);
+            background: rgba(59, 130, 246, 0.05);
         }
 
-        /* Selected state */
         .time-slot.selected {
-            border-color: var(--accent);
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
-            box-shadow: 0 0 30px var(--accent-glow), 0 10px 30px rgba(0, 0, 0, 0.3);
-            transform: translateY(-4px);
+            border: none;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.25);
         }
 
         .time-slot.selected .time {
             color: white;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
 
         .time-slot.selected .courts-info {
-            color: rgba(255, 255, 255, 0.9);
+            color: rgba(255,255,255,0.85);
         }
 
-        /* Unavailable state */
         .time-slot.unavailable {
-            border-color: var(--glass-border);
-            background: var(--bg-secondary);
-            opacity: 0.4;
+            border-color: #e2e8f0;
+            background: #f8fafc;
+            opacity: 0.5;
             cursor: not-allowed;
         }
 
-        .time-slot.unavailable .time {
-            color: var(--text-muted);
-            text-decoration: line-through;
-        }
-
-        .time-slot.unavailable .courts-info {
-            color: var(--text-muted);
-        }
-
-        /* Almost full state */
         .time-slot.almost-full {
             border-color: var(--warning);
-            background: var(--warning-light);
         }
 
         .time-slot.almost-full .courts-info {
@@ -689,366 +433,30 @@
 
         .time-loading {
             text-align: center;
-            padding: 24px;
-            color: var(--text-muted);
-            font-size: 14px;
-        }
-
-        /* ============================================
-           VISUAL COURT VENUE - Cinema Style
-           ============================================ */
-        .court-venue {
-            background: var(--bg-card);
-            border-radius: var(--radius-2xl);
-            padding: 24px;
-            margin-top: 24px;
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--shadow-lg);
-            overflow: hidden;
-        }
-
-        .venue-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .venue-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .venue-subtitle {
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-
-        /* Time Slider */
-        .time-slider-container {
-            background: var(--bg-elevated);
-            border-radius: var(--radius-lg);
-            padding: 16px;
-            margin-bottom: 24px;
-        }
-
-        .time-slider-label {
-            font-size: 12px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 12px;
-            text-align: center;
-        }
-
-        .time-slider-scroll {
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            padding-bottom: 8px;
-            scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .time-slider-scroll::-webkit-scrollbar {
-            height: 4px;
-        }
-
-        .time-slider-scroll::-webkit-scrollbar-track {
-            background: var(--glass-border);
-            border-radius: 2px;
-        }
-
-        .time-slider-scroll::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 2px;
-        }
-
-        .time-slot-pill {
-            flex-shrink: 0;
-            padding: 10px 18px;
-            background: var(--bg-card);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-full);
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: var(--transition-base);
-            scroll-snap-align: center;
-            white-space: nowrap;
-        }
-
-        .time-slot-pill:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
-        .time-slot-pill.selected {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: white;
-            box-shadow: 0 0 20px var(--accent-glow);
-        }
-
-        .time-slot-pill.unavailable {
-            opacity: 0.4;
-            cursor: not-allowed;
-            text-decoration: line-through;
-        }
-
-        .time-slot-pill.almost-full {
-            border-color: var(--warning);
-            color: var(--warning);
-        }
-
-        .time-slot-pill.plenty {
-            border-color: var(--emerald);
-            color: var(--emerald);
-        }
-
-        .time-slot-pill.peak::after {
-            content: ' 🔥';
-        }
-
-        /* 3D Court Arena */
-        .court-arena {
-            perspective: 800px;
-            margin: 20px 0;
-        }
-
-        .court-grid-3d {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            transform: rotateX(10deg);
-            transform-style: preserve-3d;
             padding: 20px;
-            background: linear-gradient(180deg, rgba(99, 102, 241, 0.05) 0%, rgba(16, 185, 129, 0.05) 100%);
-            border-radius: var(--radius-xl);
-            border: 1px solid var(--glass-border);
-        }
-
-        /* Individual Court Tile */
-        .court-tile {
-            aspect-ratio: 1;
-            background: var(--bg-elevated);
-            border: 2px solid var(--glass-border);
-            border-radius: var(--radius-lg);
-            cursor: pointer;
-            transition: var(--transition-spring);
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 12px 8px;
-            transform-style: preserve-3d;
-            overflow: hidden;
-        }
-
-        /* Court surface pattern */
-        .court-tile::before {
-            content: '';
-            position: absolute;
-            inset: 8px;
-            border: 2px dashed var(--glass-border);
-            border-radius: var(--radius-sm);
-            opacity: 0.5;
-        }
-
-        /* Center line */
-        .court-tile::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 15%;
-            right: 15%;
-            height: 2px;
-            background: var(--glass-border);
-            opacity: 0.5;
-        }
-
-        .court-number {
-            font-size: 24px;
-            font-weight: 800;
-            color: var(--text-primary);
-            z-index: 1;
-            line-height: 1;
-        }
-
-        .court-label {
-            font-size: 10px;
-            font-weight: 600;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-top: 4px;
-            z-index: 1;
-        }
-
-        .court-status {
-            position: absolute;
-            bottom: 8px;
-            font-size: 9px;
-            font-weight: 600;
-            padding: 2px 8px;
-            border-radius: var(--radius-full);
-            z-index: 1;
-        }
-
-        /* Court States */
-        .court-tile.available {
-            border-color: var(--emerald);
-            background: rgba(16, 185, 129, 0.1);
-        }
-
-        .court-tile.available .court-number {
-            color: var(--emerald);
-        }
-
-        .court-tile.available .court-status {
-            background: var(--emerald);
-            color: white;
-        }
-
-        .court-tile.available:hover {
-            transform: translateY(-8px) scale(1.05);
-            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.3), 0 0 30px var(--emerald-glow);
-            border-color: var(--emerald-light);
-        }
-
-        .court-tile.selected {
-            border-color: var(--accent);
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
-            box-shadow: 0 0 40px var(--accent-glow), 0 15px 40px rgba(0, 0, 0, 0.4);
-            transform: translateY(-10px) scale(1.08);
-        }
-
-        .court-tile.selected::before,
-        .court-tile.selected::after {
-            border-color: rgba(255, 255, 255, 0.3);
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .court-tile.selected .court-number {
-            color: white;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        .court-tile.selected .court-label {
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .court-tile.selected .court-status {
-            background: white;
-            color: var(--accent);
-        }
-
-        .court-tile.unavailable {
-            border-color: var(--glass-border);
-            background: var(--bg-secondary);
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .court-tile.unavailable .court-number {
-            color: var(--text-muted);
-            text-decoration: line-through;
-        }
-
-        .court-tile.unavailable .court-status {
-            background: rgba(107, 114, 128, 0.5);
-            color: var(--text-muted);
-        }
-
-        /* Ripple effect on tap */
-        .court-tile.ripple::before {
-            animation: rippleEffect 0.6s ease-out;
-        }
-
-        @keyframes rippleEffect {
-            0% {
-                transform: scale(0);
-                opacity: 0.8;
-            }
-
-            100% {
-                transform: scale(2);
-                opacity: 0;
-            }
-        }
-
-        /* Legend */
-        .court-legend {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-
-        .legend-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 4px;
-        }
-
-        .legend-dot.available {
-            background: var(--emerald);
-            box-shadow: 0 0 10px var(--emerald-glow);
-        }
-
-        .legend-dot.selected {
-            background: var(--accent);
-            box-shadow: 0 0 10px var(--accent-glow);
-        }
-
-        .legend-dot.unavailable {
-            background: var(--text-muted);
-            opacity: 0.5;
+            color: var(--gray);
+            font-size: 14px;
         }
 
         .skeleton {
-            background: linear-gradient(90deg, var(--bg-elevated) 25%, var(--bg-card) 50%, var(--bg-elevated) 75%);
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
             background-size: 200% 100%;
             animation: skeleton-loading 1.5s infinite;
-            border-radius: var(--radius-lg);
+            border-radius: 12px;
             pointer-events: none;
         }
 
         @keyframes skeleton-loading {
-            0% {
-                background-position: 200% 0;
-            }
-
-            100% {
-                background-position: -200% 0;
-            }
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
 
-        /* ============================================
-           PRICE CARD - Premium Glass Style
-           ============================================ */
+        /* Price Card */
         .price-card {
-            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-elevated) 100%);
-            border-radius: var(--radius-2xl);
-            padding: 28px;
-            margin-top: 24px;
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--shadow-lg);
+            background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+            border-radius: 20px;
+            padding: 24px;
+            margin-top: 16px;
             position: relative;
             overflow: hidden;
         }
@@ -1056,27 +464,13 @@
         .price-card::before {
             content: '';
             position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
-            opacity: 0.3;
-            animation: priceGlow 4s ease infinite alternate;
-        }
-
-        @keyframes priceGlow {
-            0% {
-                transform: translate(0, 0);
-            }
-
-            100% {
-                transform: translate(-20%, 20%);
-            }
-        }
-
-        .price-card::after {
-            display: none;
+            top: -20px;
+            right: -20px;
+            width: 100px;
+            height: 100px;
+            background: var(--accent);
+            border-radius: 50%;
+            opacity: 0.1;
         }
 
         .price-card-inner {
@@ -1088,31 +482,30 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--glass-border);
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
         .price-breakdown-left {
-            font-size: 13px;
-            color: var(--text-muted);
+            font-size: 12px;
+            color: rgba(255,255,255,0.6);
         }
 
         .price-breakdown-left span {
             display: block;
-            font-size: 15px;
-            color: var(--text-secondary);
+            font-size: 13px;
+            color: rgba(255,255,255,0.8);
             margin-top: 4px;
         }
 
         .price-hours-badge {
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
-            padding: 10px 16px;
-            border-radius: var(--radius-full);
-            font-size: 13px;
+            background: var(--accent);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
             font-weight: 700;
             color: white;
-            box-shadow: 0 0 20px var(--accent-glow);
         }
 
         .price-total {
@@ -1122,79 +515,70 @@
         }
 
         .price-total-left .label {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-size: 12px;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 4px;
         }
 
         .price-total-left .amount {
-            font-size: 44px;
+            font-size: 36px;
             font-weight: 800;
-            color: var(--text-primary);
+            color: white;
             line-height: 1;
-            text-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
         }
 
         .price-pay-badge {
-            font-size: 13px;
-            color: var(--emerald);
+            font-size: 12px;
+            color: var(--accent);
             font-weight: 600;
-            background: var(--success-light);
-            padding: 10px 16px;
-            border-radius: var(--radius-full);
+            background: rgba(249, 115, 22, 0.15);
+            padding: 6px 12px;
+            border-radius: 8px;
         }
 
-        /* ============================================
-           LOCATION CARD - Glass Style
-           ============================================ */
+        /* Location Card */
         .location-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: var(--radius-xl);
-            padding: 18px;
-            margin-top: 24px;
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-top: 16px;
             display: flex;
             align-items: center;
-            gap: 16px;
-            border: 1px solid var(--glass-border);
+            gap: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
 
         .location-icon {
-            width: 50px;
-            height: 50px;
-            background: var(--bg-elevated);
-            border-radius: var(--radius-md);
+            width: 48px;
+            height: 48px;
+            background: var(--light-gray);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 22px;
         }
 
         .location-info h3 {
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--dark);
         }
 
         .location-info p {
-            font-size: 13px;
-            color: var(--text-muted);
+            font-size: 12px;
+            color: var(--gray);
         }
 
-        /* ============================================
-           CONFIRM BUTTON - Premium CTA
-           ============================================ */
+        /* Bottom Button */
         .btn-container {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(to top, var(--bg-primary) 80%, transparent);
-            padding: 24px 20px;
-            padding-bottom: max(24px, env(safe-area-inset-bottom));
+            background: white;
+            padding: 12px 16px 20px;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
         }
 
         .btn-book {
@@ -1203,59 +587,50 @@
             font-size: 16px;
             font-weight: 700;
             border: none;
-            border-radius: var(--radius-lg);
+            border-radius: 14px;
             background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
             color: white;
             cursor: pointer;
-            transition: var(--transition-base);
-            box-shadow: 0 0 30px var(--accent-glow), 0 10px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 16px rgba(249, 115, 22, 0.35);
+            letter-spacing: 0.5px;
             text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .btn-book:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 50px var(--accent-glow), 0 15px 40px rgba(0, 0, 0, 0.4);
+            transition: all 0.2s;
         }
 
         .btn-book:disabled {
-            opacity: 0.4;
+            opacity: 0.5;
             cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
         }
 
         .btn-book:not(:disabled):active {
             transform: scale(0.98);
+            opacity: 0.9;
         }
 
         /* Messages */
         .message {
             display: none;
-            padding: 16px 20px;
-            border-radius: var(--radius-lg);
+            padding: 16px;
+            border-radius: 12px;
             margin-bottom: 16px;
             font-size: 14px;
             font-weight: 500;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
         }
 
         .message.show {
             display: block;
-            animation: slideUp 0.3s ease;
         }
 
         .message.success {
-            background: var(--success-light);
-            color: var(--success);
-            border: 1px solid rgba(16, 185, 129, 0.3);
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
         }
 
         .message.error {
-            background: var(--danger-light);
-            color: var(--danger);
-            border: 1px solid rgba(239, 68, 68, 0.3);
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
         }
 
         /* Loading */
@@ -1270,27 +645,21 @@
         }
 
         .spinner {
-            border: 3px solid var(--glass-border);
+            border: 3px solid var(--light-gray);
             border-top: 3px solid var(--accent);
             border-radius: 50%;
-            width: 44px;
-            height: 44px;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 16px;
-            box-shadow: 0 0 20px var(--accent-glow);
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 12px;
         }
 
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
-        /* Modal - Premium Glass */
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -1298,54 +667,37 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            background: rgba(0,0,0,0.5);
             z-index: 1000;
             align-items: center;
             justify-content: center;
         }
 
         .modal-content {
-            background: var(--bg-card);
-            border-radius: var(--radius-2xl);
-            padding: 32px;
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
             margin: 16px;
-            max-width: 420px;
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--shadow-lg), 0 0 60px rgba(99, 102, 241, 0.2);
-            animation: modalSlideUp 0.4s var(--transition-spring);
-        }
-
-        @keyframes modalSlideUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px) scale(0.95);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+            max-width: 400px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.2);
         }
 
         .modal-header {
-            font-size: 24px;
-            margin-bottom: 20px;
+            font-size: 20px;
+            margin-bottom: 16px;
             text-align: center;
             font-weight: 800;
-            color: var(--text-primary);
+            color: var(--dark);
         }
 
         .modal-details {
-            background: var(--bg-elevated);
-            border-radius: var(--radius-lg);
-            padding: 20px;
-            margin-bottom: 24px;
+            background: var(--light-gray);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
             font-size: 14px;
             line-height: 1.8;
-            color: var(--text-secondary);
-            border: 1px solid var(--glass-border);
+            color: var(--dark);
         }
 
         .modal-buttons {
@@ -1355,68 +707,55 @@
 
         .modal-btn {
             flex: 1;
-            padding: 16px;
-            border-radius: var(--radius-lg);
+            padding: 14px;
+            border-radius: 12px;
             font-size: 16px;
-            font-weight: 700;
+            font-weight: 600;
             cursor: pointer;
-            transition: var(--transition-base);
+            transition: all 0.2s;
         }
 
         .modal-btn:active {
-            transform: scale(0.96);
+            transform: scale(0.95);
         }
 
         .modal-btn-cancel {
-            border: 1px solid var(--glass-border);
-            background: var(--bg-elevated);
-            color: var(--text-secondary);
-        }
-
-        .modal-btn-cancel:hover {
-            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid var(--light-gray);
+            background: white;
+            color: var(--gray);
         }
 
         .modal-btn-confirm {
             border: none;
             background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
             color: white;
-            box-shadow: 0 0 30px var(--accent-glow);
         }
 
-        .modal-btn-confirm:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 50px var(--accent-glow);
-        }
-
-        /* Payment Options - Glass Cards */
+        /* Payment Options */
         .payment-options {
-            margin-top: 20px;
+            margin-top: 16px;
         }
 
         .payment-option {
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-lg);
-            padding: 18px;
+            border: 2px solid var(--light-gray);
+            border-radius: 14px;
+            padding: 16px;
             margin-bottom: 12px;
             cursor: pointer;
-            transition: var(--transition-base);
-            background: var(--bg-elevated);
+            transition: all 0.2s;
         }
 
         .payment-option:hover {
             border-color: var(--primary-light);
-            background: rgba(99, 102, 241, 0.1);
         }
 
         .payment-option.selected {
             border-color: var(--primary);
-            background: rgba(99, 102, 241, 0.15);
-            box-shadow: 0 0 20px var(--primary-glow);
+            background: rgba(59, 130, 246, 0.08);
         }
 
         .payment-option.disabled {
-            opacity: 0.4;
+            opacity: 0.5;
             cursor: not-allowed;
         }
 
@@ -1426,8 +765,8 @@
         }
 
         .payment-option-icon {
-            font-size: 26px;
-            margin-right: 14px;
+            font-size: 24px;
+            margin-right: 12px;
         }
 
         .payment-option-details {
@@ -1444,23 +783,23 @@
         .payment-option-title {
             font-weight: 700;
             font-size: 15px;
-            color: var(--text-primary);
+            color: var(--dark);
         }
 
         .payment-option-price {
             font-weight: 800;
-            font-size: 17px;
-            color: var(--emerald);
+            font-size: 16px;
+            color: var(--primary);
         }
 
         .payment-option-subtitle {
             font-size: 12px;
-            color: var(--text-muted);
+            color: var(--gray);
         }
 
         .helper-text {
             font-size: 12px;
-            color: var(--text-muted);
+            color: var(--gray);
             margin-top: 8px;
             font-style: italic;
         }
@@ -1468,98 +807,8 @@
         .required {
             color: var(--danger);
         }
-
-        /* ========================================
-           KEYFRAME ANIMATIONS
-           ======================================== */
-        @keyframes float {
-
-            0%,
-            100% {
-                transform: translateY(0);
-            }
-
-            50% {
-                transform: translateY(-15px);
-            }
-        }
-
-        @keyframes pulse-soft {
-
-            0%,
-            100% {
-                opacity: 0.1;
-                transform: scale(1);
-            }
-
-            50% {
-                opacity: 0.2;
-                transform: scale(1.1);
-            }
-        }
-
-        @keyframes pulse-glow {
-
-            0%,
-            100% {
-                box-shadow: 0 8px 24px var(--accent-glow);
-            }
-
-            50% {
-                box-shadow: 0 12px 36px var(--accent-glow), 0 0 20px var(--accent-glow);
-            }
-        }
-
-        @keyframes pulse {
-
-            0%,
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-
-            50% {
-                opacity: 0.6;
-                transform: scale(0.9);
-            }
-        }
-
-        @keyframes shimmer {
-            0% {
-                transform: translateX(-100%) rotate(45deg);
-            }
-
-            100% {
-                transform: translateX(100%) rotate(45deg);
-            }
-        }
-
-        @keyframes gradient-shift {
-
-            0%,
-            100% {
-                background-position: 0% 50%;
-            }
-
-            50% {
-                background-position: 100% 50%;
-            }
-        }
-
-        @keyframes slide-up {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
     </style>
 </head>
-
 <body>
     <!-- Header Banner -->
     <div class="header-banner">
@@ -1602,13 +851,11 @@
                 <div class="form-row">
                     <div>
                         <label class="form-label" for="name"><span data-i18n="fullName">Name</span></label>
-                        <input type="text" id="name" name="name" class="form-input" required
-                            data-i18n-placeholder="namePlaceholder">
+                        <input type="text" id="name" name="name" class="form-input" required data-i18n-placeholder="namePlaceholder">
                     </div>
                     <div>
                         <label class="form-label" for="phone"><span data-i18n="phoneNumber">Phone</span></label>
-                        <input type="tel" id="phone" name="phone" class="form-input" required
-                            data-i18n-placeholder="phonePlaceholder">
+                        <input type="tel" id="phone" name="phone" class="form-input" required data-i18n-placeholder="phonePlaceholder">
                     </div>
                 </div>
 
@@ -1618,10 +865,8 @@
                     <input type="date" id="date" name="date" class="form-input" required>
                     <div class="quick-dates">
                         <button type="button" id="btnToday" class="quick-date-btn" data-i18n="today">Today</button>
-                        <button type="button" id="btnTomorrow" class="quick-date-btn"
-                            data-i18n="tomorrow">Tomorrow</button>
-                        <button type="button" id="btnNextWeek" class="quick-date-btn" data-i18n="nextWeek">Next
-                            Week</button>
+                        <button type="button" id="btnTomorrow" class="quick-date-btn" data-i18n="tomorrow">Tomorrow</button>
+                        <button type="button" id="btnNextWeek" class="quick-date-btn" data-i18n="nextWeek">Next Week</button>
                     </div>
                 </div>
 
@@ -1649,8 +894,8 @@
                     <input type="hidden" id="duration" name="duration" value="1">
                 </div>
 
-                <!-- Courts Buttons - Hidden, use 3D court tiles instead -->
-                <div class="form-group" style="display: none;">
+                <!-- Courts Buttons -->
+                <div class="form-group">
                     <label class="form-label"><span data-i18n="courts">Courts</span></label>
                     <div class="selector-grid" id="courtsSelector">
                         <button type="button" class="selector-btn court-btn selected" data-value="1">
@@ -1674,112 +919,16 @@
                 </div>
             </div>
 
-            <!-- Time Slots Card - Hidden, replaced by Court Venue time slider -->
-            <div class="time-card" style="display: none;">
+            <!-- Time Slots Card -->
+            <div class="time-card">
                 <div class="time-header">
-                    <label class="form-label" style="margin-bottom: 0;"><span data-i18n="startTime">Select
-                            Time</span></label>
+                    <label class="form-label" style="margin-bottom: 0;"><span data-i18n="startTime">Select Time</span></label>
                     <span id="availableCount" class="time-count"></span>
                 </div>
-                <p class="helper-text" style="margin-top: 0; margin-bottom: 12px;" data-i18n="selectFirst">Select date,
-                    duration, and courts first.</p>
-                <div id="timeLoadingMessage" class="time-loading" style="display: none;" data-i18n="checking">Checking
-                    availability...</div>
+                <p class="helper-text" style="margin-top: 0; margin-bottom: 12px;" data-i18n="selectFirst">Select date, duration, and courts first.</p>
+                <div id="timeLoadingMessage" class="time-loading" style="display: none;" data-i18n="checking">Checking availability...</div>
                 <div id="timeGrid" class="time-grid"></div>
                 <input type="hidden" id="selectedTime" name="time" required>
-            </div>
-
-            <!-- Visual Court Venue - Cinema Style -->
-            <div class="court-venue" id="courtVenue">
-                <div class="venue-header">
-                    <div class="venue-title">🏟️ TK Pickleball Arena</div>
-                    <div class="venue-subtitle">Select your courts below</div>
-                </div>
-
-                <!-- Time Slider -->
-                <div class="time-slider-container">
-                    <div class="time-slider-label">Choose Time Slot</div>
-                    <div class="time-slider-scroll" id="timeSliderScroll">
-                        <div class="time-slot-pill" data-time="08:00">8:00 AM</div>
-                        <div class="time-slot-pill" data-time="09:00">9:00 AM</div>
-                        <div class="time-slot-pill" data-time="10:00">10:00 AM</div>
-                        <div class="time-slot-pill" data-time="11:00">11:00 AM</div>
-                        <div class="time-slot-pill" data-time="12:00">12:00 PM</div>
-                        <div class="time-slot-pill" data-time="13:00">1:00 PM</div>
-                        <div class="time-slot-pill" data-time="14:00">2:00 PM</div>
-                        <div class="time-slot-pill" data-time="15:00">3:00 PM</div>
-                        <div class="time-slot-pill" data-time="16:00">4:00 PM</div>
-                        <div class="time-slot-pill peak" data-time="17:00">5:00 PM</div>
-                        <div class="time-slot-pill peak" data-time="18:00">6:00 PM</div>
-                        <div class="time-slot-pill peak" data-time="19:00">7:00 PM</div>
-                        <div class="time-slot-pill peak" data-time="20:00">8:00 PM</div>
-                        <div class="time-slot-pill" data-time="21:00">9:00 PM</div>
-                    </div>
-                </div>
-
-                <!-- 3D Court Arena -->
-                <div class="court-arena">
-                    <div class="court-grid-3d" id="courtGrid3D">
-                        <!-- Row 1 -->
-                        <div class="court-tile available" data-court="1">
-                            <div class="court-number">1</div>
-                            <div class="court-label">Court</div>
-                            <div class="court-status">OPEN</div>
-                        </div>
-                        <div class="court-tile available" data-court="2">
-                            <div class="court-number">2</div>
-                            <div class="court-label">Court</div>
-                            <div class="court-status">OPEN</div>
-                        </div>
-                        <div class="court-tile available" data-court="3">
-                            <div class="court-number">3</div>
-                            <div class="court-label">Court</div>
-                            <div class="court-status">OPEN</div>
-                        </div>
-                        <div class="court-tile available" data-court="4">
-                            <div class="court-number">4</div>
-                            <div class="court-label">Court</div>
-                            <div class="court-status">OPEN</div>
-                        </div>
-                        <!-- Row 2 -->
-                        <div class="court-tile available" data-court="5">
-                            <div class="court-number">5</div>
-                            <div class="court-label">Court</div>
-                            <div class="court-status">OPEN</div>
-                        </div>
-                        <div class="court-tile available" data-court="6">
-                            <div class="court-number">6</div>
-                            <div class="court-label">Court</div>
-                            <div class="court-status">OPEN</div>
-                        </div>
-                        <div class="court-tile available" data-court="7">
-                            <div class="court-number">7</div>
-                            <div class="court-label">Court</div>
-                            <div class="court-status">OPEN</div>
-                        </div>
-                        <div class="court-tile available" data-court="8">
-                            <div class="court-number">8</div>
-                            <div class="court-label">Court</div>
-                            <div class="court-status">OPEN</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Legend -->
-                <div class="court-legend">
-                    <div class="legend-item">
-                        <div class="legend-dot available"></div>
-                        <span>Available</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-dot selected"></div>
-                        <span>Your Selection</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-dot unavailable"></div>
-                        <span>Booked</span>
-                    </div>
-                </div>
             </div>
 
             <!-- Price Card -->
@@ -1788,7 +937,7 @@
                     <div class="price-breakdown">
                         <div class="price-breakdown-left">
                             <span id="priceBreakdown">1 hour × 1 court</span>
-                            <span id="rateLabel">@ $13-$15/hour per court</span>
+<span id="rateLabel">@ $13-$15/hour per court</span>
                         </div>
                         <div class="price-hours-badge"><span id="totalHours">1</span> total hrs</div>
                     </div>
@@ -1813,8 +962,7 @@
         </form>
 
         <div class="btn-container">
-            <button type="submit" form="bookingForm" id="btnBook" class="btn-book" data-i18n="confirmBooking">🏓 Confirm
-                Booking</button>
+            <button type="submit" form="bookingForm" id="btnBook" class="btn-book" data-i18n="confirmBooking">🏓 Confirm Booking</button>
         </div>
     </div>
 
@@ -1823,7 +971,7 @@
         <div class="modal-content">
             <h2 class="modal-header">🏓 <span data-i18n="confirmTitle">Confirm Booking</span></h2>
             <div id="confirmDetails" class="modal-details"></div>
-
+            
             <!-- Payment Options -->
             <div id="paymentOptions" class="payment-options">
                 <!-- Full Credits Option -->
@@ -1836,16 +984,14 @@
                                 <span class="payment-option-price" id="creditOptionPrice">FREE</span>
                             </div>
                             <div class="payment-option-subtitle">
-                                Use <span id="creditsToUse">0</span> hrs • Balance: <span id="creditsRemaining">0</span>
-                                hrs left
+                                Use <span id="creditsToUse">0</span> hrs • Balance: <span id="creditsRemaining">0</span> hrs left
                             </div>
                         </div>
                     </div>
                 </div>
-
+                
                 <!-- Partial Credits Option -->
-                <div id="partialPaymentOption" class="payment-option" onclick="selectPaymentMethod('partial')"
-                    style="display: none;">
+                <div id="partialPaymentOption" class="payment-option" onclick="selectPaymentMethod('partial')" style="display: none;">
                     <div class="payment-option-content">
                         <span class="payment-option-icon">💳+💵</span>
                         <div class="payment-option-details">
@@ -1854,13 +1000,12 @@
                                 <span class="payment-option-price" id="partialOptionPrice">$0</span>
                             </div>
                             <div class="payment-option-subtitle">
-                                Use <span id="partialCreditsToUse">0</span> hrs credits + $<span
-                                    id="partialCashDue">0</span> on arrival
+                                Use <span id="partialCreditsToUse">0</span> hrs credits + $<span id="partialCashDue">0</span> on arrival
                             </div>
                         </div>
                     </div>
                 </div>
-
+                
                 <!-- Cash on Arrival Option -->
                 <div id="arrivalPaymentOption" class="payment-option selected" onclick="selectPaymentMethod('arrival')">
                     <div class="payment-option-content">
@@ -1875,9 +1020,9 @@
                     </div>
                 </div>
             </div>
-
+            
             <input type="hidden" id="selectedPaymentMethod" value="arrival">
-
+            
             <div class="modal-buttons">
                 <button id="confirmCancel" class="modal-btn modal-btn-cancel" data-i18n="cancel">Cancel</button>
                 <button id="confirmSubmit" class="modal-btn modal-btn-confirm" data-i18n="confirm">Confirm</button>
@@ -1885,790 +1030,755 @@
         </div>
     </div>
 
-    <script>
-        // ============================================
-        // CONFIGURATION & CONSTANTS
-        // ============================================
-        const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbySlkS8Yb3ACIfh5izbul6FfwTxgzrWg4_SnEMHsC21JyiaC1V9fak4GQFP4w3FvyjYPw/exec';
-        const AUTO_REFRESH_INTERVAL = 30000;
-        // Dynamic Pricing Configuration
-        const PRICING = {
-            WEEKDAY_OFFPEAK: 13,  // Weekdays 8am-5pm
-            WEEKDAY_PEAK: 15,     // Weekdays 5pm-10pm
-            WEEKEND: 15,          // Weekends all day
-            PEAK_START_HOUR: 17   // 5pm = hour 17
-        };
+<script>
+    // ============================================
+    // CONFIGURATION & CONSTANTS
+    // ============================================
+    const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbySlkS8Yb3ACIfh5izbul6FfwTxgzrWg4_SnEMHsC21JyiaC1V9fak4GQFP4w3FvyjYPw/exec';
+    const AUTO_REFRESH_INTERVAL = 30000;
+    // Dynamic Pricing Configuration
+const PRICING = {
+    WEEKDAY_OFFPEAK: 13,  // Weekdays 8am-5pm
+    WEEKDAY_PEAK: 15,     // Weekdays 5pm-10pm
+    WEEKEND: 15,          // Weekends all day
+    PEAK_START_HOUR: 17   // 5pm = hour 17
+};
 
-        /**
-         * Calculate dynamic price based on date, time, duration, courts
-         */
-        function calculateDynamicPrice(dateStr, startTime, hours, courts) {
-            const bookingDate = new Date(dateStr);
-            const startHour = parseInt(String(startTime).split(':')[0]);
-            const dayOfWeek = bookingDate.getDay(); // 0 = Sunday, 6 = Saturday
-            const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
-
-            let totalPrice = 0;
-
-            for (let h = 0; h < hours; h++) {
-                const slotHour = startHour + h;
-                let rate;
-
-                if (isWeekend) {
-                    rate = PRICING.WEEKEND;
-                } else if (slotHour >= PRICING.PEAK_START_HOUR) {
-                    rate = PRICING.WEEKDAY_PEAK;
-                } else {
-                    rate = PRICING.WEEKDAY_OFFPEAK;
-                }
-
-                totalPrice += rate * courts;
-            }
-
-            return totalPrice;
+/**
+ * Calculate dynamic price based on date, time, duration, courts
+ */
+function calculateDynamicPrice(dateStr, startTime, hours, courts) {
+    const bookingDate = new Date(dateStr);
+    const startHour = parseInt(String(startTime).split(':')[0]);
+    const dayOfWeek = bookingDate.getDay(); // 0 = Sunday, 6 = Saturday
+    const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+    
+    let totalPrice = 0;
+    
+    for (let h = 0; h < hours; h++) {
+        const slotHour = startHour + h;
+        let rate;
+        
+        if (isWeekend) {
+            rate = PRICING.WEEKEND;
+        } else if (slotHour >= PRICING.PEAK_START_HOUR) {
+            rate = PRICING.WEEKDAY_PEAK;
+        } else {
+            rate = PRICING.WEEKDAY_OFFPEAK;
         }
+        
+        totalPrice += rate * courts;
+    }
+    
+    return totalPrice;
+}
 
-        /**
-         * Calculate dynamic price based on date, time, duration, courts
-         */
-        function calculateCashDueForRemainingHours(dateStr, startTime, duration, courts, creditsUsed) {
-            const bookingDate = new Date(dateStr);
-            const startHour = parseInt(String(startTime).split(':')[0]);
-            const dayOfWeek = bookingDate.getDay(); // 0 = Sunday, 6 = Saturday
-            const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
-
-            const totalHours = duration * courts;
-            const remainingHours = totalHours - creditsUsed;
-
-            if (remainingHours <= 0) return 0;
-
-            // Build array of all court-hours in chronological order
-            const courtHours = [];
-
-            for (let h = 0; h < duration; h++) {
-                const slotHour = startHour + h;
-                let rate;
-
-                if (isWeekend) {
-                    rate = PRICING.WEEKEND; // $15
-                } else if (slotHour >= PRICING.PEAK_START_HOUR) {
-                    rate = PRICING.WEEKDAY_PEAK; // $15
-                } else {
-                    rate = PRICING.WEEKDAY_OFFPEAK; // $13
-                }
-
-                // Add one entry per court for this time slot
-                for (let c = 0; c < courts; c++) {
-                    courtHours.push({ slot: h, hour: slotHour, court: c, rate: rate });
-                }
-            }
-
-            // Credits cover the FIRST N court-hours
-            // Customer pays for the LAST (remainingHours) court-hours
-            const paidHours = courtHours.slice(-remainingHours);
-
-            let cashDue = 0;
-            for (const ch of paidHours) {
-                cashDue += ch.rate;
-            }
-
-            console.log('calculateCashDueForRemainingHours:');
-            console.log('  Total court-hours:', totalHours);
-            console.log('  Credits used:', creditsUsed);
-            console.log('  Remaining hours:', remainingHours);
-            console.log('  Paid by customer:', paidHours.map(ch => '$' + ch.rate));
-            console.log('  Cash due: $' + cashDue);
-
-            return cashDue;
+/**
+ * Calculate dynamic price based on date, time, duration, courts
+ */
+function calculateCashDueForRemainingHours(dateStr, startTime, duration, courts, creditsUsed) {
+    const bookingDate = new Date(dateStr);
+    const startHour = parseInt(String(startTime).split(':')[0]);
+    const dayOfWeek = bookingDate.getDay(); // 0 = Sunday, 6 = Saturday
+    const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+    
+    const totalHours = duration * courts;
+    const remainingHours = totalHours - creditsUsed;
+    
+    if (remainingHours <= 0) return 0;
+    
+    // Build array of all court-hours in chronological order
+    const courtHours = [];
+    
+    for (let h = 0; h < duration; h++) {
+        const slotHour = startHour + h;
+        let rate;
+        
+        if (isWeekend) {
+            rate = PRICING.WEEKEND; // $15
+        } else if (slotHour >= PRICING.PEAK_START_HOUR) {
+            rate = PRICING.WEEKDAY_PEAK; // $15
+        } else {
+            rate = PRICING.WEEKDAY_OFFPEAK; // $13
         }
-        /**
-         * Get rate label for display
-         */
-        function getRateLabel(dateStr, startTime) {
-            const bookingDate = new Date(dateStr);
-            const startHour = parseInt(String(startTime).split(':')[0]);
-            const dayOfWeek = bookingDate.getDay();
-            const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
-
-            if (isWeekend) {
-                return { en: 'Weekend Rate: $15/hr', km: 'តម្លៃចុងសប្តាហ៍: $15/ម៉ោង' };
-            } else if (startHour >= PRICING.PEAK_START_HOUR) {
-                return { en: 'Peak Rate: $15/hr', km: 'តម្លៃម៉ោងកំពូល: $15/ម៉ោង' };
-            }
-            return { en: 'Off-Peak Rate: $13/hr', km: 'តម្លៃម៉ោងធម្មតា: $13/ម៉ោង' };
+        
+        // Add one entry per court for this time slot
+        for (let c = 0; c < courts; c++) {
+            courtHours.push({ slot: h, hour: slotHour, court: c, rate: rate });
         }
-        let autoRefreshTimer = null;
-        let currentLang = 'en';
-        const availabilityCache = new Map();
-        const CACHE_DURATION = 30000;
+    }
+    
+    // Credits cover the FIRST N court-hours
+    // Customer pays for the LAST (remainingHours) court-hours
+    const paidHours = courtHours.slice(-remainingHours);
+    
+    let cashDue = 0;
+    for (const ch of paidHours) {
+        cashDue += ch.rate;
+    }
+    
+    console.log('calculateCashDueForRemainingHours:');
+    console.log('  Total court-hours:', totalHours);
+    console.log('  Credits used:', creditsUsed);
+    console.log('  Remaining hours:', remainingHours);
+    console.log('  Paid by customer:', paidHours.map(ch => '$' + ch.rate));
+    console.log('  Cash due: $' + cashDue);
+    
+    return cashDue;
+}
+/**
+ * Get rate label for display
+ */
+function getRateLabel(dateStr, startTime) {
+    const bookingDate = new Date(dateStr);
+    const startHour = parseInt(String(startTime).split(':')[0]);
+    const dayOfWeek = bookingDate.getDay();
+    const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+    
+    if (isWeekend) {
+        return { en: 'Weekend Rate: $15/hr', km: 'តម្លៃចុងសប្តាហ៍: $15/ម៉ោង' };
+    } else if (startHour >= PRICING.PEAK_START_HOUR) {
+        return { en: 'Peak Rate: $15/hr', km: 'តម្លៃម៉ោងកំពូល: $15/ម៉ោង' };
+    }
+    return { en: 'Off-Peak Rate: $13/hr', km: 'តម្លៃម៉ោងធម្មតា: $13/ម៉ោង' };
+}
+    let autoRefreshTimer = null;
+    let currentLang = 'en';
+    const availabilityCache = new Map();
+    const CACHE_DURATION = 30000;
 
-        // Credit system variables
-        let userCreditBalance = 0;
-        let selectedPaymentMethod = 'arrival';
+    // Credit system variables
+    let userCreditBalance = 0;
+    let selectedPaymentMethod = 'arrival';
 
-        const TIME_SLOTS = [
-            { value: '08:00', label: '8:00 AM' },
-            { value: '09:00', label: '9:00 AM' },
-            { value: '10:00', label: '10:00 AM' },
-            { value: '11:00', label: '11:00 AM' },
-            { value: '12:00', label: '12:00 PM' },
-            { value: '13:00', label: '1:00 PM' },
-            { value: '14:00', label: '2:00 PM' },
-            { value: '15:00', label: '3:00 PM' },
-            { value: '16:00', label: '4:00 PM' },
-            { value: '17:00', label: '5:00 PM' },
-            { value: '18:00', label: '6:00 PM' },
-            { value: '19:00', label: '7:00 PM' },
-            { value: '20:00', label: '8:00 PM' },
-            { value: '21:00', label: '9:00 PM' }
-        ];
+    const TIME_SLOTS = [
+        { value: '08:00', label: '8:00 AM' },
+        { value: '09:00', label: '9:00 AM' },
+        { value: '10:00', label: '10:00 AM' },
+        { value: '11:00', label: '11:00 AM' },
+        { value: '12:00', label: '12:00 PM' },
+        { value: '13:00', label: '1:00 PM' },
+        { value: '14:00', label: '2:00 PM' },
+        { value: '15:00', label: '3:00 PM' },
+        { value: '16:00', label: '4:00 PM' },
+        { value: '17:00', label: '5:00 PM' },
+        { value: '18:00', label: '6:00 PM' },
+        { value: '19:00', label: '7:00 PM' },
+        { value: '20:00', label: '8:00 PM' },
+        { value: '21:00', label: '9:00 PM' }
+    ];
 
-        // ============================================
-        // TRANSLATIONS
-        // ============================================
-        const translations = {
-            en: {
-                title: 'TK PICKLEBALL',
-                subtitle: 'Book your court in seconds',
-                fullName: 'Name',
-                namePlaceholder: 'Enter your name',
-                phoneNumber: 'Phone',
-                phonePlaceholder: '012-345-6789',
-                date: 'Date',
-                today: 'Today',
-                tomorrow: 'Tomorrow',
-                nextWeek: 'Next Week',
-                duration: 'Duration',
-                hours: 'Hour(s)',
-                courts: 'Courts',
-                selectCourts: 'Select courts',
-                court: 'Court',
-                startTime: 'Select Time',
-                selectFirst: 'Select date, duration, and courts first.',
-                hideFull: 'Hide full slots',
-                checking: 'Checking availability...',
-                totalAmount: 'Total Amount',
-                payOnArrival: '💵 Pay on arrival',
-                location: 'TK Pickleball Courts',
-                locationDetails: 'Open daily 8:00 AM - 10:00 PM',
-                confirmBooking: '🏓 Confirm Booking',
-                processing: 'Processing your booking...',
-                confirmTitle: 'Confirm Booking',
-                cancel: 'Cancel',
-                confirm: 'Confirm',
-                courtsAvailable: 'open',
-                full: 'Full',
-                noSlots: 'No available time slots. Try a different date or fewer courts.',
-                errorTelegram: 'Error: Please open this app from Telegram.',
-                errorFillFields: 'Please fill in all fields and select a time',
-                successBooked: 'Booking confirmed! See you at the court! 🎉',
-                successBookedCredits: 'Booking confirmed! Credits applied. See you! 🎉',
-                errorDoubleBooked: 'This slot was just booked. Please select another time.',
-                errorBookingFailed: 'Booking failed. Please try again.',
-                errorConnection: 'Connection error. Please check your internet.',
-                modalDate: 'Date',
-                modalTime: 'Time',
-                modalDuration: 'Duration',
-                modalCourts: 'Courts',
-                modalName: 'Name',
-                modalPhone: 'Phone',
-                modalTotal: 'Total',
-                hour: 'hour',
-                pastTimeError: 'This time slot has passed.',
-                noSlotsToday: 'No more slots today. Try tomorrow!',
-                insufficientCredits: 'Not enough credits. Need {{needed}} hrs, have {{have}} hrs.'
-            },
-            km: {
-                title: 'TK PICKLEBALL',
-                subtitle: 'កក់ទីលានរបស់អ្នកក្នុងពេលប៉ុន្មានវិនាទី',
-                fullName: 'ឈ្មោះ',
-                namePlaceholder: 'បញ្ចូលឈ្មោះរបស់អ្នក',
-                phoneNumber: 'ទូរស័ព្ទ',
-                phonePlaceholder: '០១២-៣៤៥-៦៧៨៩',
-                date: 'កាលបរិច្ឆេទ',
-                today: 'ថ្ងៃនេះ',
-                tomorrow: 'ថ្ងៃស្អែក',
-                nextWeek: 'សប្តាហ៍ក្រោយ',
-                duration: 'រយៈពេល',
-                hours: 'ម៉ោង',
-                courts: 'ទីលាន',
-                selectCourts: 'ជ្រើសរើសទីលាន',
-                court: 'ទីលាន',
-                startTime: 'ជ្រើសរើសពេលវេលា',
-                selectFirst: 'សូមជ្រើសរើសកាលបរិច្ឆេទ រយៈពេល និងទីលានសិន។',
-                hideFull: 'លាក់ទីលានពេញ',
-                checking: 'កំពុងពិនិត្យ...',
-                totalAmount: 'ចំនួនសរុប',
-                payOnArrival: '💵 បង់នៅពេលមកដល់',
-                location: 'ទីលាន TK Pickleball',
-                locationDetails: 'បើកប្រចាំថ្ងៃ ម៉ោង ៨ព្រឹក - ១០យប់',
-                confirmBooking: '🏓 បញ្ជាក់ការកក់',
-                processing: 'កំពុងដំណើរការ...',
-                confirmTitle: 'បញ្ជាក់ការកក់',
-                cancel: 'បោះបង់',
-                confirm: 'បញ្ជាក់',
-                courtsAvailable: 'ទំនេរ',
-                full: 'ពេញ',
-                noSlots: 'គ្មានពេលវេលាទំនេរ។ សូមសាកល្បងថ្ងៃផ្សេង។',
-                errorTelegram: 'កំហុស៖ សូមបើកកម្មវិធីនេះពី Telegram។',
-                errorFillFields: 'សូមបំពេញវាលទាំងអស់ និងជ្រើសរើសពេលវេលា',
-                successBooked: 'ការកក់បានបញ្ជាក់! ជួបគ្នានៅទីលាន! 🎉',
-                successBookedCredits: 'ការកក់បានបញ្ជាក់! ឥណទានត្រូវបានអនុវត្ត។ 🎉',
-                errorDoubleBooked: 'ពេលវេលានេះទើបត្រូវបានកក់។ សូមជ្រើសរើសពេលផ្សេង។',
-                errorBookingFailed: 'ការកក់បរាជ័យ។ សូមសាកល្បងម្តងទៀត។',
-                errorConnection: 'កំហុសការតភ្ជាប់។ សូមពិនិត្យអ៊ីនធឺណិត។',
-                modalDate: 'កាលបរិច្ឆេទ',
-                modalTime: 'ពេលវេលា',
-                modalDuration: 'រយៈពេល',
-                modalCourts: 'ទីលាន',
-                modalName: 'ឈ្មោះ',
-                modalPhone: 'ទូរស័ព្ទ',
-                modalTotal: 'សរុប',
-                hour: 'ម៉ោង',
-                pastTimeError: 'ពេលវេលានេះបានកន្លងផុតហើយ។',
-                noSlotsToday: 'គ្មានពេលវេលាសម្រាប់ថ្ងៃនេះទៀតទេ។ សូមសាកល្បងថ្ងៃស្អែក!',
-                insufficientCredits: 'ឥណទានមិនគ្រប់គ្រាន់។ ត្រូវការ {{needed}} ម៉ោង មាន {{have}} ម៉ោង។'
-            }
-        };
-
-        // ============================================
-        // LANGUAGE SWITCHING
-        // ============================================
-        function switchLanguage(lang) {
-            currentLang = lang;
-            localStorage.setItem('preferredLang', lang);
-
-            document.querySelectorAll('.lang-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.lang === lang);
-            });
-
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (translations[lang][key]) {
-                    el.innerHTML = translations[lang][key];
-                }
-            });
-
-            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-                const key = el.getAttribute('data-i18n-placeholder');
-                if (translations[lang][key]) {
-                    el.placeholder = translations[lang][key];
-                }
-            });
+    // ============================================
+    // TRANSLATIONS
+    // ============================================
+    const translations = {
+        en: {
+            title: 'TK PICKLEBALL',
+            subtitle: 'Book your court in seconds',
+            fullName: 'Name',
+            namePlaceholder: 'Enter your name',
+            phoneNumber: 'Phone',
+            phonePlaceholder: '012-345-6789',
+            date: 'Date',
+            today: 'Today',
+            tomorrow: 'Tomorrow',
+            nextWeek: 'Next Week',
+            duration: 'Duration',
+            hours: 'Hour(s)',
+            courts: 'Courts',
+            selectCourts: 'Select courts',
+            court: 'Court',
+            startTime: 'Select Time',
+            selectFirst: 'Select date, duration, and courts first.',
+            hideFull: 'Hide full slots',
+            checking: 'Checking availability...',
+            totalAmount: 'Total Amount',
+            payOnArrival: '💵 Pay on arrival',
+            location: 'TK Pickleball Courts',
+            locationDetails: 'Open daily 8:00 AM - 10:00 PM',
+            confirmBooking: '🏓 Confirm Booking',
+            processing: 'Processing your booking...',
+            confirmTitle: 'Confirm Booking',
+            cancel: 'Cancel',
+            confirm: 'Confirm',
+            courtsAvailable: 'open',
+            full: 'Full',
+            noSlots: 'No available time slots. Try a different date or fewer courts.',
+            errorTelegram: 'Error: Please open this app from Telegram.',
+            errorFillFields: 'Please fill in all fields and select a time',
+            successBooked: 'Booking confirmed! See you at the court! 🎉',
+            successBookedCredits: 'Booking confirmed! Credits applied. See you! 🎉',
+            errorDoubleBooked: 'This slot was just booked. Please select another time.',
+            errorBookingFailed: 'Booking failed. Please try again.',
+            errorConnection: 'Connection error. Please check your internet.',
+            modalDate: 'Date',
+            modalTime: 'Time',
+            modalDuration: 'Duration',
+            modalCourts: 'Courts',
+            modalName: 'Name',
+            modalPhone: 'Phone',
+            modalTotal: 'Total',
+            hour: 'hour',
+            pastTimeError: 'This time slot has passed.',
+            noSlotsToday: 'No more slots today. Try tomorrow!',
+            insufficientCredits: 'Not enough credits. Need {{needed}} hrs, have {{have}} hrs.'
+        },
+        km: {
+            title: 'TK PICKLEBALL',
+            subtitle: 'កក់ទីលានរបស់អ្នកក្នុងពេលប៉ុន្មានវិនាទី',
+            fullName: 'ឈ្មោះ',
+            namePlaceholder: 'បញ្ចូលឈ្មោះរបស់អ្នក',
+            phoneNumber: 'ទូរស័ព្ទ',
+            phonePlaceholder: '០១២-៣៤៥-៦៧៨៩',
+            date: 'កាលបរិច្ឆេទ',
+            today: 'ថ្ងៃនេះ',
+            tomorrow: 'ថ្ងៃស្អែក',
+            nextWeek: 'សប្តាហ៍ក្រោយ',
+            duration: 'រយៈពេល',
+            hours: 'ម៉ោង',
+            courts: 'ទីលាន',
+            selectCourts: 'ជ្រើសរើសទីលាន',
+            court: 'ទីលាន',
+            startTime: 'ជ្រើសរើសពេលវេលា',
+            selectFirst: 'សូមជ្រើសរើសកាលបរិច្ឆេទ រយៈពេល និងទីលានសិន។',
+            hideFull: 'លាក់ទីលានពេញ',
+            checking: 'កំពុងពិនិត្យ...',
+            totalAmount: 'ចំនួនសរុប',
+            payOnArrival: '💵 បង់នៅពេលមកដល់',
+            location: 'ទីលាន TK Pickleball',
+            locationDetails: 'បើកប្រចាំថ្ងៃ ម៉ោង ៨ព្រឹក - ១០យប់',
+            confirmBooking: '🏓 បញ្ជាក់ការកក់',
+            processing: 'កំពុងដំណើរការ...',
+            confirmTitle: 'បញ្ជាក់ការកក់',
+            cancel: 'បោះបង់',
+            confirm: 'បញ្ជាក់',
+            courtsAvailable: 'ទំនេរ',
+            full: 'ពេញ',
+            noSlots: 'គ្មានពេលវេលាទំនេរ។ សូមសាកល្បងថ្ងៃផ្សេង។',
+            errorTelegram: 'កំហុស៖ សូមបើកកម្មវិធីនេះពី Telegram។',
+            errorFillFields: 'សូមបំពេញវាលទាំងអស់ និងជ្រើសរើសពេលវេលា',
+            successBooked: 'ការកក់បានបញ្ជាក់! ជួបគ្នានៅទីលាន! 🎉',
+            successBookedCredits: 'ការកក់បានបញ្ជាក់! ឥណទានត្រូវបានអនុវត្ត។ 🎉',
+            errorDoubleBooked: 'ពេលវេលានេះទើបត្រូវបានកក់។ សូមជ្រើសរើសពេលផ្សេង។',
+            errorBookingFailed: 'ការកក់បរាជ័យ។ សូមសាកល្បងម្តងទៀត។',
+            errorConnection: 'កំហុសការតភ្ជាប់។ សូមពិនិត្យអ៊ីនធឺណិត។',
+            modalDate: 'កាលបរិច្ឆេទ',
+            modalTime: 'ពេលវេលា',
+            modalDuration: 'រយៈពេល',
+            modalCourts: 'ទីលាន',
+            modalName: 'ឈ្មោះ',
+            modalPhone: 'ទូរស័ព្ទ',
+            modalTotal: 'សរុប',
+            hour: 'ម៉ោង',
+            pastTimeError: 'ពេលវេលានេះបានកន្លងផុតហើយ។',
+            noSlotsToday: 'គ្មានពេលវេលាសម្រាប់ថ្ងៃនេះទៀតទេ។ សូមសាកល្បងថ្ងៃស្អែក!',
+            insufficientCredits: 'ឥណទានមិនគ្រប់គ្រាន់។ ត្រូវការ {{needed}} ម៉ោង មាន {{have}} ម៉ោង។'
         }
+    };
 
-        // ============================================
-        // UTILITY FUNCTIONS
-        // ============================================
-        function showMessage(message, type = 'error') {
-            const messageBox = document.getElementById('messageBox');
-            messageBox.textContent = message;
-            messageBox.className = `message ${type} show`;
-            setTimeout(() => messageBox.classList.remove('show'), 5000);
+    // ============================================
+    // LANGUAGE SWITCHING
+    // ============================================
+    function switchLanguage(lang) {
+        currentLang = lang;
+        localStorage.setItem('preferredLang', lang);
+
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.lang === lang);
+        });
+
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (translations[lang][key]) {
+                el.innerHTML = translations[lang][key];
+            }
+        });
+
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-i18n-placeholder');
+            if (translations[lang][key]) {
+                el.placeholder = translations[lang][key];
+            }
+        });
+    }
+
+    // ============================================
+    // UTILITY FUNCTIONS
+    // ============================================
+    function showMessage(message, type = 'error') {
+        const messageBox = document.getElementById('messageBox');
+        messageBox.textContent = message;
+        messageBox.className = `message ${type} show`;
+        setTimeout(() => messageBox.classList.remove('show'), 5000);
+    }
+
+    function showLoading(show = true) {
+        const loadingBox = document.getElementById('loadingBox');
+        const form = document.getElementById('bookingForm');
+        const btnBook = document.getElementById('btnBook');
+        
+        if (show) {
+            loadingBox.classList.add('show');
+            form.style.display = 'none';
+            btnBook.disabled = true;
+        } else {
+            loadingBox.classList.remove('show');
+            form.style.display = 'block';
+            btnBook.disabled = false;
         }
+    }
 
-        function showLoading(show = true) {
-            const loadingBox = document.getElementById('loadingBox');
-            const form = document.getElementById('bookingForm');
-            const btnBook = document.getElementById('btnBook');
+    function formatDate(date) {
+        const d = new Date(date);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
 
-            if (show) {
-                loadingBox.classList.add('show');
-                form.style.display = 'none';
-                btnBook.disabled = true;
-            } else {
-                loadingBox.classList.remove('show');
-                form.style.display = 'block';
-                btnBook.disabled = false;
+    function getTelegramUserData() {
+        if (typeof Telegram !== 'undefined' && Telegram.WebApp && Telegram.WebApp.initDataUnsafe) {
+            const user = Telegram.WebApp.initDataUnsafe.user;
+            if (user) {
+                return {
+                    telegram_id: user.id,
+                    first_name: user.first_name || '',
+                    last_name: user.last_name || '',
+                    username: user.username || ''
+                };
             }
         }
+        return null;
+    }
 
-        function formatDate(date) {
-            const d = new Date(date);
-            const year = d.getFullYear();
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
-
-        function getTelegramUserData() {
-            if (typeof Telegram !== 'undefined' && Telegram.WebApp && Telegram.WebApp.initDataUnsafe) {
-                const user = Telegram.WebApp.initDataUnsafe.user;
-                if (user) {
-                    return {
-                        telegram_id: user.id,
-                        first_name: user.first_name || '',
-                        last_name: user.last_name || '',
-                        username: user.username || ''
-                    };
-                }
-            }
-            return null;
-        }
-
-        // ============================================
-        // CREDIT FUNCTIONS
-        // ============================================
-        async function checkUserCredits() {
-            const telegramUser = getTelegramUserData();
-            if (!telegramUser) {
-                console.log('No Telegram user data available');
-                return 0;
-            }
-
-            try {
-                const url = `${BACKEND_URL}?action=checkCredits&telegram_id=${telegramUser.telegram_id}`;
-                const response = await fetch(url);
-                const data = await response.json();
-
-                if (data.success && data.balance > 0) {
-                    userCreditBalance = data.balance;
-                    updateCreditBanner();
-                    console.log('✅ User has ' + userCreditBalance + ' credit hours');
-                    return data.balance;
-                }
-            } catch (e) {
-                console.log('Could not check credits:', e);
-            }
-
-            userCreditBalance = 0;
-            updateCreditBanner();
+    // ============================================
+    // CREDIT FUNCTIONS
+    // ============================================
+    async function checkUserCredits() {
+        const telegramUser = getTelegramUserData();
+        if (!telegramUser) {
+            console.log('No Telegram user data available');
             return 0;
         }
 
-        function updateCreditBanner() {
-            const banner = document.getElementById('creditBanner');
-            const balanceDisplay = document.getElementById('creditBalanceDisplay');
+        try {
+            const url = `${BACKEND_URL}?action=checkCredits&telegram_id=${telegramUser.telegram_id}`;
+            const response = await fetch(url);
+            const data = await response.json();
 
-            if (userCreditBalance > 0) {
-                banner.classList.add('show');
-                balanceDisplay.textContent = userCreditBalance;
-            } else {
-                banner.classList.remove('show');
+            if (data.success && data.balance > 0) {
+                userCreditBalance = data.balance;
+                updateCreditBanner();
+                console.log('✅ User has ' + userCreditBalance + ' credit hours');
+                return data.balance;
             }
+        } catch (e) {
+            console.log('Could not check credits:', e);
         }
 
-        function selectPaymentMethod(method) {
-            const duration = parseInt(document.getElementById('duration').value) || 1;
-            const courts = parseInt(document.getElementById('courts').value) || 1;
-            const totalHours = duration * courts;
+        userCreditBalance = 0;
+        updateCreditBanner();
+        return 0;
+    }
 
-            if (method === 'credits' && userCreditBalance < totalHours) {
-                showMessage(translations[currentLang].insufficientCredits
-                    .replace('{{needed}}', totalHours)
-                    .replace('{{have}}', userCreditBalance), 'error');
-                return;
-            }
+    function updateCreditBanner() {
+        const banner = document.getElementById('creditBanner');
+        const balanceDisplay = document.getElementById('creditBalanceDisplay');
 
-            selectedPaymentMethod = method;
-            document.getElementById('selectedPaymentMethod').value = method;
+        if (userCreditBalance > 0) {
+            banner.classList.add('show');
+            balanceDisplay.textContent = userCreditBalance;
+        } else {
+            banner.classList.remove('show');
+        }
+    }
 
-            document.querySelectorAll('.payment-option').forEach(opt => {
-                opt.classList.remove('selected');
-            });
+    function selectPaymentMethod(method) {
+        const duration = parseInt(document.getElementById('duration').value) || 1;
+        const courts = parseInt(document.getElementById('courts').value) || 1;
+        const totalHours = duration * courts;
 
-            if (method === 'credits') {
-                document.getElementById('creditPaymentOption').classList.add('selected');
-            } else if (method === 'partial') {
-                document.getElementById('partialPaymentOption').classList.add('selected');
-            } else {
-                document.getElementById('arrivalPaymentOption').classList.add('selected');
-            }
-
-            if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
-                Telegram.WebApp.HapticFeedback.impactOccurred('light');
-            }
+        if (method === 'credits' && userCreditBalance < totalHours) {
+            showMessage(translations[currentLang].insufficientCredits
+                .replace('{{needed}}', totalHours)
+                .replace('{{have}}', userCreditBalance), 'error');
+            return;
         }
 
-        // ============================================
-        // USER DATA FUNCTIONS
-        // ============================================
-        async function prefillUserData() {
-            const telegramUser = getTelegramUserData();
+        selectedPaymentMethod = method;
+        document.getElementById('selectedPaymentMethod').value = method;
 
-            if (telegramUser) {
-                const fullName = `${telegramUser.first_name} ${telegramUser.last_name || ''}`.trim();
-                if (fullName) {
-                    document.getElementById('name').value = fullName;
-                }
+        document.querySelectorAll('.payment-option').forEach(opt => {
+            opt.classList.remove('selected');
+        });
 
-                try {
-                    const url = `${BACKEND_URL}?action=getUserInfo&telegram_id=${telegramUser.telegram_id}`;
-                    const response = await fetch(url);
-                    const data = await response.json();
-
-                    if (data.success && data.phone) {
-                        document.getElementById('phone').value = data.phone;
-                        console.log('✅ Auto-filled phone from previous booking');
-                    }
-                } catch (e) {
-                    console.log('Could not prefill user data:', e);
-                }
-            }
+        if (method === 'credits') {
+            document.getElementById('creditPaymentOption').classList.add('selected');
+        } else if (method === 'partial') {
+            document.getElementById('partialPaymentOption').classList.add('selected');
+        } else {
+            document.getElementById('arrivalPaymentOption').classList.add('selected');
         }
 
-        // ============================================
-        // PRICE & SELECTION FUNCTIONS
-        // ============================================
-        function updatePrice() {
-            const duration = parseInt(document.getElementById('duration').value) || 1;
-            const courts = parseInt(document.getElementById('courts').value) || 1;
-            const totalHours = duration * courts;
-
-            const dateInput = document.getElementById('date');
-            const selectedTime = document.querySelector('.time-slot.selected');
-
-            let totalPrice;
-            let rateText = '@ $15/hour per court';
-
-            if (dateInput && dateInput.value && selectedTime) {
-                const time = selectedTime.dataset.time;
-                totalPrice = calculateDynamicPrice(dateInput.value, time, duration, courts);
-                const rateInfo = getRateLabel(dateInput.value, time);
-                rateText = rateInfo[currentLang] || rateInfo.en;
-            } else if (dateInput && dateInput.value) {
-                // No time selected yet - show range or default
-                totalPrice = duration * courts * PRICING.WEEKDAY_OFFPEAK; // Show minimum
-                rateText = currentLang === 'km' ? '$13-$15/ម៉ោង' : '$13-$15/hr';
-            } else {
-                totalPrice = duration * courts * PRICING.WEEKDAY_PEAK; // Default to peak
-            }
-
-            document.getElementById('totalPrice').textContent = totalPrice;
-            document.getElementById('totalHours').textContent = totalHours;
-            document.getElementById('priceBreakdown').textContent =
-                `${duration} ${duration === 1 ? 'hour' : 'hours'} × ${courts} ${courts === 1 ? 'court' : 'courts'}`;
-
-            // Update rate label if element exists
-            const rateLabel = document.getElementById('rateLabel');
-            if (rateLabel) {
-                rateLabel.textContent = rateText;
-            }
+        if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
+            Telegram.WebApp.HapticFeedback.impactOccurred('light');
         }
+    }
 
-        function selectDuration(value) {
-            document.getElementById('duration').value = value;
-
-            document.querySelectorAll('.duration-btn').forEach(btn => {
-                btn.classList.toggle('selected', btn.dataset.value === String(value));
-            });
-
-            if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
-                Telegram.WebApp.HapticFeedback.impactOccurred('light');
+    // ============================================
+    // USER DATA FUNCTIONS
+    // ============================================
+    async function prefillUserData() {
+        const telegramUser = getTelegramUserData();
+        
+        if (telegramUser) {
+            const fullName = `${telegramUser.first_name} ${telegramUser.last_name || ''}`.trim();
+            if (fullName) {
+                document.getElementById('name').value = fullName;
             }
-
-            updatePrice();
-            checkAndLoadAvailability();
-        }
-
-        function selectCourts(value) {
-            document.getElementById('courts').value = value;
-
-            document.querySelectorAll('.court-btn').forEach(btn => {
-                btn.classList.toggle('selected', btn.dataset.value === String(value));
-            });
-
-            if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
-                Telegram.WebApp.HapticFeedback.impactOccurred('light');
-            }
-
-            updatePrice();
-            checkAndLoadAvailability();
-        }
-
-        function setQuickDate(days) {
-            const dateInput = document.getElementById('date');
-            const today = new Date();
-            today.setDate(today.getDate() + days);
-            dateInput.value = formatDate(today);
-            dateInput.dispatchEvent(new Event('change'));
-        }
-
-        function addQuickRebookButton() {
-            const lastBooking = localStorage.getItem('lastBooking');
-
-            if (lastBooking) {
-                const data = JSON.parse(lastBooking);
-                const quickDatesDiv = document.querySelector('.quick-dates');
-
-                if (document.getElementById('rebookBtn')) return;
-
-                const rebookBtn = document.createElement('button');
-                rebookBtn.id = 'rebookBtn';
-                rebookBtn.type = 'button';
-                rebookBtn.className = 'quick-date-btn';
-                rebookBtn.style.background = 'linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%)';
-                rebookBtn.style.color = 'white';
-                rebookBtn.style.border = 'none';
-                rebookBtn.innerHTML = '🔄 Same as Last';
-
-                rebookBtn.onclick = () => {
-                    selectDuration(parseInt(data.duration));
-                    selectCourts(parseInt(data.courts));
-
-                    if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
-                        Telegram.WebApp.HapticFeedback.impactOccurred('light');
-                    }
-                };
-
-                quickDatesDiv.appendChild(rebookBtn);
-            }
-        }
-
-        // ============================================
-        // AVAILABILITY FUNCTIONS
-        // ============================================
-        let availabilityCheckTimeout = null;
-
-        function checkAndLoadAvailability() {
-            clearTimeout(availabilityCheckTimeout);
-
-            const loadingMsg = document.getElementById('timeLoadingMessage');
-            loadingMsg.style.display = 'block';
-
-            availabilityCheckTimeout = setTimeout(async () => {
-                await performAvailabilityCheck();
-            }, 500);
-        }
-
-        async function performAvailabilityCheck() {
-            const date = document.getElementById('date').value;
-            const duration = document.getElementById('duration').value;
-            const courts = document.getElementById('courts').value;
-
-            if (!date || !duration || !courts) {
-                document.getElementById('timeLoadingMessage').style.display = 'none';
-                return;
-            }
-
-            const cacheKey = `${date}_${duration}_${courts}`;
-
-            const cached = availabilityCache.get(cacheKey);
-            if (cached && (Date.now() - cached.timestamp < CACHE_DURATION)) {
-                console.log('✅ Using cached availability');
-                renderTimeSlots(cached.data);
-                document.getElementById('timeLoadingMessage').style.display = 'none';
-                return;
-            }
-
-            showSkeletonSlots();
-
+            
             try {
-                const url = `${BACKEND_URL}?action=checkAvailability&date=${date}&duration=${duration}&courts=${courts}`;
+                const url = `${BACKEND_URL}?action=getUserInfo&telegram_id=${telegramUser.telegram_id}`;
                 const response = await fetch(url);
                 const data = await response.json();
-
-                document.getElementById('timeLoadingMessage').style.display = 'none';
-
-                if (data.status === 'success') {
-                    availabilityCache.set(cacheKey, {
-                        timestamp: Date.now(),
-                        data: data.availability
-                    });
-
-                    console.log('✅ Cached availability for:', cacheKey);
-                    renderTimeSlots(data.availability);
-                } else {
-                    showMessage(data.error || translations[currentLang].errorConnection, 'error');
+                
+                if (data.success && data.phone) {
+                    document.getElementById('phone').value = data.phone;
+                    console.log('✅ Auto-filled phone from previous booking');
                 }
-            } catch (error) {
-                console.error('💥 Fetch error:', error);
-                document.getElementById('timeLoadingMessage').style.display = 'none';
-                showMessage(translations[currentLang].errorConnection, 'error');
+            } catch (e) {
+                console.log('Could not prefill user data:', e);
             }
         }
+    }
 
-        function renderTimeSlots(availability) {
-            const timeGrid = document.getElementById('timeGrid');
-            const requestedCourts = parseInt(document.getElementById('courts').value);
-            const selectedDate = document.getElementById('date').value;
+    // ============================================
+    // PRICE & SELECTION FUNCTIONS
+    // ============================================
+  function updatePrice() {
+    const duration = parseInt(document.getElementById('duration').value) || 1;
+    const courts = parseInt(document.getElementById('courts').value) || 1;
+    const totalHours = duration * courts;
+    
+    const dateInput = document.getElementById('date');
+    const selectedTime = document.querySelector('.time-slot.selected');
+    
+    let totalPrice;
+    let rateText = '@ $15/hour per court';
+    
+    if (dateInput && dateInput.value && selectedTime) {
+        const time = selectedTime.dataset.time;
+        totalPrice = calculateDynamicPrice(dateInput.value, time, duration, courts);
+        const rateInfo = getRateLabel(dateInput.value, time);
+        rateText = rateInfo[currentLang] || rateInfo.en;
+    } else if (dateInput && dateInput.value) {
+        // No time selected yet - show range or default
+        totalPrice = duration * courts * PRICING.WEEKDAY_OFFPEAK; // Show minimum
+        rateText = currentLang === 'km' ? '$13-$15/ម៉ោង' : '$13-$15/hr';
+    } else {
+        totalPrice = duration * courts * PRICING.WEEKDAY_PEAK; // Default to peak
+    }
+    
+    document.getElementById('totalPrice').textContent = totalPrice;
+    document.getElementById('totalHours').textContent = totalHours;
+    document.getElementById('priceBreakdown').textContent = 
+        `${duration} ${duration === 1 ? 'hour' : 'hours'} × ${courts} ${courts === 1 ? 'court' : 'courts'}`;
+    
+    // Update rate label if element exists
+    const rateLabel = document.getElementById('rateLabel');
+    if (rateLabel) {
+        rateLabel.textContent = rateText;
+    }
+}
 
-            timeGrid.innerHTML = '';
+    function selectDuration(value) {
+        document.getElementById('duration').value = value;
+        
+        document.querySelectorAll('.duration-btn').forEach(btn => {
+            btn.classList.toggle('selected', btn.dataset.value === String(value));
+        });
+        
+        if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
+            Telegram.WebApp.HapticFeedback.impactOccurred('light');
+        }
+        
+        updatePrice();
+        checkAndLoadAvailability();
+    }
 
-            if (!availability || Object.keys(availability).length === 0) {
-                timeGrid.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--gray);">${translations[currentLang].noSlots}</p>`;
-                document.getElementById('availableCount').textContent = '0 available';
+    function selectCourts(value) {
+        document.getElementById('courts').value = value;
+        
+        document.querySelectorAll('.court-btn').forEach(btn => {
+            btn.classList.toggle('selected', btn.dataset.value === String(value));
+        });
+        
+        if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
+            Telegram.WebApp.HapticFeedback.impactOccurred('light');
+        }
+        
+        updatePrice();
+        checkAndLoadAvailability();
+    }
+
+    function setQuickDate(days) {
+        const dateInput = document.getElementById('date');
+        const today = new Date();
+        today.setDate(today.getDate() + days);
+        dateInput.value = formatDate(today);
+        dateInput.dispatchEvent(new Event('change'));
+    }
+
+    function addQuickRebookButton() {
+        const lastBooking = localStorage.getItem('lastBooking');
+        
+        if (lastBooking) {
+            const data = JSON.parse(lastBooking);
+            const quickDatesDiv = document.querySelector('.quick-dates');
+            
+            if (document.getElementById('rebookBtn')) return;
+            
+            const rebookBtn = document.createElement('button');
+            rebookBtn.id = 'rebookBtn';
+            rebookBtn.type = 'button';
+            rebookBtn.className = 'quick-date-btn';
+            rebookBtn.style.background = 'linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%)';
+            rebookBtn.style.color = 'white';
+            rebookBtn.style.border = 'none';
+            rebookBtn.innerHTML = '🔄 Same as Last';
+            
+            rebookBtn.onclick = () => {
+                selectDuration(parseInt(data.duration));
+                selectCourts(parseInt(data.courts));
+                
+                if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
+                    Telegram.WebApp.HapticFeedback.impactOccurred('light');
+                }
+            };
+            
+            quickDatesDiv.appendChild(rebookBtn);
+        }
+    }
+
+    // ============================================
+    // AVAILABILITY FUNCTIONS
+    // ============================================
+    let availabilityCheckTimeout = null;
+
+    function checkAndLoadAvailability() {
+        clearTimeout(availabilityCheckTimeout);
+        
+        const loadingMsg = document.getElementById('timeLoadingMessage');
+        loadingMsg.style.display = 'block';
+        
+        availabilityCheckTimeout = setTimeout(async () => {
+            await performAvailabilityCheck();
+        }, 500);
+    }
+
+    async function performAvailabilityCheck() {
+        const date = document.getElementById('date').value;
+        const duration = document.getElementById('duration').value;
+        const courts = document.getElementById('courts').value;
+
+        if (!date || !duration || !courts) {
+            document.getElementById('timeLoadingMessage').style.display = 'none';
+            return;
+        }
+
+        const cacheKey = `${date}_${duration}_${courts}`;
+        
+        const cached = availabilityCache.get(cacheKey);
+        if (cached && (Date.now() - cached.timestamp < CACHE_DURATION)) {
+            console.log('✅ Using cached availability');
+            renderTimeSlots(cached.data);
+            document.getElementById('timeLoadingMessage').style.display = 'none';
+            return;
+        }
+
+        showSkeletonSlots();
+
+        try {
+            const url = `${BACKEND_URL}?action=checkAvailability&date=${date}&duration=${duration}&courts=${courts}`;
+            const response = await fetch(url);
+            const data = await response.json();
+
+            document.getElementById('timeLoadingMessage').style.display = 'none';
+
+            if (data.status === 'success') {
+                availabilityCache.set(cacheKey, {
+                    timestamp: Date.now(),
+                    data: data.availability
+                });
+                
+                console.log('✅ Cached availability for:', cacheKey);
+                renderTimeSlots(data.availability);
+            } else {
+                showMessage(data.error || translations[currentLang].errorConnection, 'error');
+            }
+        } catch (error) {
+            console.error('💥 Fetch error:', error);
+            document.getElementById('timeLoadingMessage').style.display = 'none';
+            showMessage(translations[currentLang].errorConnection, 'error');
+        }
+    }
+
+    function renderTimeSlots(availability) {
+        const timeGrid = document.getElementById('timeGrid');
+        const requestedCourts = parseInt(document.getElementById('courts').value);
+        const selectedDate = document.getElementById('date').value;
+        
+        timeGrid.innerHTML = '';
+
+        if (!availability || Object.keys(availability).length === 0) {
+            timeGrid.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--gray);">${translations[currentLang].noSlots}</p>`;
+            document.getElementById('availableCount').textContent = '0 available';
+            return;
+        }
+
+        const now = new Date();
+        const todayStr = formatDate(now);
+        const isToday = (selectedDate === todayStr);
+        const currentHour = now.getHours();
+
+        let hasAnySlots = false;
+        let availableSlotCount = 0;
+
+        TIME_SLOTS.forEach(slot => {
+            const slotHour = parseInt(slot.value.split(':')[0]);
+            const availableCourts = availability[slot.value] ?? 0;
+            
+            const isPastSlot = isToday && slotHour <= currentHour;
+            if (isPastSlot) {
                 return;
             }
+            
+            const isAvailable = availableCourts >= requestedCourts;
+            hasAnySlots = true;
+            if (isAvailable) availableSlotCount++;
 
-            const now = new Date();
-            const todayStr = formatDate(now);
-            const isToday = (selectedDate === todayStr);
-            const currentHour = now.getHours();
+            const slotDiv = document.createElement('div');
+            
+            let slotClass = 'time-slot';
+            if (!isAvailable) {
+                slotClass += ' unavailable';
+            } else if (availableCourts === requestedCourts) {
+                slotClass += ' available almost-full';
+            } else if (availableCourts > requestedCourts + 2) {
+                slotClass += ' available plenty';
+            } else {
+                slotClass += ' available';
+            }
+            
+            slotDiv.className = slotClass;
+            slotDiv.dataset.time = slot.value;
 
-            let hasAnySlots = false;
-            let availableSlotCount = 0;
+            const courtsText = isAvailable 
+                ? (availableCourts > requestedCourts + 2 ? `✓ ${availableCourts} ${translations[currentLang].courtsAvailable}` :
+                   availableCourts === requestedCourts ? `! ${availableCourts} left` :
+                   `${availableCourts} ${translations[currentLang].courtsAvailable}`)
+                : (availableCourts > 0 ? `${availableCourts} ${translations[currentLang].courtsAvailable}` : `● ${translations[currentLang].full}`);
 
-            TIME_SLOTS.forEach(slot => {
-                const slotHour = parseInt(slot.value.split(':')[0]);
-                const availableCourts = availability[slot.value] ?? 0;
-
-                const isPastSlot = isToday && slotHour <= currentHour;
-                if (isPastSlot) {
-                    return;
-                }
-
-                const isAvailable = availableCourts >= requestedCourts;
-                hasAnySlots = true;
-                if (isAvailable) availableSlotCount++;
-
-                const slotDiv = document.createElement('div');
-
-                let slotClass = 'time-slot';
-                if (!isAvailable) {
-                    slotClass += ' unavailable';
-                } else if (availableCourts === requestedCourts) {
-                    slotClass += ' available almost-full';
-                } else if (availableCourts > requestedCourts + 2) {
-                    slotClass += ' available plenty';
-                } else {
-                    slotClass += ' available';
-                }
-
-                slotDiv.className = slotClass;
-                slotDiv.dataset.time = slot.value;
-
-                const courtsText = isAvailable
-                    ? (availableCourts > requestedCourts + 2 ? `✓ ${availableCourts} ${translations[currentLang].courtsAvailable}` :
-                        availableCourts === requestedCourts ? `! ${availableCourts} left` :
-                            `${availableCourts} ${translations[currentLang].courtsAvailable}`)
-                    : (availableCourts > 0 ? `${availableCourts} ${translations[currentLang].courtsAvailable}` : `● ${translations[currentLang].full}`);
-
-                slotDiv.innerHTML = `
+            slotDiv.innerHTML = `
                 <div class="time">${slot.label}</div>
                 <div class="courts-info">${courtsText}</div>
             `;
 
-                if (isAvailable) {
-                    slotDiv.addEventListener('click', () => selectTimeSlot(slot.value));
-                }
-
-                timeGrid.appendChild(slotDiv);
-            });
-
-            document.getElementById('availableCount').textContent = `${availableSlotCount} available`;
-
-            // Also update the time slider pills in the visual court arena
-            updateTimeSliderPills(availability, isToday, currentHour, requestedCourts);
-
-            if (!hasAnySlots) {
-                const message = isToday ? translations[currentLang].noSlotsToday : translations[currentLang].noSlots;
-                timeGrid.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--gray);">${message}</p>`;
+            if (isAvailable) {
+                slotDiv.addEventListener('click', () => selectTimeSlot(slot.value));
             }
+
+            timeGrid.appendChild(slotDiv);
+        });
+
+        document.getElementById('availableCount').textContent = `${availableSlotCount} available`;
+
+        if (!hasAnySlots) {
+            const message = isToday ? translations[currentLang].noSlotsToday : translations[currentLang].noSlots;
+            timeGrid.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--gray);">${message}</p>`;
         }
+    }
 
-        // Update time slider pills in visual court arena based on availability
-        function updateTimeSliderPills(availability, isToday, currentHour, requestedCourts) {
-            document.querySelectorAll('.time-slot-pill').forEach(pill => {
-                const time = pill.dataset.time;
-                const slotHour = parseInt(time.split(':')[0]);
-                const availableCourts = availability[time] ?? 0;
-
-                const isPastSlot = isToday && slotHour <= currentHour;
-                const isAvailable = availableCourts >= requestedCourts && !isPastSlot;
-
-                // Remove previous state classes
-                pill.classList.remove('unavailable', 'almost-full', 'plenty');
-
-                if (isPastSlot || !isAvailable) {
-                    pill.classList.add('unavailable');
-                } else if (availableCourts === requestedCourts) {
-                    pill.classList.add('almost-full');
-                } else if (availableCourts > requestedCourts + 2) {
-                    pill.classList.add('plenty');
-                }
-
-                // Don't allow selection of unavailable pills
-                if (isPastSlot || !isAvailable) {
-                    pill.style.pointerEvents = 'none';
-                    pill.style.opacity = '0.4';
-                } else {
-                    pill.style.pointerEvents = 'auto';
-                    pill.style.opacity = '1';
-                }
-            });
-        }
-
-        function showSkeletonSlots() {
-            const timeGrid = document.getElementById('timeGrid');
-            timeGrid.innerHTML = '';
-
-            for (let i = 0; i < 12; i++) {
-                const skeleton = document.createElement('div');
-                skeleton.className = 'time-slot skeleton';
-                skeleton.innerHTML = `
+    function showSkeletonSlots() {
+        const timeGrid = document.getElementById('timeGrid');
+        timeGrid.innerHTML = '';
+        
+        for (let i = 0; i < 12; i++) {
+            const skeleton = document.createElement('div');
+            skeleton.className = 'time-slot skeleton';
+            skeleton.innerHTML = `
                 <div class="time" style="background: #e0e0e0; border-radius: 4px; height: 18px; width: 60%; margin: 0 auto;"></div>
                 <div class="courts-info" style="background: #e0e0e0; border-radius: 4px; height: 12px; width: 70%; margin: 6px auto 0;"></div>
             `;
-                timeGrid.appendChild(skeleton);
-            }
+            timeGrid.appendChild(skeleton);
+        }
+    }
+
+   function selectTimeSlot(time) {
+    if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
+        Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+    }
+    
+    document.querySelectorAll('.time-slot').forEach(slot => {
+        slot.classList.remove('selected');
+    });
+
+    const selectedSlot = document.querySelector(`[data-time="${time}"]`);
+    if (selectedSlot) {
+        selectedSlot.classList.add('selected');
+    }
+
+    document.getElementById('selectedTime').value = time;
+    document.getElementById('btnBook').disabled = false;
+    
+    // Update price based on selected time (for dynamic pricing)
+    updatePrice();
+}
+
+    // ============================================
+    // FORM SUBMISSION & BOOKING
+    // ============================================
+    function showConfirmationModal() {
+        const name = document.getElementById('name').value;
+        const phone = document.getElementById('phone').value;
+        const date = document.getElementById('date').value;
+        const time = document.getElementById('selectedTime').value;
+        const duration = parseInt(document.getElementById('duration').value);
+        const courts = parseInt(document.getElementById('courts').value);
+        const totalPrice = calculateDynamicPrice(date, time, duration, courts);
+document.getElementById('totalPrice').textContent = totalPrice;
+        const totalHours = duration * courts;
+
+        if (!name || !phone || !date || !time || !duration || !courts) {
+            showMessage(translations[currentLang].errorFillFields, 'error');
+            return false;
         }
 
-        function selectTimeSlot(time) {
-            if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
-                Telegram.WebApp.HapticFeedback.impactOccurred('medium');
-            }
-
-            document.querySelectorAll('.time-slot').forEach(slot => {
-                slot.classList.remove('selected');
-            });
-
-            const selectedSlot = document.querySelector(`[data-time="${time}"]`);
-            if (selectedSlot) {
-                selectedSlot.classList.add('selected');
-            }
-
-            document.getElementById('selectedTime').value = time;
-            document.getElementById('btnBook').disabled = false;
-
-            // Update price based on selected time (for dynamic pricing)
-            updatePrice();
-        }
-
-        // ============================================
-        // FORM SUBMISSION & BOOKING
-        // ============================================
-        function showConfirmationModal() {
-            const name = document.getElementById('name').value;
-            const phone = document.getElementById('phone').value;
-            const date = document.getElementById('date').value;
-            const time = document.getElementById('selectedTime').value;
-            const duration = parseInt(document.getElementById('duration').value);
-            const courts = parseInt(document.getElementById('courts').value);
-            const totalPrice = calculateDynamicPrice(date, time, duration, courts);
-            document.getElementById('totalPrice').textContent = totalPrice;
-            const totalHours = duration * courts;
-
-            if (!name || !phone || !date || !time || !duration || !courts) {
-                showMessage(translations[currentLang].errorFillFields, 'error');
+        const now = new Date();
+        const todayStr = formatDate(now);
+        const isToday = (date === todayStr);
+        
+        if (isToday) {
+            const selectedHour = parseInt(time.split(':')[0]);
+            const currentHour = now.getHours();
+            
+            if (selectedHour <= currentHour) {
+                showMessage('⚠️ ' + translations[currentLang].pastTimeError, 'error');
+                availabilityCache.clear();
+                checkAndLoadAvailability();
                 return false;
             }
+        }
 
-            const now = new Date();
-            const todayStr = formatDate(now);
-            const isToday = (date === todayStr);
+        if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
+            Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+        }
 
-            if (isToday) {
-                const selectedHour = parseInt(time.split(':')[0]);
-                const currentHour = now.getHours();
+        const timeLabel = TIME_SLOTS.find(slot => slot.value === time)?.label || time;
+        const durationText = duration === 1 ? translations[currentLang].hour : translations[currentLang].hours;
 
-                if (selectedHour <= currentHour) {
-                    showMessage('⚠️ ' + translations[currentLang].pastTimeError, 'error');
-                    availabilityCache.clear();
-                    checkAndLoadAvailability();
-                    return false;
-                }
-            }
-
-            if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
-                Telegram.WebApp.HapticFeedback.notificationOccurred('success');
-            }
-
-            const timeLabel = TIME_SLOTS.find(slot => slot.value === time)?.label || time;
-            const durationText = duration === 1 ? translations[currentLang].hour : translations[currentLang].hours;
-
-            const confirmDetails = document.getElementById('confirmDetails');
-            confirmDetails.innerHTML = `
+        const confirmDetails = document.getElementById('confirmDetails');
+        confirmDetails.innerHTML = `
             <strong>${translations[currentLang].modalDate}:</strong> ${date}<br>
             <strong>${translations[currentLang].modalTime}:</strong> ${timeLabel}<br>
             <strong>${translations[currentLang].modalDuration}:</strong> ${duration} ${durationText}<br>
@@ -2677,494 +1787,355 @@
             <strong>${translations[currentLang].modalPhone}:</strong> ${phone}
         `;
 
-            // Setup payment options
-            const creditOption = document.getElementById('creditPaymentOption');
-            const partialOption = document.getElementById('partialPaymentOption');
-            const arrivalOption = document.getElementById('arrivalPaymentOption');
+        // Setup payment options
+        const creditOption = document.getElementById('creditPaymentOption');
+        const partialOption = document.getElementById('partialPaymentOption');
+        const arrivalOption = document.getElementById('arrivalPaymentOption');
+        
+        const creditsToUseSpan = document.getElementById('creditsToUse');
+        const creditsRemainingSpan = document.getElementById('creditsRemaining');
+        const arrivalPriceSpan = document.getElementById('arrivalPrice');
+        const creditOptionPrice = document.getElementById('creditOptionPrice');
+        
+        const partialCreditsSpan = document.getElementById('partialCreditsToUse');
+        const partialCashSpan = document.getElementById('partialCashDue');
+        const partialOptionPrice = document.getElementById('partialOptionPrice');
 
-            const creditsToUseSpan = document.getElementById('creditsToUse');
-            const creditsRemainingSpan = document.getElementById('creditsRemaining');
-            const arrivalPriceSpan = document.getElementById('arrivalPrice');
-            const creditOptionPrice = document.getElementById('creditOptionPrice');
+        arrivalPriceSpan.textContent = totalPrice;
 
-            const partialCreditsSpan = document.getElementById('partialCreditsToUse');
-            const partialCashSpan = document.getElementById('partialCashDue');
-            const partialOptionPrice = document.getElementById('partialOptionPrice');
+        const hasEnoughCredits = userCreditBalance >= totalHours;
+        const hasPartialCredits = userCreditBalance > 0 && userCreditBalance < totalHours;
 
-            arrivalPriceSpan.textContent = totalPrice;
+        creditOption.style.display = 'none';
+        partialOption.style.display = 'none';
+        creditOption.classList.remove('selected', 'disabled');
+        partialOption.classList.remove('selected', 'disabled');
+        arrivalOption.classList.remove('selected');
 
-            const hasEnoughCredits = userCreditBalance >= totalHours;
-            const hasPartialCredits = userCreditBalance > 0 && userCreditBalance < totalHours;
-
+        if (hasEnoughCredits) {
+            creditOption.style.display = 'block';
+            creditsToUseSpan.textContent = totalHours;
+            creditsRemainingSpan.textContent = userCreditBalance - totalHours;
+            creditOptionPrice.textContent = 'FREE';
+            creditOption.onclick = () => selectPaymentMethod('credits');
+            partialOption.style.display = 'none';
+            selectPaymentMethod('credits');
+            
+        } else if (hasPartialCredits) {
+    creditOption.style.display = 'none';
+    partialOption.style.display = 'block';
+    const partialCreditsUsed = userCreditBalance;
+    const cashDue = calculateCashDueForRemainingHours(date, time, duration, courts, partialCreditsUsed);
+    
+    partialCreditsSpan.textContent = partialCreditsUsed;
+    partialCashSpan.textContent = cashDue;
+    partialOptionPrice.textContent = '$' + cashDue;
+    partialOption.onclick = () => selectPaymentMethod('partial');
+    selectPaymentMethod('partial');
+} else {
             creditOption.style.display = 'none';
             partialOption.style.display = 'none';
-            creditOption.classList.remove('selected', 'disabled');
-            partialOption.classList.remove('selected', 'disabled');
-            arrivalOption.classList.remove('selected');
-
-            if (hasEnoughCredits) {
-                creditOption.style.display = 'block';
-                creditsToUseSpan.textContent = totalHours;
-                creditsRemainingSpan.textContent = userCreditBalance - totalHours;
-                creditOptionPrice.textContent = 'FREE';
-                creditOption.onclick = () => selectPaymentMethod('credits');
-                partialOption.style.display = 'none';
-                selectPaymentMethod('credits');
-
-            } else if (hasPartialCredits) {
-                creditOption.style.display = 'none';
-                partialOption.style.display = 'block';
-                const partialCreditsUsed = userCreditBalance;
-                const cashDue = calculateCashDueForRemainingHours(date, time, duration, courts, partialCreditsUsed);
-
-                partialCreditsSpan.textContent = partialCreditsUsed;
-                partialCashSpan.textContent = cashDue;
-                partialOptionPrice.textContent = '$' + cashDue;
-                partialOption.onclick = () => selectPaymentMethod('partial');
-                selectPaymentMethod('partial');
-            } else {
-                creditOption.style.display = 'none';
-                partialOption.style.display = 'none';
-                selectPaymentMethod('arrival');
-            }
-
-            const modal = document.getElementById('confirmModal');
-            modal.style.display = 'flex';
-            return false;
+            selectPaymentMethod('arrival');
         }
 
-        function hideConfirmationModal() {
-            const modal = document.getElementById('confirmModal');
-            modal.style.display = 'none';
+        const modal = document.getElementById('confirmModal');
+        modal.style.display = 'flex';
+        return false;
+    }
+
+    function hideConfirmationModal() {
+        const modal = document.getElementById('confirmModal');
+        modal.style.display = 'none';
+    }
+
+    async function submitBooking() {
+        hideConfirmationModal();
+        
+        if (!navigator.onLine) {
+            showMessage('❌ No internet connection.', 'error');
+            return;
+        }
+        
+        showLoading(true);
+
+        const telegramUser = getTelegramUserData();
+        if (!telegramUser) {
+            showLoading(false);
+            showMessage(translations[currentLang].errorTelegram, 'error');
+            return;
         }
 
-        async function submitBooking() {
-            hideConfirmationModal();
+        const name = document.getElementById('name').value;
+        const phone = document.getElementById('phone').value;
+        const date = document.getElementById('date').value;
+        const time = document.getElementById('selectedTime').value;
+        const duration = document.getElementById('duration').value;
+        const courts = document.getElementById('courts').value;
+        const paymentMethod = document.getElementById('selectedPaymentMethod').value;
+        const totalHours = parseInt(duration) * parseInt(courts);
 
-            if (!navigator.onLine) {
-                showMessage('❌ No internet connection.', 'error');
-                return;
-            }
+        console.log('📤 Submitting booking:', {
+            name, phone, date, time, duration, courts,
+            telegram_id: telegramUser.telegram_id,
+            paymentMethod: paymentMethod
+        });
 
-            showLoading(true);
+        const formData = {
+            action: 'book',
+            name: name,
+            phone: phone,
+            date: date,
+            time: time,
+            duration: duration,
+            courts: courts,
+            telegram_id: telegramUser.telegram_id,
+            payment_method: paymentMethod,
+            source: 'telegram_miniapp'
+        };
 
-            const telegramUser = getTelegramUserData();
-            if (!telegramUser) {
-                showLoading(false);
-                showMessage(translations[currentLang].errorTelegram, 'error');
-                return;
-            }
+        if (paymentMethod === 'partial') {
+            formData.use_credits = 'true';
+        }
 
-            const name = document.getElementById('name').value;
-            const phone = document.getElementById('phone').value;
-            const date = document.getElementById('date').value;
-            const time = document.getElementById('selectedTime').value;
-            const duration = document.getElementById('duration').value;
-            const courts = document.getElementById('courts').value;
-            const paymentMethod = document.getElementById('selectedPaymentMethod').value;
-            const totalHours = parseInt(duration) * parseInt(courts);
+        try {
+            const params = new URLSearchParams(formData);
+            const url = `${BACKEND_URL}?${params.toString()}`;
+            
+            console.log('🌐 Booking URL:', url);
+            
+            const response = await fetch(url);
+            console.log('📡 Response status:', response.status);
+            
+            const data = await response.json();
+            console.log('📦 Response data:', data);
 
-            console.log('📤 Submitting booking:', {
-                name, phone, date, time, duration, courts,
-                telegram_id: telegramUser.telegram_id,
-                paymentMethod: paymentMethod
-            });
+            showLoading(false);
 
-            const formData = {
-                action: 'book',
-                name: name,
-                phone: phone,
-                date: date,
-                time: time,
-                duration: duration,
-                courts: courts,
-                telegram_id: telegramUser.telegram_id,
-                payment_method: paymentMethod,
-                source: 'telegram_miniapp'
-            };
-
-            if (paymentMethod === 'partial') {
-                formData.use_credits = 'true';
-            }
-
-            try {
-                const params = new URLSearchParams(formData);
-                const url = `${BACKEND_URL}?${params.toString()}`;
-
-                console.log('🌐 Booking URL:', url);
-
-                const response = await fetch(url);
-                console.log('📡 Response status:', response.status);
-
-                const data = await response.json();
-                console.log('📦 Response data:', data);
-
-                showLoading(false);
-
-                if (data.success === true || data.status === 'success') {
-                    if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
-                        Telegram.WebApp.HapticFeedback.notificationOccurred('success');
-                    }
-
-                    const lastBooking = {
-                        duration: duration,
-                        courts: courts,
-                        time: time
-                    };
-                    localStorage.setItem('lastBooking', JSON.stringify(lastBooking));
-                    console.log('💾 Saved last booking for quick rebook');
-
-                    availabilityCache.clear();
-                    console.log('🗑️ Cleared availability cache');
-
-                    if (data.creditsUsed) {
-                        userCreditBalance = data.newCreditBalance !== undefined ? data.newCreditBalance : (userCreditBalance - data.creditsUsed);
-                        updateCreditBanner();
-                    }
-
-                    let successMsg;
-                    if (paymentMethod === 'credits') {
-                        successMsg = translations[currentLang].successBookedCredits;
-                    } else if (paymentMethod === 'partial' && data.creditsUsed > 0) {
-                        const creditsUsed = data.creditsUsed;
-                        const cashDue = data.cashDue || ((totalHours - creditsUsed) * PRICING.WEEKDAY_PEAK);
-                        successMsg = `✅ Booking confirmed! ${creditsUsed} hrs credits used, $${cashDue} due on arrival. 🎉`;
-                    } else {
-                        successMsg = translations[currentLang].successBooked;
-                    }
-                    showMessage(successMsg, 'success');
-
-                    // Reset form
-                    document.getElementById('bookingForm').reset();
-                    document.getElementById('timeGrid').innerHTML = '';
-                    document.getElementById('selectedTime').value = '';
-                    document.getElementById('totalPrice').textContent = '13';
-                    document.getElementById('totalHours').textContent = '1';
-                    document.getElementById('priceBreakdown').textContent = '1 hour × 1 court';
-
-                    // Reset duration and courts buttons
-                    selectDuration(1);
-                    selectCourts(1);
-
-                    const today = new Date();
-                    document.getElementById('date').value = formatDate(today);
-
-                    setTimeout(() => {
-                        if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
-                            Telegram.WebApp.close();
-                        }
-                    }, 3000);
+            if (data.success === true || data.status === 'success') {
+                if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
+                    Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+                }
+                
+                const lastBooking = {
+                    duration: duration,
+                    courts: courts,
+                    time: time
+                };
+                localStorage.setItem('lastBooking', JSON.stringify(lastBooking));
+                console.log('💾 Saved last booking for quick rebook');
+                
+                availabilityCache.clear();
+                console.log('🗑️ Cleared availability cache');
+                
+                if (data.creditsUsed) {
+                    userCreditBalance = data.newCreditBalance !== undefined ? data.newCreditBalance : (userCreditBalance - data.creditsUsed);
+                    updateCreditBanner();
+                }
+                
+                let successMsg;
+                if (paymentMethod === 'credits') {
+                    successMsg = translations[currentLang].successBookedCredits;
+                } else if (paymentMethod === 'partial' && data.creditsUsed > 0) {
+                    const creditsUsed = data.creditsUsed;
+                    const cashDue = data.cashDue || ((totalHours - creditsUsed) * PRICING.WEEKDAY_PEAK);
+                    successMsg = `✅ Booking confirmed! ${creditsUsed} hrs credits used, $${cashDue} due on arrival. 🎉`;
                 } else {
-                    const errorMsg = data.error || data.message || translations[currentLang].errorBookingFailed;
-                    console.error('❌ Booking error:', errorMsg);
-                    showMessage(errorMsg, 'error');
-
-                    if (errorMsg.includes('already booked') || errorMsg.includes('not available')) {
-                        availabilityCache.clear();
-                        checkAndLoadAvailability();
-                    }
+                    successMsg = translations[currentLang].successBooked;
                 }
-            } catch (error) {
-                showLoading(false);
-                console.error('💥 Network error:', error);
-                showMessage(translations[currentLang].errorConnection + ': ' + error.message, 'error');
-            }
-        }
-
-        // ============================================
-        // AUTO-REFRESH
-        // ============================================
-        let isTabVisible = true;
-        let visibilityListenerAdded = false;
-
-        function startAutoRefresh() {
-            stopAutoRefresh();
-
-            if (!visibilityListenerAdded) {
-                document.addEventListener('visibilitychange', () => {
-                    isTabVisible = !document.hidden;
-
-                    if (isTabVisible) {
-                        console.log('Tab visible - refreshing availability');
-                        availabilityCache.clear();
-                        checkAndLoadAvailability();
+                showMessage(successMsg, 'success');
+                
+                // Reset form
+                document.getElementById('bookingForm').reset();
+                document.getElementById('timeGrid').innerHTML = '';
+                document.getElementById('selectedTime').value = '';
+                document.getElementById('totalPrice').textContent = '13';
+                document.getElementById('totalHours').textContent = '1';
+                document.getElementById('priceBreakdown').textContent = '1 hour × 1 court';
+                
+                // Reset duration and courts buttons
+                selectDuration(1);
+                selectCourts(1);
+                
+                const today = new Date();
+                document.getElementById('date').value = formatDate(today);
+                
+                setTimeout(() => {
+                    if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
+                        Telegram.WebApp.close();
                     }
-                });
-                visibilityListenerAdded = true;
-            }
-
-            autoRefreshTimer = setInterval(() => {
-                if (!isTabVisible) {
-                    console.log('Tab hidden - skipping refresh');
-                    return;
-                }
-
-                const date = document.getElementById('date').value;
-                const duration = document.getElementById('duration').value;
-                const courts = document.getElementById('courts').value;
-
-                if (date && duration && courts) {
+                }, 3000);
+            } else {
+                const errorMsg = data.error || data.message || translations[currentLang].errorBookingFailed;
+                console.error('❌ Booking error:', errorMsg);
+                showMessage(errorMsg, 'error');
+                
+                if (errorMsg.includes('already booked') || errorMsg.includes('not available')) {
                     availabilityCache.clear();
                     checkAndLoadAvailability();
                 }
-            }, AUTO_REFRESH_INTERVAL);
-        }
-
-        function stopAutoRefresh() {
-            if (autoRefreshTimer) {
-                clearInterval(autoRefreshTimer);
-                autoRefreshTimer = null;
             }
+        } catch (error) {
+            showLoading(false);
+            console.error('💥 Network error:', error);
+            showMessage(translations[currentLang].errorConnection + ': ' + error.message, 'error');
         }
+    }
 
-        // ============================================
-        // EVENT LISTENERS
-        // ============================================
-        function setupEventListeners() {
-            // Language buttons
-            document.querySelectorAll('.lang-btn').forEach(btn => {
-                btn.addEventListener('click', () => switchLanguage(btn.dataset.lang));
-            });
+    // ============================================
+    // AUTO-REFRESH
+    // ============================================
+    let isTabVisible = true;
+    let visibilityListenerAdded = false;
 
-            // Quick date buttons
-            document.getElementById('btnToday').addEventListener('click', () => setQuickDate(0));
-            document.getElementById('btnTomorrow').addEventListener('click', () => setQuickDate(1));
-            document.getElementById('btnNextWeek').addEventListener('click', () => setQuickDate(7));
-
-            // Date change
-            document.getElementById('date').addEventListener('change', () => {
-                checkAndLoadAvailability();
-                startAutoRefresh();
-                updatePrice();  // Recalculate price for new date
-            });
-
-            // Duration buttons
-            document.querySelectorAll('.duration-btn').forEach(btn => {
-                btn.addEventListener('click', () => selectDuration(parseInt(btn.dataset.value)));
-            });
-
-            // Court buttons
-            document.querySelectorAll('.court-btn').forEach(btn => {
-                btn.addEventListener('click', () => selectCourts(parseInt(btn.dataset.value)));
-            });
-
-            // Form submission
-            document.getElementById('bookingForm').addEventListener('submit', (e) => {
-                e.preventDefault();
-                showConfirmationModal();
-            });
-
-            // Modal buttons
-            document.getElementById('confirmCancel').addEventListener('click', hideConfirmationModal);
-            document.getElementById('confirmSubmit').addEventListener('click', submitBooking);
-
-            // Modal backdrop click
-            document.getElementById('confirmModal').addEventListener('click', (e) => {
-                if (e.target.id === 'confirmModal') {
-                    hideConfirmationModal();
+    function startAutoRefresh() {
+        stopAutoRefresh();
+        
+        if (!visibilityListenerAdded) {
+            document.addEventListener('visibilitychange', () => {
+                isTabVisible = !document.hidden;
+                
+                if (isTabVisible) {
+                    console.log('Tab visible - refreshing availability');
+                    availabilityCache.clear();
+                    checkAndLoadAvailability();
                 }
             });
-
-            // Time slider pills in court venue
-            document.querySelectorAll('.time-slot-pill').forEach(pill => {
-                pill.addEventListener('click', () => {
-                    const time = pill.dataset.time;
-                    selectTimeSlotPill(time);
-                });
-            });
-
-            // Court tiles in 3D arena (for visual demonstration)
-            document.querySelectorAll('.court-tile').forEach(tile => {
-                tile.addEventListener('click', () => {
-                    const courtNum = tile.dataset.court;
-                    toggleCourtTileSelection(tile, courtNum);
-                });
-            });
+            visibilityListenerAdded = true;
         }
-
-        // ============================================
-        // VISUAL COURT ARENA FUNCTIONS
-        // ============================================
-        function selectTimeSlotPill(time) {
-            // Update pill selection UI
-            document.querySelectorAll('.time-slot-pill').forEach(pill => {
-                pill.classList.toggle('selected', pill.dataset.time === time);
-            });
-
-            // Set the hidden input directly (since old grid is hidden)
-            document.getElementById('selectedTime').value = time;
-
-            // Update price based on the selected time
-            updatePrice();
-
-            // Haptic feedback
-            if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
-                Telegram.WebApp.HapticFeedback.impactOccurred('light');
+        
+        autoRefreshTimer = setInterval(() => {
+            if (!isTabVisible) {
+                console.log('Tab hidden - skipping refresh');
+                return;
             }
-
-            // Scroll the selected pill into view
-            const selectedPill = document.querySelector('.time-slot-pill.selected');
-            if (selectedPill) {
-                selectedPill.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-            }
-
-            // Update court availability display for this time
-            updateCourtArenaForTime(time);
-        }
-
-        function updateCourtArenaForTime(time) {
-            // Get the current availability data if we have it
+            
             const date = document.getElementById('date').value;
             const duration = document.getElementById('duration').value;
             const courts = document.getElementById('courts').value;
-
-            if (!date) return;
-
-            const cacheKey = `${date}_${duration}_${courts}`;
-            const cached = availabilityCache.get(cacheKey);
-
-            if (cached && cached.data) {
-                const slotData = cached.data.find(slot => slot.time === time);
-                if (slotData) {
-                    updateCourtTilesAvailability(slotData.availableCourts || 8 - slotData.booked);
-                }
-            }
-        }
-
-        function updateCourtTilesAvailability(availableCourts) {
-            const tiles = document.querySelectorAll('.court-tile');
-            const bookedCount = 8 - availableCourts;
-
-            // Reset all tiles
-            tiles.forEach((tile, index) => {
-                tile.classList.remove('available', 'unavailable', 'selected');
-                const statusEl = tile.querySelector('.court-status');
-
-                // Mark some courts as booked based on availability
-                if (index < bookedCount) {
-                    tile.classList.add('unavailable');
-                    if (statusEl) statusEl.textContent = 'BOOKED';
-                } else {
-                    tile.classList.add('available');
-                    if (statusEl) statusEl.textContent = 'OPEN';
-                }
-            });
-        }
-
-        function toggleCourtTileSelection(tile, courtNum) {
-            if (tile.classList.contains('unavailable')) {
-                // Show feedback that court is booked
-                if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
-                    Telegram.WebApp.HapticFeedback.notificationOccurred('error');
-                }
-                return;
-            }
-
-            // Toggle selection
-            const wasSelected = tile.classList.contains('selected');
-
-            if (wasSelected) {
-                tile.classList.remove('selected');
-                tile.classList.add('available');
-                tile.querySelector('.court-status').textContent = 'OPEN';
-            } else {
-                tile.classList.remove('available');
-                tile.classList.add('selected');
-                tile.querySelector('.court-status').textContent = 'SELECTED';
-            }
-
-            // Haptic feedback
-            if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
-                Telegram.WebApp.HapticFeedback.impactOccurred('medium');
-            }
-
-            // Add ripple effect
-            tile.classList.add('ripple');
-            setTimeout(() => tile.classList.remove('ripple'), 600);
-
-            // Count selected courts and update hidden input
-            updateSelectedCourtsCount();
-        }
-
-        // Count selected court tiles and update the hidden input
-        function updateSelectedCourtsCount() {
-            const selectedTiles = document.querySelectorAll('.court-tile.selected');
-            const count = selectedTiles.length;
-
-            // Ensure at least 1 court is selected
-            const courtCount = Math.max(1, count);
-            document.getElementById('courts').value = courtCount;
-
-            // Update price display
-            updatePrice();
-
-            // Update the old selector buttons to match (for consistency)
-            document.querySelectorAll('.court-btn').forEach(btn => {
-                btn.classList.toggle('selected', btn.dataset.value === String(courtCount));
-            });
-        }
-
-        // ============================================
-        // INITIALIZATION
-        // ============================================
-        async function init() {
-            const savedLang = localStorage.getItem('preferredLang') || 'en';
-            switchLanguage(savedLang);
-
-            setupEventListeners();
-            prefillUserData();
-            addQuickRebookButton();
-
-            await checkUserCredits();
-
-            const today = new Date();
-            document.getElementById('date').value = formatDate(today);
-            document.getElementById('date').setAttribute('min', formatDate(today));
-
-            const maxDate = new Date();
-            maxDate.setDate(maxDate.getDate() + 30);
-            document.getElementById('date').setAttribute('max', formatDate(maxDate));
-
-            if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
-                Telegram.WebApp.ready();
-                Telegram.WebApp.expand();
-
-                if (Telegram.WebApp.themeParams) {
-                    document.body.style.setProperty('--tg-theme-bg-color', Telegram.WebApp.themeParams.bg_color || '#ffffff');
-                    document.body.style.setProperty('--tg-theme-text-color', Telegram.WebApp.themeParams.text_color || '#000000');
-                }
-            }
-
-            updatePrice();
-            checkAndLoadAvailability();
-            startAutoRefresh();
-
-            window.addEventListener('online', () => {
-                showMessage('✅ Back online! Refreshing...', 'success');
+            
+            if (date && duration && courts) {
                 availabilityCache.clear();
                 checkAndLoadAvailability();
-            });
+            }
+        }, AUTO_REFRESH_INTERVAL);
+    }
 
-            window.addEventListener('offline', () => {
-                showMessage('⚠️ No internet connection.', 'error');
-            });
-
-            console.log('TK Pickleball Booking System Initialized ✅');
+    function stopAutoRefresh() {
+        if (autoRefreshTimer) {
+            clearInterval(autoRefreshTimer);
+            autoRefreshTimer = null;
         }
+    }
 
-        // ============================================
-        // START THE APPLICATION
-        // ============================================
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
-        } else {
-            init();
-        }
-
-        window.addEventListener('beforeunload', () => {
-            stopAutoRefresh();
+    // ============================================
+    // EVENT LISTENERS
+    // ============================================
+    function setupEventListeners() {
+        // Language buttons
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', () => switchLanguage(btn.dataset.lang));
         });
-    </script>
-</body>
 
+        // Quick date buttons
+        document.getElementById('btnToday').addEventListener('click', () => setQuickDate(0));
+        document.getElementById('btnTomorrow').addEventListener('click', () => setQuickDate(1));
+        document.getElementById('btnNextWeek').addEventListener('click', () => setQuickDate(7));
+
+        // Date change
+        document.getElementById('date').addEventListener('change', () => {
+    checkAndLoadAvailability();
+    startAutoRefresh();
+    updatePrice();  // Recalculate price for new date
+});
+
+        // Duration buttons
+        document.querySelectorAll('.duration-btn').forEach(btn => {
+            btn.addEventListener('click', () => selectDuration(parseInt(btn.dataset.value)));
+        });
+
+        // Court buttons
+        document.querySelectorAll('.court-btn').forEach(btn => {
+            btn.addEventListener('click', () => selectCourts(parseInt(btn.dataset.value)));
+        });
+
+        // Form submission
+        document.getElementById('bookingForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            showConfirmationModal();
+        });
+
+        // Modal buttons
+        document.getElementById('confirmCancel').addEventListener('click', hideConfirmationModal);
+        document.getElementById('confirmSubmit').addEventListener('click', submitBooking);
+
+        // Modal backdrop click
+        document.getElementById('confirmModal').addEventListener('click', (e) => {
+            if (e.target.id === 'confirmModal') {
+                hideConfirmationModal();
+            }
+        });
+    }
+
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+    async function init() {
+        const savedLang = localStorage.getItem('preferredLang') || 'en';
+        switchLanguage(savedLang);
+
+        setupEventListeners();
+        prefillUserData();
+        addQuickRebookButton();
+
+        await checkUserCredits();
+
+        const today = new Date();
+        document.getElementById('date').value = formatDate(today);
+        document.getElementById('date').setAttribute('min', formatDate(today));
+
+        const maxDate = new Date();
+        maxDate.setDate(maxDate.getDate() + 30);
+        document.getElementById('date').setAttribute('max', formatDate(maxDate));
+
+        if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
+            Telegram.WebApp.ready();
+            Telegram.WebApp.expand();
+            
+            if (Telegram.WebApp.themeParams) {
+                document.body.style.setProperty('--tg-theme-bg-color', Telegram.WebApp.themeParams.bg_color || '#ffffff');
+                document.body.style.setProperty('--tg-theme-text-color', Telegram.WebApp.themeParams.text_color || '#000000');
+            }
+        }
+
+        updatePrice();
+        checkAndLoadAvailability();
+        startAutoRefresh();
+
+        window.addEventListener('online', () => {
+            showMessage('✅ Back online! Refreshing...', 'success');
+            availabilityCache.clear();
+            checkAndLoadAvailability();
+        });
+
+        window.addEventListener('offline', () => {
+            showMessage('⚠️ No internet connection.', 'error');
+        });
+
+        console.log('TK Pickleball Booking System Initialized ✅');
+    }
+
+    // ============================================
+    // START THE APPLICATION
+    // ============================================
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+
+    window.addEventListener('beforeunload', () => {
+        stopAutoRefresh();
+    });
+</script>
+</body>
 </html>
