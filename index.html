@@ -133,11 +133,9 @@
             background: rgba(15, 15, 26, 0.8);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            padding: 16px 20px 28px;
+            padding: 12px 16px 16px;
             border-bottom: 1px solid var(--glass-border);
-            position: sticky;
-            top: 0;
-            z-index: 50;
+            /* Removed sticky so header scrolls with content */
         }
 
         .header-banner::before {
@@ -161,7 +159,7 @@
         .lang-toggle {
             display: flex;
             justify-content: flex-end;
-            margin-bottom: 16px;
+            margin-bottom: 8px;
             position: relative;
             z-index: 10;
         }
@@ -207,14 +205,13 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 72px;
-            height: 72px;
+            width: 48px;
+            height: 48px;
             background: linear-gradient(135deg, var(--primary) 0%, var(--pink) 100%);
-            border-radius: var(--radius-xl);
-            margin-bottom: 16px;
-            box-shadow: 0 0 40px var(--primary-glow), 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-radius: var(--radius-lg);
+            margin-bottom: 8px;
+            box-shadow: 0 0 30px var(--primary-glow), 0 10px 20px rgba(0, 0, 0, 0.3);
             transition: var(--transition-spring);
-            animation: logoPulse 3s ease-in-out infinite;
         }
 
         @keyframes logoPulse {
@@ -238,15 +235,15 @@
         }
 
         .logo-box span {
-            font-size: 36px;
+            font-size: 24px;
             filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
         }
 
         .header-content h1 {
-            font-size: 24px;
+            font-size: 18px;
             font-weight: 800;
             color: var(--text-primary);
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             letter-spacing: -0.5px;
             background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.8) 100%);
             -webkit-background-clip: text;
@@ -255,7 +252,7 @@
         }
 
         .header-content p {
-            font-size: 14px;
+            font-size: 12px;
             color: var(--text-muted);
             font-weight: 500;
         }
@@ -2446,7 +2443,7 @@
             const cached = availabilityCache.get(cacheKey);
             if (cached && (Date.now() - cached.timestamp < CACHE_DURATION)) {
                 console.log('✅ Using cached availability');
-                renderTimeSlots(cached.data);
+                renderTimeSlots(cached.data, cached.courtStatus);
                 document.getElementById('timeLoadingMessage').style.display = 'none';
                 return;
             }
@@ -2463,11 +2460,12 @@
                 if (data.status === 'success') {
                     availabilityCache.set(cacheKey, {
                         timestamp: Date.now(),
-                        data: data.availability
+                        data: data.availability,
+                        courtStatus: data.courtStatus // Store precise court data
                     });
 
                     console.log('✅ Cached availability for:', cacheKey);
-                    renderTimeSlots(data.availability);
+                    renderTimeSlots(data.availability, data.courtStatus);
                 } else {
                     showMessage(data.error || translations[currentLang].errorConnection, 'error');
                 }
@@ -2478,7 +2476,7 @@
             }
         }
 
-        function renderTimeSlots(availability) {
+        function renderTimeSlots(availability, courtStatusMap) {
             const timeGrid = document.getElementById('timeGrid');
             const requestedCourts = parseInt(document.getElementById('courts').value);
             const selectedDate = document.getElementById('date').value;
@@ -2553,8 +2551,10 @@
 
             // Update court tiles for currently selected time, or first available slot
             const selectedTime = document.getElementById('selectedTime').value;
+
             if (selectedTime && availability[selectedTime] !== undefined) {
-                updateCourtTilesAvailability(availability[selectedTime]);
+                const status = courtStatusMap ? courtStatusMap[selectedTime] : null;
+                updateCourtTilesAvailability(availability[selectedTime], status);
             } else {
                 // Find and show first available time slot's courts
                 const firstAvailableTime = Object.keys(availability).find(time => {
@@ -2562,7 +2562,8 @@
                     return availability[time] >= requestedCourts && !(isToday && slotHour <= currentHour);
                 });
                 if (firstAvailableTime) {
-                    updateCourtTilesAvailability(availability[firstAvailableTime]);
+                    const status = courtStatusMap ? courtStatusMap[firstAvailableTime] : null;
+                    updateCourtTilesAvailability(availability[firstAvailableTime], status);
                 }
             }
 
@@ -3039,29 +3040,42 @@
             const cached = availabilityCache.get(cacheKey);
 
             if (cached && cached.data) {
-                // Availability data is an object: { "08:00": 5, "09:00": 3, ... }
-                // where the value is the number of available courts at that time
-                const availableCourts = cached.data[time] ?? 8; // Default to 8 if no data
-                updateCourtTilesAvailability(availableCourts);
+                // If we have precise court status from backend, use it
+                if (cached.courtStatus && cached.courtStatus[time]) {
+                    updateCourtTilesAvailability(cached.data[time], cached.courtStatus[time]);
+                } else {
+                    // Fallback to simpler count-based logic
+                    const availableCourts = cached.data[time] ?? 8;
+                    updateCourtTilesAvailability(availableCourts);
+                }
             }
         }
 
-        function updateCourtTilesAvailability(availableCourts) {
+        function updateCourtTilesAvailability(availableCourts, courtStatusArray) {
             const tiles = document.querySelectorAll('.court-tile');
-            const bookedCount = 8 - availableCourts;
 
             // Reset all tiles
             tiles.forEach((tile, index) => {
                 tile.classList.remove('available', 'unavailable', 'selected');
                 const statusEl = tile.querySelector('.court-status');
 
-                // Mark some courts as booked based on availability
-                if (index < bookedCount) {
-                    tile.classList.add('unavailable');
-                    if (statusEl) statusEl.textContent = 'BOOKED';
+                let isAvailable = false;
+
+                if (courtStatusArray && courtStatusArray.length > index) {
+                    // OPTION 1: Use specific status from backend (Precise Mode)
+                    isAvailable = courtStatusArray[index];
                 } else {
+                    // OPTION 2: Fallback to count-based logic (Simple Mode)
+                    // Courts 1 to availableCourts are available
+                    isAvailable = index < availableCourts;
+                }
+
+                if (isAvailable) {
                     tile.classList.add('available');
                     if (statusEl) statusEl.textContent = 'OPEN';
+                } else {
+                    tile.classList.add('unavailable');
+                    if (statusEl) statusEl.textContent = 'BOOKED';
                 }
             });
         }
