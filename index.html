@@ -3,259 +3,554 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TK Pickleball Admin</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>TK Pickleball Booking</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --primary-light: #a5b4fc;
-            --success: #10b981;
-            --success-light: #d1fae5;
-            --warning: #f59e0b;
-            --warning-light: #fef3c7;
-            --danger: #ef4444;
-            --danger-light: #fee2e2;
-            --gray-50: #f9fafb;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-            --gray-300: #d1d5db;
-            --gray-400: #9ca3af;
-            --gray-500: #6b7280;
-            --gray-600: #4b5563;
-            --gray-700: #374151;
-            --gray-800: #1f2937;
-            --gray-900: #111827;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--gray-100);
-            color: var(--gray-800);
-            min-height: 100vh;
-            -webkit-font-smoothing: antialiased;
+        :root {
+            --primary: #1e40af;
+            --primary-light: #3b82f6;
+            --accent: #f97316;
+            --accent-light: #fb923c;
+            --dark: #0f172a;
+            --gray: #64748b;
+            --light-gray: #f1f5f9;
+            --white: #ffffff;
+            --success: #22c55e;
+            --warning: #eab308;
+            --danger: #ef4444;
         }
 
-        /* ============================================
-           LOGIN SCREEN
-           ============================================ */
-        .login-screen {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--light-gray);
+            color: var(--dark);
+            padding-bottom: 100px;
             min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        /* Header Banner */
+        .header-banner {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            padding: 20px 16px 30px;
+            border-radius: 0 0 24px 24px;
             position: relative;
             overflow: hidden;
         }
 
-        .login-screen::before {
+        .header-banner::before {
             content: '';
             position: absolute;
-            width: 600px;
-            height: 600px;
-            background: rgba(255,255,255,0.1);
+            top: -20px;
+            right: -20px;
+            width: 120px;
+            height: 120px;
+            background: var(--accent);
             border-radius: 50%;
-            top: -300px;
-            right: -200px;
+            opacity: 0.2;
         }
 
-        .login-screen::after {
+        .header-banner::after {
             content: '';
             position: absolute;
-            width: 400px;
-            height: 400px;
-            background: rgba(255,255,255,0.05);
+            bottom: -30px;
+            left: 20%;
+            width: 80px;
+            height: 80px;
+            background: var(--accent);
             border-radius: 50%;
-            bottom: -200px;
-            left: -100px;
+            opacity: 0.15;
         }
 
-        .login-box {
+        .lang-toggle {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .lang-toggle-inner {
+            display: flex;
+            gap: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 3px;
+        }
+
+        .lang-btn {
+            padding: 5px 12px;
+            border: none;
+            border-radius: 16px;
+            background: transparent;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            color: rgba(255,255,255,0.8);
+            transition: all 0.3s;
+        }
+
+        .lang-btn.active {
             background: white;
-            border-radius: 24px;
-            padding: 48px 40px;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .header-content {
             text-align: center;
-            box-shadow: var(--shadow-xl);
-            max-width: 380px;
-            width: 100%;
             position: relative;
             z-index: 1;
         }
 
-        .login-logo {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
-            border-radius: 20px;
-            display: flex;
+        .logo-box {
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 40px;
-            margin: 0 auto 20px;
-            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+            width: 56px;
+            height: 56px;
+            background: var(--accent);
+            border-radius: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
         }
 
-        .login-title {
+        .logo-box span {
             font-size: 28px;
+        }
+
+        .header-content h1 {
+            font-size: 22px;
             font-weight: 800;
+            color: white;
             margin-bottom: 4px;
-            color: var(--gray-900);
+            letter-spacing: -0.5px;
         }
 
-        .login-subtitle {
-            font-size: 15px;
-            color: var(--gray-500);
-            margin-bottom: 32px;
+        .header-content p {
+            font-size: 13px;
+            color: rgba(255,255,255,0.85);
+            font-weight: 500;
         }
 
-        .pin-display {
-            display: flex;
-            justify-content: center;
-            gap: 16px;
-            margin-bottom: 32px;
-        }
-
-        .pin-dot {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            border: 2px solid var(--gray-300);
+        /* Credit Banner */
+        .credit-banner {
             background: white;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 16px;
+            padding: 16px;
+            margin-top: -20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            border: 2px solid var(--accent);
+            position: relative;
+            z-index: 10;
         }
 
-        .pin-dot.filled {
-            background: var(--primary);
-            border-color: var(--primary);
-            transform: scale(1.2);
+        .credit-banner.show {
+            display: flex;
         }
 
-        .pin-dot.error {
-            background: var(--danger);
-            border-color: var(--danger);
-            animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97);
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20% { transform: translateX(-8px); }
-            40% { transform: translateX(8px); }
-            60% { transform: translateX(-8px); }
-            80% { transform: translateX(8px); }
-        }
-
-        .pin-pad {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
+        .credit-banner-left {
+            display: flex;
+            align-items: center;
             gap: 12px;
-            max-width: 280px;
-            margin: 0 auto;
         }
 
-        .pin-btn {
-            width: 76px;
-            height: 76px;
-            border-radius: 50%;
-            border: none;
-            background: var(--gray-100);
-            font-size: 28px;
-            font-weight: 600;
-            color: var(--gray-800);
-            cursor: pointer;
-            transition: all 0.15s ease;
+        .credit-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 20px;
         }
 
-        .pin-btn:hover {
-            background: var(--gray-200);
+        .credit-info .label {
+            font-size: 12px;
+            color: var(--gray);
+            font-weight: 500;
         }
 
-        .pin-btn:active {
-            transform: scale(0.95);
-            background: var(--gray-300);
+        .credit-info .balance {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--dark);
         }
 
-        .pin-btn.clear {
-            background: var(--danger-light);
-            color: var(--danger);
-        }
-
-        .pin-btn.submit {
-            background: var(--success-light);
+        .credit-status {
+            background: var(--light-gray);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
             color: var(--success);
         }
 
-        .login-error {
-            color: var(--danger);
-            font-size: 14px;
-            font-weight: 500;
-            margin-top: 24px;
-            display: none;
-        }
-
-        .login-error.show {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ============================================
-           MAIN DASHBOARD
-           ============================================ */
-        .dashboard {
-            display: none;
-            padding-bottom: 100px;
-        }
-
-        .dashboard.show {
-            display: block;
-        }
-
-        /* Header */
-        .header {
+        /* Form Card */
+        .form-card {
             background: white;
-            padding: 16px 20px;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 15px;
+            border: 2px solid var(--light-gray);
+            border-radius: 12px;
+            background: var(--light-gray);
+            color: var(--dark);
+            font-weight: 500;
+            transition: all 0.2s;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: var(--primary-light);
+            background: white;
+        }
+
+        .quick-dates {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .quick-date-btn {
+            flex: 1;
+            padding: 10px 8px;
+            border: 2px solid var(--light-gray);
+            border-radius: 10px;
+            background: white;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--gray);
+            transition: all 0.2s;
+        }
+
+        .quick-date-btn:active {
+            transform: scale(0.95);
+        }
+
+        .quick-date-btn.active {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Duration & Courts Buttons */
+        .selector-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .selector-btn {
+            padding: 16px 8px;
+            border: 2px solid var(--light-gray);
+            border-radius: 14px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .selector-btn:active {
+            transform: scale(0.95);
+        }
+
+        .selector-btn.selected {
+            border: none;
+            transform: scale(1.02);
+        }
+
+        .selector-btn.duration-btn.selected {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+        }
+
+        .selector-btn.court-btn.selected {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+        }
+
+        .selector-btn .value {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--dark);
+            line-height: 1;
+        }
+
+        .selector-btn.selected .value {
+            color: white;
+        }
+
+        .selector-btn .unit {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--gray);
+            margin-top: 2px;
+        }
+
+        .selector-btn.selected .unit {
+            color: rgba(255,255,255,0.9);
+        }
+
+        /* Time Slots Card */
+        .time-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .time-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .time-count {
+            font-size: 11px;
+            color: var(--gray);
+            background: var(--light-gray);
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+
+        .time-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .time-slot {
+            padding: 14px 10px;
+            border: 2px solid var(--primary-light);
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            background: white;
+            transition: all 0.2s;
+        }
+
+        .time-slot:active {
+            transform: scale(0.95);
+        }
+
+        .time-slot .time {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 3px;
+        }
+
+        .time-slot .courts-info {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--gray);
+        }
+
+        .time-slot.available:hover {
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .time-slot.selected {
+            border: none;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.25);
+        }
+
+        .time-slot.selected .time {
+            color: white;
+        }
+
+        .time-slot.selected .courts-info {
+            color: rgba(255,255,255,0.85);
+        }
+
+        .time-slot.unavailable {
+            border-color: #e2e8f0;
+            background: #f8fafc;
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .time-slot.almost-full {
+            border-color: var(--warning);
+        }
+
+        .time-slot.almost-full .courts-info {
+            color: var(--warning);
+        }
+
+        .time-slot.plenty .courts-info {
+            color: var(--success);
+        }
+
+        .time-loading {
+            text-align: center;
+            padding: 20px;
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: 12px;
+            pointer-events: none;
+        }
+
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Price Card */
+        .price-card {
+            background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+            border-radius: 20px;
+            padding: 24px;
+            margin-top: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .price-card::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 100px;
+            height: 100px;
+            background: var(--accent);
+            border-radius: 50%;
+            opacity: 0.1;
+        }
+
+        .price-card-inner {
+            position: relative;
+            z-index: 1;
+        }
+
+        .price-breakdown {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 1px solid var(--gray-200);
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
-        .header-left {
+        .price-breakdown-left {
+            font-size: 12px;
+            color: rgba(255,255,255,0.6);
+        }
+
+        .price-breakdown-left span {
+            display: block;
+            font-size: 13px;
+            color: rgba(255,255,255,0.8);
+            margin-top: 4px;
+        }
+
+        .price-hours-badge {
+            background: var(--accent);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .price-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .price-total-left .label {
+            font-size: 12px;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 4px;
+        }
+
+        .price-total-left .amount {
+            font-size: 36px;
+            font-weight: 800;
+            color: white;
+            line-height: 1;
+        }
+
+        .price-pay-badge {
+            font-size: 12px;
+            color: var(--accent);
+            font-weight: 600;
+            background: rgba(249, 115, 22, 0.15);
+            padding: 6px 12px;
+            border-radius: 8px;
+        }
+
+        /* Location Card */
+        .location-card {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-top: 16px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
 
-        .header-logo {
-            width: 44px;
-            height: 44px;
-            background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
+        .location-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--light-gray);
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -263,951 +558,107 @@
             font-size: 22px;
         }
 
-        .header-info h1 {
-            font-size: 18px;
+        .location-info h3 {
+            font-size: 14px;
             font-weight: 700;
-            color: var(--gray-900);
+            color: var(--dark);
         }
 
-        .header-info p {
+        .location-info p {
             font-size: 12px;
-            color: var(--gray-500);
+            color: var(--gray);
         }
 
-        .header-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .header-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            border: none;
-            background: var(--gray-100);
-            color: var(--gray-600);
-            font-size: 18px;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .header-btn:hover {
-            background: var(--gray-200);
-        }
-
-        /* Bottom Navigation */
-        .bottom-nav {
+        /* Bottom Button */
+        .btn-container {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
             background: white;
-            border-top: 1px solid var(--gray-200);
-            display: flex;
-            justify-content: space-around;
-            padding: 8px 0;
-            padding-bottom: max(8px, env(safe-area-inset-bottom));
-            z-index: 100;
+            padding: 12px 16px 20px;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
         }
 
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 8px 16px;
-            border: none;
-            background: none;
-            cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
-        }
-
-        .nav-item-icon {
-            font-size: 24px;
-            margin-bottom: 4px;
-            transition: transform 0.2s;
-        }
-
-        .nav-item-label {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--gray-500);
-            transition: color 0.2s;
-        }
-
-        .nav-item.active .nav-item-icon {
-            transform: scale(1.1);
-        }
-
-        .nav-item.active .nav-item-label {
-            color: var(--primary);
-        }
-
-        .nav-item.active::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 32px;
-            height: 3px;
-            background: var(--primary);
-            border-radius: 0 0 3px 3px;
-        }
-
-        .nav-badge {
-            position: absolute;
-            top: 4px;
-            right: 8px;
-            background: var(--danger);
-            color: white;
-            font-size: 10px;
+        .btn-book {
+            width: 100%;
+            padding: 18px;
+            font-size: 16px;
             font-weight: 700;
-            padding: 2px 6px;
-            border-radius: 10px;
-            min-width: 18px;
-            text-align: center;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(249, 115, 22, 0.35);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            transition: all 0.2s;
         }
 
-        /* Content Sections */
-        .content-section {
+        .btn-book:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-book:not(:disabled):active {
+            transform: scale(0.98);
+            opacity: 0.9;
+        }
+
+        /* Messages */
+        .message {
             display: none;
-            padding: 20px;
-            max-width: 800px;
-            margin: 0 auto;
-            animation: fadeInUp 0.3s ease;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            font-weight: 500;
         }
 
-        .content-section.active {
+        .message.show {
             display: block;
         }
 
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .message.success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
         }
 
-        /* Today Summary Card */
-        .today-summary {
-            background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
-            border-radius: 20px;
-            padding: 24px;
-            color: white;
-            margin-bottom: 20px;
-            position: relative;
-            overflow: hidden;
+        .message.error {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
         }
 
-        .today-summary::before {
-            content: '';
-            position: absolute;
-            width: 200px;
-            height: 200px;
-            background: rgba(255,255,255,0.1);
+        /* Loading */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid var(--light-gray);
+            border-top: 3px solid var(--accent);
             border-radius: 50%;
-            top: -100px;
-            right: -50px;
-        }
-
-        .today-summary-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 20px;
-        }
-
-        .today-summary-date {
-            font-size: 14px;
-            opacity: 0.9;
-            margin-bottom: 4px;
-        }
-
-        .today-summary-title {
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        .today-summary-badge {
-            background: rgba(255,255,255,0.2);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .today-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-        }
-
-        .today-stat {
-            text-align: center;
-        }
-
-        .today-stat-value {
-            font-size: 28px;
-            font-weight: 800;
-            line-height: 1;
-        }
-
-        .today-stat-label {
-            font-size: 12px;
-            opacity: 0.8;
-            margin-top: 4px;
-        }
-
-        /* Date Selector */
-        .date-selector {
-            background: white;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow);
-        }
-
-        .date-selector-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            gap: 12px;
-        }
-
-        .date-selector-month {
-            flex: 1;
-            text-align: center;
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--gray-800);
-            padding: 8px 16px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .calendar-input {
-            padding: 6px 10px;
-            border: 1px solid var(--gray-300);
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--primary);
-            background: var(--gray-50);
-            cursor: pointer;
-            font-family: inherit;
-        }
-
-        .calendar-input:hover {
-            border-color: var(--primary);
-            background: white;
-        }
-
-        .calendar-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-
-        .date-selector-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--gray-700);
-        }
-
-        .date-nav-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            border: none;
-            background: var(--gray-100);
-            color: var(--gray-600);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .date-nav-btn:hover {
-            background: var(--gray-200);
-        }
-
-        .date-pills {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding: 4px 0;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .date-pill {
-            flex-shrink: 0;
-            padding: 10px 12px;
-            border-radius: 12px;
-            border: none;
-            background: var(--gray-100);
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: center;
-            min-width: 65px;
-        }
-
-        .date-pill:hover {
-            background: var(--gray-200);
-        }
-
-        .date-pill.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        .date-pill-day {
-            font-size: 11px;
-            font-weight: 500;
-            opacity: 0.7;
-            text-transform: uppercase;
-        }
-
-        .date-pill-date {
-            font-size: 20px;
-            font-weight: 700;
-            margin-top: 2px;
-            line-height: 1.1;
-        }
-
-        .date-pill-month {
-            font-size: 10px;
-            font-weight: 600;
-            text-transform: uppercase;
-            opacity: 0.6;
-            margin-top: 2px;
-        }
-
-        .date-pill.active .date-pill-day,
-        .date-pill.active .date-pill-date,
-        .date-pill.active .date-pill-month {
-            color: white;
-            opacity: 1;
-        }
-
-        /* Court Timeline View */
-        .timeline-toggle {
-            display: flex;
-            background: var(--gray-100);
-            border-radius: 10px;
-            padding: 4px;
-            margin-bottom: 16px;
-        }
-
-        .timeline-toggle-btn {
-            flex: 1;
-            padding: 10px 16px;
-            border: none;
-            background: none;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--gray-600);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .timeline-toggle-btn.active {
-            background: white;
-            color: var(--gray-900);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .court-timeline {
-            background: white;
-            border-radius: 16px;
-            padding: 16px;
-            box-shadow: var(--shadow);
-            overflow-x: auto;
-        }
-
-        .timeline-header {
-            display: flex;
-            border-bottom: 1px solid var(--gray-200);
-            padding-bottom: 12px;
-            margin-bottom: 12px;
-        }
-
-        .timeline-court-label {
-            width: 80px;
-            flex-shrink: 0;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--gray-500);
-        }
-
-        .timeline-hours {
-            display: flex;
-            flex: 1;
-        }
-
-        .timeline-hour {
-            width: 60px;
-            flex-shrink: 0;
-            text-align: center;
-            font-size: 11px;
-            font-weight: 500;
-            color: var(--gray-500);
-        }
-
-        .timeline-row {
-            display: flex;
-            margin-bottom: 8px;
-            align-items: center;
-        }
-
-        .timeline-court-name {
-            width: 80px;
-            flex-shrink: 0;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--gray-700);
-        }
-
-        .timeline-slots {
-            display: flex;
-            flex: 1;
-            position: relative;
-            height: 44px;
-            background: var(--gray-100);
-            border-radius: 8px;
-        }
-
-        .timeline-slot {
-            width: 60px;
-            height: 100%;
-            border-right: 1px dashed var(--gray-200);
-        }
-
-        .timeline-booking {
-            position: absolute;
-            top: 4px;
-            bottom: 4px;
-            border-radius: 6px;
-            padding: 4px 8px;
-            font-size: 11px;
-            font-weight: 600;
-            color: white;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-        }
-
-        .timeline-booking:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .timeline-booking.credits {
-            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
-        }
-
-        .timeline-booking.cash {
-            background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
-        }
-
-        .timeline-booking.partial {
-            background: linear-gradient(135deg, var(--primary) 0%, #4f46e5 100%);
-        }
-
-        /* Past booking styles for timeline */
-        .timeline-booking.past {
-            opacity: 0.5;
-            filter: grayscale(40%);
-        }
-
-        /* Current time needle */
-        .timeline-needle {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: var(--danger);
-            z-index: 10;
-            pointer-events: none;
-        }
-
-        .timeline-needle::before {
-            content: '';
-            position: absolute;
-            top: -4px;
-            left: -4px;
-            width: 10px;
-            height: 10px;
-            background: var(--danger);
-            border-radius: 50%;
-        }
-
-        .timeline-needle::after {
-            content: 'NOW';
-            position: absolute;
-            top: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 9px;
-            font-weight: 700;
-            color: var(--danger);
-            background: white;
-            padding: 2px 4px;
-            border-radius: 3px;
-            white-space: nowrap;
-        }
-
-        /* Timeline container needs relative positioning for needle */
-        .timeline-slots {
-            display: flex;
-            flex: 1;
-            position: relative;
-            height: 44px;
-            background: var(--gray-100);
-            border-radius: 8px;
-            overflow: visible;
-        }
-
-        /* Booking Cards */
-        .booking-card {
-            background: white;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-            box-shadow: var(--shadow);
-            transition: all 0.2s;
-            border-left: 4px solid transparent;
-            position: relative;
-        }
-
-        .booking-card:hover {
-            box-shadow: var(--shadow-md);
-        }
-
-        .booking-card.paid {
-            border-left-color: var(--success);
-        }
-
-        .booking-card.pending {
-            border-left-color: var(--warning);
-        }
-
-        .booking-card.credits {
-            border-left-color: var(--primary);
-        }
-
-        /* Past booking card styles */
-        .booking-card.past-booking {
-            opacity: 0.6;
-            background: var(--gray-50);
-        }
-
-        .booking-card.past-booking .booking-time-badge {
-            background: var(--gray-500);
-        }
-
-        .booking-card.past-booking::after {
-            content: 'PAST';
-            position: absolute;
-            bottom: 8px;
-            left: 8px;
-            font-size: 9px;
-            font-weight: 700;
-            color: var(--gray-400);
-            background: var(--gray-200);
-            padding: 2px 6px;
-            border-radius: 4px;
-        }
-
-        .booking-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
-        }
-
-        .booking-time-badge {
-            background: var(--gray-900);
-            color: white;
-            padding: 8px 14px;
-            border-radius: 10px;
-            font-size: 15px;
-            font-weight: 700;
-        }
-
-        .booking-status-badges {
-            display: flex;
-            gap: 6px;
-        }
-
-        .status-badge {
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        .status-badge.credits {
-            background: var(--success-light);
-            color: var(--success);
-        }
-
-        .status-badge.cash {
-            background: var(--warning-light);
-            color: var(--warning);
-        }
-
-        .status-badge.partial {
-            background: rgba(99, 102, 241, 0.1);
-            color: var(--primary);
-        }
-
-        .status-badge.paid {
-            background: var(--success-light);
-            color: var(--success);
-        }
-
-        .status-badge.pending {
-            background: var(--warning-light);
-            color: var(--warning);
-        }
-
-        .status-badge.unpaid {
-            background: var(--danger-light);
-            color: var(--danger);
-        }
-
-        .status-badge.noshow {
-            background: var(--gray-200);
-            color: var(--gray-600);
-        }
-
-        .booking-card-body {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .booking-customer {
-            flex: 1;
-        }
-
-        .booking-customer-name {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--gray-900);
-            margin-bottom: 4px;
-        }
-
-        .booking-customer-details {
-            font-size: 13px;
-            color: var(--gray-500);
-            display: flex;
-            gap: 12px;
-        }
-
-        .booking-card-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .action-btn {
-            padding: 10px 16px;
-            border-radius: 10px;
-            border: none;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .action-btn.primary {
-            background: var(--success-light);
-            color: var(--success);
-        }
-
-        .action-btn.primary:hover {
-            background: var(--success);
-            color: white;
-        }
-
-        .action-btn.danger {
-            background: var(--danger-light);
-            color: var(--danger);
-        }
-
-        .action-btn.danger:hover {
-            background: var(--danger);
-            color: white;
-        }
-
-        .action-btn.secondary {
-            background: var(--gray-100);
-            color: var(--gray-600);
-        }
-
-        .action-btn.secondary:hover {
-            background: var(--gray-200);
-        }
-
-        /* Floating Action Button */
-        .fab {
-            position: fixed;
-            bottom: 90px;
-            right: 20px;
-            width: 56px;
-            height: 56px;
-            border-radius: 16px;
-            border: none;
-            background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
-            transition: all 0.3s;
-            z-index: 50;
-        }
-
-        .fab:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 30px rgba(99, 102, 241, 0.5);
-        }
-
-        .fab:active {
-            transform: scale(0.95);
-        }
-
-        /* Quick Stats Cards */
-        .quick-stats {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .quick-stat-card {
-            background: white;
-            border-radius: 16px;
-            padding: 16px;
-            box-shadow: var(--shadow);
-        }
-
-        .quick-stat-icon {
             width: 40px;
             height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            margin-bottom: 12px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 12px;
         }
 
-        .quick-stat-icon.bookings {
-            background: rgba(99, 102, 241, 0.1);
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
-        .quick-stat-icon.revenue {
-            background: var(--success-light);
-        }
-
-        .quick-stat-icon.pending {
-            background: var(--warning-light);
-        }
-
-        .quick-stat-icon.credits {
-            background: rgba(139, 92, 246, 0.1);
-        }
-
-        .quick-stat-value {
-            font-size: 24px;
-            font-weight: 800;
-            color: var(--gray-900);
-            margin-bottom: 2px;
-        }
-
-        .quick-stat-label {
-            font-size: 12px;
-            color: var(--gray-500);
-            font-weight: 500;
-        }
-
-        .quick-stat-change {
-            font-size: 11px;
-            font-weight: 600;
-            margin-top: 8px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .quick-stat-change.up {
-            color: var(--success);
-        }
-
-        .quick-stat-change.down {
-            color: var(--danger);
-        }
-
-        /* Package Cards Enhanced */
-        .package-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
-
-        .package-card {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 2px solid transparent;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .package-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), #8b5cf6);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .package-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .package-card:hover::before {
-            opacity: 1;
-        }
-
-        .package-card.selected {
-            border-color: var(--primary);
-            background: rgba(99, 102, 241, 0.05);
-        }
-
-        .package-card.selected::before {
-            opacity: 1;
-        }
-
-        .package-hours {
-            font-size: 36px;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--primary), #8b5cf6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .package-hours-label {
-            font-size: 12px;
-            color: var(--gray-500);
-            font-weight: 500;
-            margin-bottom: 8px;
-        }
-
-        .package-name {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--gray-800);
-            margin-bottom: 4px;
-        }
-
-        .package-price {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--gray-900);
-        }
-
-        .package-savings {
-            font-size: 11px;
-            color: var(--success);
-            font-weight: 600;
-            margin-top: 4px;
-        }
-
-        /* Customer Cards */
-        .customer-card {
-            background: white;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-            box-shadow: var(--shadow);
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .customer-card:hover {
-            transform: translateX(4px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .customer-avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, var(--primary), #8b5cf6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 18px;
-            font-weight: 700;
-            flex-shrink: 0;
-        }
-
-        .customer-info {
-            flex: 1;
-        }
-
-        .customer-name {
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--gray-900);
-            margin-bottom: 2px;
-        }
-
-        .customer-phone {
-            font-size: 13px;
-            color: var(--gray-500);
-        }
-
-        .customer-balance {
-            text-align: right;
-        }
-
-        .customer-balance-value {
-            font-size: 20px;
-            font-weight: 800;
-            color: var(--primary);
-        }
-
-        .customer-balance-label {
-            font-size: 11px;
-            color: var(--gray-500);
-        }
-
-        /* Modal Enhanced */
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -1216,2114 +667,1474 @@
             right: 0;
             bottom: 0;
             background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(4px);
             z-index: 1000;
-            align-items: flex-end;
+            align-items: center;
             justify-content: center;
-            padding: 0;
-        }
-
-        .modal.show {
-            display: flex;
         }
 
         .modal-content {
             background: white;
-            border-radius: 24px 24px 0 0;
+            border-radius: 20px;
             padding: 24px;
-            width: 100%;
-            max-width: 500px;
-            max-height: 90vh;
-            overflow-y: auto;
-            animation: slideUp 0.3s ease;
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
-        }
-
-        .modal-handle {
-            width: 40px;
-            height: 4px;
-            background: var(--gray-300);
-            border-radius: 2px;
-            margin: 0 auto 20px;
+            margin: 16px;
+            max-width: 400px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.2);
         }
 
         .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .modal-title {
             font-size: 20px;
-            font-weight: 700;
-            color: var(--gray-900);
-        }
-
-        .modal-close {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            border: none;
-            background: var(--gray-100);
-            color: var(--gray-600);
-            font-size: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-close:hover {
-            background: var(--gray-200);
-        }
-
-        /* Form Inputs Enhanced */
-        .form-group {
             margin-bottom: 16px;
+            text-align: center;
+            font-weight: 800;
+            color: var(--dark);
         }
 
-        .form-label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--gray-700);
-            margin-bottom: 8px;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid var(--gray-200);
+        .modal-details {
+            background: var(--light-gray);
             border-radius: 12px;
-            font-size: 15px;
-            font-family: inherit;
-            transition: all 0.2s;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        /* Buttons Enhanced */
-        .btn {
-            padding: 14px 24px;
-            border-radius: 12px;
-            border: none;
-            font-size: 15px;
-            font-weight: 600;
-            font-family: inherit;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), #8b5cf6);
-            color: white;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
-        }
-
-        .btn-secondary {
-            background: var(--gray-100);
-            color: var(--gray-700);
-        }
-
-        .btn-secondary:hover {
-            background: var(--gray-200);
-        }
-
-        .btn-danger {
-            background: var(--danger-light);
-            color: var(--danger);
-        }
-
-        .btn-danger:hover {
-            background: var(--danger);
-            color: white;
-        }
-
-        .btn-success {
-            background: var(--success-light);
-            color: var(--success);
-        }
-
-        .btn-success:hover {
-            background: var(--success);
-            color: white;
-        }
-
-        .btn-block {
-            width: 100%;
+            padding: 16px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.8;
+            color: var(--dark);
         }
 
         .modal-buttons {
             display: flex;
             gap: 12px;
-            margin-top: 24px;
         }
 
-        .modal-buttons .btn {
+        .modal-btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-btn:active {
+            transform: scale(0.95);
+        }
+
+        .modal-btn-cancel {
+            border: 2px solid var(--light-gray);
+            background: white;
+            color: var(--gray);
+        }
+
+        .modal-btn-confirm {
+            border: none;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            color: white;
+        }
+
+        /* Payment Options */
+        .payment-options {
+            margin-top: 16px;
+        }
+
+        .payment-option {
+            border: 2px solid var(--light-gray);
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .payment-option:hover {
+            border-color: var(--primary-light);
+        }
+
+        .payment-option.selected {
+            border-color: var(--primary);
+            background: rgba(59, 130, 246, 0.08);
+        }
+
+        .payment-option.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .payment-option-content {
+            display: flex;
+            align-items: center;
+        }
+
+        .payment-option-icon {
+            font-size: 24px;
+            margin-right: 12px;
+        }
+
+        .payment-option-details {
             flex: 1;
         }
 
-        /* Activation Code Modal */
-        .code-modal {
-            align-items: center;
-            padding: 20px;
-        }
-
-        .code-modal .modal-content {
-            border-radius: 24px;
-            text-align: center;
-            padding: 32px 24px;
-        }
-
-        .code-success-icon {
-            width: 80px;
-            height: 80px;
-            background: var(--success-light);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            margin: 0 auto 20px;
-        }
-
-        .code-display {
-            background: linear-gradient(135deg, var(--primary), #8b5cf6);
-            color: white;
-            font-size: 40px;
-            font-weight: 800;
-            letter-spacing: 12px;
-            padding: 24px 32px;
-            border-radius: 16px;
-            margin: 20px 0;
-            font-family: 'Courier New', monospace;
-            cursor: pointer;
-            transition: transform 0.2s;
-            text-indent: 12px;
-        }
-
-        .code-display:hover {
-            transform: scale(1.02);
-        }
-
-        .code-info {
-            background: var(--gray-100);
-            border-radius: 12px;
-            padding: 16px;
-            margin: 20px 0;
-            text-align: left;
-        }
-
-        .code-info-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid var(--gray-200);
-        }
-
-        .code-info-row:last-child {
-            border-bottom: none;
-        }
-
-        .code-info-label {
-            color: var(--gray-500);
-            font-size: 13px;
-        }
-
-        .code-info-value {
-            font-weight: 600;
-            font-size: 13px;
-        }
-
-        .code-instructions {
-            background: var(--warning-light);
-            border-radius: 12px;
-            padding: 16px;
-            font-size: 13px;
-            color: var(--warning);
-            margin-bottom: 20px;
-        }
-
-        /* Summary Box */
-        .summary-box {
-            background: var(--gray-100);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 20px;
-        }
-
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid var(--gray-200);
-            font-size: 14px;
-        }
-
-        .summary-row:last-child {
-            border-bottom: none;
-            font-weight: 700;
-            font-size: 16px;
-            padding-top: 14px;
-        }
-
-        .summary-row span:first-child {
-            color: var(--gray-600);
-        }
-
-        /* Stats Page Enhanced */
-        .stats-card {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 16px;
-            box-shadow: var(--shadow);
-        }
-
-        .stats-card-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--gray-700);
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .revenue-row {
+        .payment-option-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--gray-100);
-        }
-
-        .revenue-row:last-child {
-            border-bottom: none;
-        }
-
-        .revenue-label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            color: var(--gray-600);
-        }
-
-        .revenue-value {
-            font-size: 18px;
-            font-weight: 700;
-        }
-
-        .revenue-value.success {
-            color: var(--success);
-        }
-
-        .revenue-value.warning {
-            color: var(--warning);
-        }
-
-        .revenue-value.primary {
-            color: var(--primary);
-        }
-
-        /* Loading */
-        .loading-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255,255,255,0.9);
-            backdrop-filter: blur(4px);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        }
-
-        .loading-overlay.show {
-            display: flex;
-        }
-
-        .spinner {
-            width: 48px;
-            height: 48px;
-            border: 4px solid var(--gray-200);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            margin-top: 16px;
-            font-size: 14px;
-            color: var(--gray-600);
-            font-weight: 500;
-        }
-
-        /* Toast Enhanced */
-        .toast {
-            position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: var(--gray-900);
-            color: white;
-            padding: 14px 24px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 500;
-            z-index: 3000;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: var(--shadow-lg);
-        }
-
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-        }
-
-        .toast.success {
-            background: var(--success);
-        }
-
-        .toast.error {
-            background: var(--danger);
-        }
-
-        .toast-icon {
-            font-size: 18px;
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 48px 24px;
-        }
-
-        .empty-state-icon {
-            font-size: 64px;
-            margin-bottom: 16px;
-            opacity: 0.5;
-        }
-
-        .empty-state-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--gray-700);
             margin-bottom: 4px;
         }
 
-        .empty-state-text {
-            font-size: 14px;
-            color: var(--gray-500);
+        .payment-option-title {
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--dark);
         }
 
-        /* Responsive */
-        @media (max-width: 600px) {
-            .booking-card-body {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 12px;
-            }
-
-            .booking-card-actions {
-                width: 100%;
-            }
-
-            .booking-card-actions .action-btn {
-                flex: 1;
-            }
-
-            .code-display {
-                font-size: 32px;
-                letter-spacing: 8px;
-                padding: 20px 24px;
-            }
-
-            .today-stats {
-                grid-template-columns: repeat(3, 1fr);
-            }
-
-            .today-stat-value {
-                font-size: 22px;
-            }
+        .payment-option-price {
+            font-weight: 800;
+            font-size: 16px;
+            color: var(--primary);
         }
 
-        /* Pull to Refresh Animation */
-        .pull-indicator {
-            position: fixed;
-            top: 60px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-100%);
-            background: white;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: var(--shadow-md);
-            transition: transform 0.3s;
-            z-index: 99;
+        .payment-option-subtitle {
+            font-size: 12px;
+            color: var(--gray);
         }
 
-        .pull-indicator.active {
-            transform: translateX(-50%) translateY(10px);
+        .helper-text {
+            font-size: 12px;
+            color: var(--gray);
+            margin-top: 8px;
+            font-style: italic;
         }
 
-        .pull-indicator .spinner {
-            width: 24px;
-            height: 24px;
-            border-width: 3px;
+        .required {
+            color: var(--danger);
         }
     </style>
 </head>
 <body>
-    <!-- LOGIN SCREEN -->
-    <div id="loginScreen" class="login-screen">
-        <div class="login-box">
-            <div class="login-logo">🏓</div>
-            <h1 class="login-title">TK Pickleball</h1>
-            <p class="login-subtitle">Admin Dashboard</p>
-            
-            <div class="pin-display">
-                <div class="pin-dot" id="dot1"></div>
-                <div class="pin-dot" id="dot2"></div>
-                <div class="pin-dot" id="dot3"></div>
-                <div class="pin-dot" id="dot4"></div>
+    <!-- Header Banner -->
+    <div class="header-banner">
+        <div class="lang-toggle">
+            <div class="lang-toggle-inner">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="km">KH</button>
             </div>
-            
-            <div class="pin-pad">
-                <button class="pin-btn" onclick="enterPin('1')">1</button>
-                <button class="pin-btn" onclick="enterPin('2')">2</button>
-                <button class="pin-btn" onclick="enterPin('3')">3</button>
-                <button class="pin-btn" onclick="enterPin('4')">4</button>
-                <button class="pin-btn" onclick="enterPin('5')">5</button>
-                <button class="pin-btn" onclick="enterPin('6')">6</button>
-                <button class="pin-btn" onclick="enterPin('7')">7</button>
-                <button class="pin-btn" onclick="enterPin('8')">8</button>
-                <button class="pin-btn" onclick="enterPin('9')">9</button>
-                <button class="pin-btn clear" onclick="clearPin()">✕</button>
-                <button class="pin-btn" onclick="enterPin('0')">0</button>
-                <button class="pin-btn submit" onclick="submitPin()">✔</button>
-            </div>
-            
-            <p id="loginError" class="login-error">Incorrect PIN. Please try again.</p>
+        </div>
+        <div class="header-content">
+            <div class="logo-box"><span>🏓</span></div>
+            <h1 data-i18n="title">TK PICKLEBALL</h1>
+            <p data-i18n="subtitle">Book your court in seconds</p>
         </div>
     </div>
 
-    <!-- MAIN DASHBOARD -->
-    <div id="dashboard" class="dashboard">
-        <!-- Header -->
-        <div class="header">
-            <div class="header-left">
-                <div class="header-logo">🏓</div>
-                <div class="header-info">
-                    <h1>TK Pickleball</h1>
-                    <p>Staff: <span id="staffName">Admin</span></p>
+    <div class="container">
+        <!-- Credit Banner -->
+        <div id="creditBanner" class="credit-banner">
+            <div class="credit-banner-left">
+                <div class="credit-icon">💳</div>
+                <div class="credit-info">
+                    <div class="label">Credit Balance</div>
+                    <div class="balance"><span id="creditBalanceDisplay">0</span> hours</div>
                 </div>
             </div>
-            <div class="header-actions">
-                <button class="header-btn" onclick="loadBookings()">🔄</button>
-                <button class="header-btn" onclick="logout()">🚪</button>
-            </div>
+            <div class="credit-status">● Active</div>
         </div>
 
-        <!-- Pull to Refresh Indicator -->
-        <div id="pullIndicator" class="pull-indicator">
+        <div id="messageBox" class="message"></div>
+        <div id="loadingBox" class="loading">
             <div class="spinner"></div>
+            <p data-i18n="processing">Processing your booking...</p>
         </div>
 
-        <!-- BOOKINGS TAB -->
-        <div id="tab-bookings" class="content-section active">
-            <!-- Today Summary -->
-            <div class="today-summary">
-                <div class="today-summary-header">
+        <form id="bookingForm" style="display: block;">
+            <!-- Form Card -->
+            <div class="form-card">
+                <!-- Name & Phone Row -->
+                <div class="form-row">
                     <div>
-                        <div class="today-summary-date" id="todaySummaryDate">Friday, Jan 24</div>
-                        <div class="today-summary-title">Today's Overview</div>
+                        <label class="form-label" for="name"><span data-i18n="fullName">Name</span></label>
+                        <input type="text" id="name" name="name" class="form-input" required data-i18n-placeholder="namePlaceholder">
                     </div>
-                    <div class="today-summary-badge" id="todayBadge">Today</div>
-                </div>
-                <div class="today-stats">
-                    <div class="today-stat">
-                        <div class="today-stat-value" id="statTodayBookings">0</div>
-                        <div class="today-stat-label">Bookings</div>
-                    </div>
-                    <div class="today-stat">
-                        <div class="today-stat-value" id="statTodayHours">0</div>
-                        <div class="today-stat-label">Court Hrs</div>
-                    </div>
-                    <div class="today-stat">
-                        <div class="today-stat-value">$<span id="statTodayRevenue">0</span></div>
-                        <div class="today-stat-label">Revenue</div>
+                    <div>
+                        <label class="form-label" for="phone"><span data-i18n="phoneNumber">Phone</span></label>
+                        <input type="tel" id="phone" name="phone" class="form-input" required data-i18n-placeholder="phonePlaceholder">
                     </div>
                 </div>
-            </div>
 
-            <!-- Date Selector -->
-            <div class="date-selector">
-                <div class="date-selector-header">
-                    <button class="date-nav-btn" onclick="navigateWeek(-1)">◀</button>
-                    <div class="date-selector-month">
-                        <span id="currentMonthYear">January 2026</span>
-                        <input type="date" id="calendarPicker" class="calendar-input" onchange="onDatePickerChange(this.value)">
-                    </div>
-                    <button class="date-nav-btn" onclick="navigateWeek(1)">▶</button>
-                </div>
-                <div class="date-pills" id="datePills">
-                    <!-- Generated by JS -->
-                </div>
-            </div>
-
-            <!-- View Toggle -->
-            <div class="timeline-toggle">
-                <button class="timeline-toggle-btn active" onclick="setView('list')" id="listViewBtn">📋 List View</button>
-                <button class="timeline-toggle-btn" onclick="setView('timeline')" id="timelineViewBtn">📊 Timeline</button>
-            </div>
-
-            <!-- Bookings List View -->
-            <div id="bookingsListView">
-                <div id="bookingsList">
-                    <div class="empty-state">
-                        <div class="empty-state-icon">📅</div>
-                        <div class="empty-state-title">No Bookings</div>
-                        <p class="empty-state-text">No bookings for this date yet</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Timeline View -->
-            <div id="timelineView" style="display: none;">
-                <div class="court-timeline" id="courtTimeline">
-                    <!-- Generated by JS -->
-                </div>
-            </div>
-        </div>
-
-        <!-- CREDITS TAB -->
-        <div id="tab-credits" class="content-section">
-            <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 20px;">🎫 Generate Credit Code</h2>
-            
-            <div class="package-grid" id="packageGrid">
-                <!-- Generated by JS -->
-            </div>
-
-            <div id="generateSection" style="display: none; margin-top: 20px;">
-                <div class="summary-box">
-                    <div class="summary-row">
-                        <span>Package</span>
-                        <span id="summaryPackage">-</span>
-                    </div>
-                    <div class="summary-row">
-                        <span>Hours</span>
-                        <span id="summaryHours">-</span>
-                    </div>
-                    <div class="summary-row">
-                        <span>Amount to Collect</span>
-                        <span>$<span id="summaryPrice">0</span></span>
-                    </div>
-                </div>
-                <button class="btn btn-primary btn-block" onclick="generateCode()">
-                    🎫 Generate Code
-                </button>
-            </div>
-
-            <div style="margin-top: 24px;">
-                <h3 style="font-size: 16px; font-weight: 600; color: var(--gray-700); margin-bottom: 12px;">⏳ Pending Codes</h3>
-                <div id="pendingCodesList">
-                    <div class="empty-state">
-                        <div class="empty-state-icon">🎫</div>
-                        <p class="empty-state-text">No pending codes</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- CUSTOMERS TAB -->
-        <div id="tab-customers" class="content-section">
-            <div class="quick-stats">
-                <div class="quick-stat-card">
-                    <div class="quick-stat-icon bookings">👥</div>
-                    <div class="quick-stat-value" id="statTotalCustomers">0</div>
-                    <div class="quick-stat-label">Total Members</div>
-                </div>
-                <div class="quick-stat-card">
-                    <div class="quick-stat-icon credits">⏰</div>
-                    <div class="quick-stat-value" id="statTotalCreditsBalance">0</div>
-                    <div class="quick-stat-label">Total Hours</div>
-                </div>
-            </div>
-
-            <div id="customersList">
-                <div class="empty-state">
-                    <div class="empty-state-icon">👥</div>
-                    <p class="empty-state-text">Loading customers...</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- STATS TAB -->
-        <div id="tab-stats" class="content-section">
-            <div class="quick-stats">
-                <div class="quick-stat-card">
-                    <div class="quick-stat-icon bookings">📅</div>
-                    <div class="quick-stat-value" id="statTotalBookings">0</div>
-                    <div class="quick-stat-label">Total Bookings</div>
-                </div>
-                <div class="quick-stat-card">
-                    <div class="quick-stat-icon revenue">💰</div>
-                    <div class="quick-stat-value">$<span id="statTotalRevenue">0</span></div>
-                    <div class="quick-stat-label">Total Revenue</div>
-                </div>
-                <div class="quick-stat-card">
-                    <div class="quick-stat-icon pending">👥</div>
-                    <div class="quick-stat-value" id="statTotalMembers">0</div>
-                    <div class="quick-stat-label">Members</div>
-                </div>
-                <div class="quick-stat-card">
-                    <div class="quick-stat-icon credits">⏰</div>
-                    <div class="quick-stat-value" id="statTotalCreditHours">0</div>
-                    <div class="quick-stat-label">Hours Sold</div>
-                </div>
-            </div>
-
-            <div class="stats-card">
-                <div class="stats-card-title">💰 Revenue Breakdown (30 Days)</div>
-                <div class="revenue-row">
-                    <span class="revenue-label">✔ Confirmed Cash</span>
-                    <span class="revenue-value success">$<span id="statCashRevenue">0</span></span>
-                </div>
-                <div class="revenue-row">
-                    <span class="revenue-label">⏳ Pending Cash</span>
-                    <span class="revenue-value warning">$<span id="statPendingRevenue">0</span></span>
-                </div>
-                <div class="revenue-row">
-                    <span class="revenue-label">🎫 Credit Packages</span>
-                    <span class="revenue-value success">$<span id="statPackageRevenue">0</span></span>
-                </div>
-                <div class="revenue-row" style="background: var(--gray-100); margin: 12px -20px -20px; padding: 16px 20px; border-radius: 0 0 16px 16px;">
-                    <span class="revenue-label" style="font-weight: 600;">📊 Total Confirmed</span>
-                    <span class="revenue-value primary">$<span id="statCombinedRevenue">0</span></span>
-                </div>
-            </div>
-
-            <div class="stats-card">
-                <div class="stats-card-title">📋 Payment Status</div>
-                <div class="summary-box" style="margin: 0;">
-                    <div class="summary-row"><span>✔ Paid</span><span style="color: var(--success);"><span id="statPaidBookings">0</span></span></div>
-                    <div class="summary-row"><span>⏳ Pending</span><span style="color: var(--warning);"><span id="statPendingBookings">0</span></span></div>
-                    <div class="summary-row"><span>✗ Unpaid</span><span style="color: var(--danger);"><span id="statUnpaidBookings">0</span></span></div>
-                    <div class="summary-row"><span>👻 No-Show</span><span style="color: var(--gray-500);"><span id="statNoShowBookings">0</span></span></div>
-                </div>
-            </div>
-
-            <div class="stats-card">
-                <div class="stats-card-title">🏆 Top Customers</div>
-                <div id="topCustomers">
-                    <div class="empty-state" style="padding: 20px;">
-                        <p class="empty-state-text">Loading...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bottom Navigation -->
-        <nav class="bottom-nav">
-            <button class="nav-item active" data-tab="bookings" onclick="switchTab('bookings')">
-                <span class="nav-item-icon">📅</span>
-                <span class="nav-item-label">Bookings</span>
-            </button>
-            <button class="nav-item" data-tab="credits" onclick="switchTab('credits')">
-                <span class="nav-item-icon">🎫</span>
-                <span class="nav-item-label">Credits</span>
-                <span class="nav-badge" id="pendingBadge" style="display: none;">0</span>
-            </button>
-            <button class="nav-item" data-tab="customers" onclick="switchTab('customers')">
-                <span class="nav-item-icon">👥</span>
-                <span class="nav-item-label">Members</span>
-            </button>
-            <button class="nav-item" data-tab="stats" onclick="switchTab('stats')">
-                <span class="nav-item-icon">📊</span>
-                <span class="nav-item-label">Stats</span>
-            </button>
-        </nav>
-
-        <!-- Floating Action Button -->
-        <button class="fab" onclick="showNewBookingModal()">+</button>
-    </div>
-
-    <!-- NEW BOOKING MODAL -->
-    <div id="newBookingModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-handle"></div>
-            <div class="modal-header">
-                <h2 class="modal-title">📅 New Booking</h2>
-                <button class="modal-close" onclick="hideModal('newBookingModal')">✕</button>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Customer Name</label>
-                <input type="text" id="newBookingName" class="form-input" placeholder="Enter name">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Phone Number</label>
-                <input type="tel" id="newBookingPhone" class="form-input" placeholder="Enter phone" oninput="lookupCreditBalance()">
-                <div id="creditBalanceInfo" style="display: none; margin-top: 8px; padding: 12px; background: var(--success-light); border-radius: 10px; color: var(--success);">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-weight: 600;">💳 Credit Member</span>
-                        <span style="font-size: 18px; font-weight: 800;"><span id="creditBalanceValue">0</span> hrs</span>
-                    </div>
-                    <div style="font-size: 12px; margin-top: 4px;" id="creditCustomerName"></div>
-                </div>
-                <div id="noCreditInfo" style="display: none; margin-top: 8px; padding: 10px; background: var(--gray-100); border-radius: 10px; color: var(--gray-600); font-size: 13px;">
-                    â„¹ï¸ No credit account found for this phone
-                </div>
-            </div>
-
-            <div class="form-row">
+                <!-- Date Field -->
                 <div class="form-group">
-                    <label class="form-label">Date</label>
-                    <input type="date" id="newBookingDate" class="form-input">
+                    <label class="form-label" for="date"><span data-i18n="date">Date</span></label>
+                    <input type="date" id="date" name="date" class="form-input" required>
+                    <div class="quick-dates">
+                        <button type="button" id="btnToday" class="quick-date-btn" data-i18n="today">Today</button>
+                        <button type="button" id="btnTomorrow" class="quick-date-btn" data-i18n="tomorrow">Tomorrow</button>
+                        <button type="button" id="btnNextWeek" class="quick-date-btn" data-i18n="nextWeek">Next Week</button>
+                    </div>
                 </div>
+
+                <!-- Duration Buttons -->
                 <div class="form-group">
-                    <label class="form-label">Start Time</label>
-                    <select id="newBookingTime" class="form-input">
-                        <option value="08:00">8:00 AM</option>
-                        <option value="09:00">9:00 AM</option>
-                        <option value="10:00">10:00 AM</option>
-                        <option value="11:00">11:00 AM</option>
-                        <option value="12:00">12:00 PM</option>
-                        <option value="13:00">1:00 PM</option>
-                        <option value="14:00">2:00 PM</option>
-                        <option value="15:00">3:00 PM</option>
-                        <option value="16:00">4:00 PM</option>
-                        <option value="17:00">5:00 PM</option>
-                        <option value="18:00">6:00 PM</option>
-                        <option value="19:00">7:00 PM</option>
-                        <option value="20:00">8:00 PM</option>
-                        <option value="21:00">9:00 PM</option>
-                    </select>
+                    <label class="form-label"><span data-i18n="duration">Duration</span></label>
+                    <div class="selector-grid" id="durationSelector">
+                        <button type="button" class="selector-btn duration-btn selected" data-value="1">
+                            <div class="value">1</div>
+                            <div class="unit">hour</div>
+                        </button>
+                        <button type="button" class="selector-btn duration-btn" data-value="2">
+                            <div class="value">2</div>
+                            <div class="unit">hours</div>
+                        </button>
+                        <button type="button" class="selector-btn duration-btn" data-value="3">
+                            <div class="value">3</div>
+                            <div class="unit">hours</div>
+                        </button>
+                        <button type="button" class="selector-btn duration-btn" data-value="4">
+                            <div class="value">4</div>
+                            <div class="unit">hours</div>
+                        </button>
+                    </div>
+                    <input type="hidden" id="duration" name="duration" value="1">
                 </div>
-            </div>
 
-            <div class="form-row">
+                <!-- Courts Buttons -->
                 <div class="form-group">
-                    <label class="form-label">Duration</label>
-                    <select id="newBookingDuration" class="form-input" onchange="updateNewBookingPrice()">
-                        <option value="1">1 Hour</option>
-                        <option value="2">2 Hours</option>
-                        <option value="3">3 Hours</option>
-                        <option value="4">4 Hours</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Courts</label>
-                    <select id="newBookingCourts" class="form-input" onchange="updateNewBookingPrice()">
-                        <option value="1">1 Court</option>
-                        <option value="2">2 Courts</option>
-                        <option value="3">3 Courts</option>
-                        <option value="4">4 Courts</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Payment Method</label>
-                <select id="newBookingPayment" class="form-input" onchange="updateNewBookingPrice()">
-                    <option value="cash">💵 Cash (Pay on Arrival)</option>
-                    <option value="credits">🎫 Use Credits</option>
-                </select>
-            </div>
-
-            <!-- Payment Summary -->
-            <div class="summary-box" id="paymentSummary">
-                <div class="summary-row" id="summaryTotalHours">
-                    <span>Total Hours Needed</span>
-                    <span><span id="totalHoursNeeded">1</span> hrs</span>
-                </div>
-                <div class="summary-row" id="summaryCreditsUsed" style="display: none;">
-                    <span>🎫 Credits Used</span>
-                    <span style="color: var(--success);"><span id="creditsToUse">0</span> hrs</span>
-                </div>
-                <div class="summary-row" id="summaryCreditsRemaining" style="display: none;">
-                    <span>Credits Remaining After</span>
-                    <span><span id="creditsRemaining">0</span> hrs</span>
-                </div>
-                <div class="summary-row" id="summaryCashDue">
-                    <span>💵 Cash Due</span>
-                    <span style="font-size: 18px; font-weight: 800; color: var(--primary);">$<span id="newBookingPrice">15</span></span>
+                    <label class="form-label"><span data-i18n="courts">Courts</span></label>
+                    <div class="selector-grid" id="courtsSelector">
+                        <button type="button" class="selector-btn court-btn selected" data-value="1">
+                            <div class="value">1</div>
+                            <div class="unit">court</div>
+                        </button>
+                        <button type="button" class="selector-btn court-btn" data-value="2">
+                            <div class="value">2</div>
+                            <div class="unit">courts</div>
+                        </button>
+                        <button type="button" class="selector-btn court-btn" data-value="3">
+                            <div class="value">3</div>
+                            <div class="unit">courts</div>
+                        </button>
+                        <button type="button" class="selector-btn court-btn" data-value="4">
+                            <div class="value">4</div>
+                            <div class="unit">courts</div>
+                        </button>
+                    </div>
+                    <input type="hidden" id="courts" name="courts" value="1">
                 </div>
             </div>
 
-            <!-- Partial Payment Notice -->
-            <div id="partialPaymentNotice" style="display: none; padding: 12px 16px; background: rgba(99, 102, 241, 0.1); border-radius: 10px; margin-bottom: 16px; color: var(--primary); font-size: 13px;">
-                <strong>💳+💵 Partial Payment</strong><br>
-                Credits will cover <span id="partialCreditsHours">0</span> hrs, remaining <span id="partialCashHours">0</span> hrs paid by cash ($<span id="partialCashAmount">0</span>)
+            <!-- Time Slots Card -->
+            <div class="time-card">
+                <div class="time-header">
+                    <label class="form-label" style="margin-bottom: 0;"><span data-i18n="startTime">Select Time</span></label>
+                    <span id="availableCount" class="time-count"></span>
+                </div>
+                <p class="helper-text" style="margin-top: 0; margin-bottom: 12px;" data-i18n="selectFirst">Select date, duration, and courts first.</p>
+                <div id="timeLoadingMessage" class="time-loading" style="display: none;" data-i18n="checking">Checking availability...</div>
+                <div id="timeGrid" class="time-grid"></div>
+                <input type="hidden" id="selectedTime" name="time" required>
             </div>
 
-            <!-- Insufficient Credits Warning -->
-            <div id="insufficientCreditsWarning" style="display: none; padding: 12px 16px; background: var(--warning-light); border-radius: 10px; margin-bottom: 16px; color: var(--warning); font-size: 13px;">
-                âš ï¸ Not enough credits. Need <span id="hoursShort">0</span> more hours. Booking will be <strong>Partial Payment</strong> or select Cash.
+            <!-- Price Card -->
+            <div class="price-card">
+                <div class="price-card-inner">
+                    <div class="price-breakdown">
+                        <div class="price-breakdown-left">
+                            <span id="priceBreakdown">1 hour × 1 court</span>
+<span id="rateLabel">@ $13-$15/hour per court</span>
+                        </div>
+                        <div class="price-hours-badge"><span id="totalHours">1</span> total hrs</div>
+                    </div>
+                    <div class="price-total">
+                        <div class="price-total-left">
+                            <div class="label" data-i18n="totalAmount">Total Amount</div>
+                            <div class="amount">$<span id="totalPrice">15</span></div>
+                        </div>
+                        <div class="price-pay-badge" data-i18n="payOnArrival">💵 Pay on arrival</div>
+                    </div>
+                </div>
             </div>
 
-            <div class="modal-buttons">
-                <button class="btn btn-secondary" onclick="hideModal('newBookingModal')">Cancel</button>
-                <button class="btn btn-primary" onclick="createNewBooking()">Create Booking</button>
+            <!-- Location Card -->
+            <div class="location-card">
+                <div class="location-icon">📍</div>
+                <div class="location-info">
+                    <h3 data-i18n="location">TK Pickleball Courts</h3>
+                    <p data-i18n="locationDetails">Open daily 8:00 AM - 10:00 PM</p>
+                </div>
             </div>
+        </form>
+
+        <div class="btn-container">
+            <button type="submit" form="bookingForm" id="btnBook" class="btn-book" data-i18n="confirmBooking">🏓 Confirm Booking</button>
         </div>
     </div>
 
-    <!-- CANCEL BOOKING MODAL -->
-    <div id="cancelBookingModal" class="modal">
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="modal">
         <div class="modal-content">
-            <div class="modal-handle"></div>
-            <div class="modal-header">
-                <h2 class="modal-title">❌ Cancel Booking</h2>
-                <button class="modal-close" onclick="hideModal('cancelBookingModal')">✕</button>
-            </div>
-
-            <p style="color: var(--gray-600); margin-bottom: 16px;">Are you sure you want to cancel this booking?</p>
-
-            <div class="summary-box" id="cancelBookingDetails"></div>
-
-            <div id="cancelRefundInfo" style="background: var(--success-light); padding: 14px 16px; border-radius: 12px; margin-bottom: 16px; display: none; color: var(--success); font-weight: 500;">
-                💳 <span id="cancelRefundAmount">0</span> hours will be refunded
-            </div>
-
-            <div class="modal-buttons">
-                <button class="btn btn-secondary" onclick="hideModal('cancelBookingModal')">Keep</button>
-                <button class="btn btn-danger" onclick="confirmCancelBooking()">Cancel Booking</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- BOOKING INFO MODAL (View Only - For Past Bookings) -->
-    <div id="bookingInfoModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-handle"></div>
-            <div class="modal-header">
-                <h2 class="modal-title">📋 Booking Details</h2>
-                <button class="modal-close" onclick="hideModal('bookingInfoModal')">✕</button>
-            </div>
-
-            <div style="background: var(--gray-100); padding: 10px 14px; border-radius: 10px; margin-bottom: 16px; color: var(--gray-600); font-size: 13px; font-weight: 500;">
-                ⏳ This booking has already passed
-            </div>
-
-            <div class="summary-box" id="bookingInfoDetails"></div>
-
-            <div class="modal-buttons">
-                <button class="btn btn-primary btn-block" onclick="hideModal('bookingInfoModal')">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ACTIVATION CODE MODAL -->
-    <div id="activationCodeModal" class="modal code-modal">
-        <div class="modal-content">
-            <div class="code-success-icon">✔</div>
-            <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 4px;">Code Generated!</h2>
-            <p style="color: var(--gray-500); font-size: 14px;">Give this code to the customer</p>
+            <h2 class="modal-header">🏓 <span data-i18n="confirmTitle">Confirm Booking</span></h2>
+            <div id="confirmDetails" class="modal-details"></div>
             
-            <div class="code-display" id="activationCodeDisplay" onclick="copyActivationCode()">0000</div>
-            
-            <div class="code-info">
-                <div class="code-info-row">
-                    <span class="code-info-label">Package</span>
-                    <span class="code-info-value" id="codePackageName">-</span>
+            <!-- Payment Options -->
+            <div id="paymentOptions" class="payment-options">
+                <!-- Full Credits Option -->
+                <div id="creditPaymentOption" class="payment-option" onclick="selectPaymentMethod('credits')">
+                    <div class="payment-option-content">
+                        <span class="payment-option-icon">💳</span>
+                        <div class="payment-option-details">
+                            <div class="payment-option-header">
+                                <span class="payment-option-title">Pay with Credits</span>
+                                <span class="payment-option-price" id="creditOptionPrice">FREE</span>
+                            </div>
+                            <div class="payment-option-subtitle">
+                                Use <span id="creditsToUse">0</span> hrs • Balance: <span id="creditsRemaining">0</span> hrs left
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="code-info-row">
-                    <span class="code-info-label">Hours</span>
-                    <span class="code-info-value" id="codeHoursAdded">-</span>
+                
+                <!-- Partial Credits Option -->
+                <div id="partialPaymentOption" class="payment-option" onclick="selectPaymentMethod('partial')" style="display: none;">
+                    <div class="payment-option-content">
+                        <span class="payment-option-icon">💳+💵</span>
+                        <div class="payment-option-details">
+                            <div class="payment-option-header">
+                                <span class="payment-option-title">Credits + Cash</span>
+                                <span class="payment-option-price" id="partialOptionPrice">$0</span>
+                            </div>
+                            <div class="payment-option-subtitle">
+                                Use <span id="partialCreditsToUse">0</span> hrs credits + $<span id="partialCashDue">0</span> on arrival
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="code-info-row">
-                    <span class="code-info-label">Collect</span>
-                    <span class="code-info-value" id="codeAmountCollect">-</span>
+                
+                <!-- Cash on Arrival Option -->
+                <div id="arrivalPaymentOption" class="payment-option selected" onclick="selectPaymentMethod('arrival')">
+                    <div class="payment-option-content">
+                        <span class="payment-option-icon">💵</span>
+                        <div class="payment-option-details">
+                            <div class="payment-option-header">
+                                <span class="payment-option-title">Pay on Arrival</span>
+                                <span class="payment-option-price">$<span id="arrivalPrice">0</span></span>
+                            </div>
+                            <div class="payment-option-subtitle">Pay full amount at the counter</div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <div class="code-instructions">
-                📱 Customer enters code in Telegram bot:<br>
-                <strong>Menu → Activate Credits → Enter Code</strong>
-            </div>
+            <input type="hidden" id="selectedPaymentMethod" value="arrival">
             
             <div class="modal-buttons">
-                <button class="btn btn-primary" id="copyCodeBtn" onclick="copyActivationCode()">📋 Copy Code</button>
-                <button class="btn btn-secondary" onclick="hideActivationCodeModal()">Done</button>
+                <button id="confirmCancel" class="modal-btn modal-btn-cancel" data-i18n="cancel">Cancel</button>
+                <button id="confirmSubmit" class="modal-btn modal-btn-confirm" data-i18n="confirm">Confirm</button>
             </div>
         </div>
     </div>
 
-    <!-- VIEW CUSTOMER MODAL -->
-    <div id="viewCustomerModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-handle"></div>
-            <div id="viewCustomerContent"></div>
-            <button class="btn btn-secondary btn-block" onclick="hideModal('viewCustomerModal')" style="margin-top: 20px;">Close</button>
-        </div>
-    </div>
+<script>
+    // ============================================
+    // CONFIGURATION & CONSTANTS
+    // ============================================
+    const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbySlkS8Yb3ACIfh5izbul6FfwTxgzrWg4_SnEMHsC21JyiaC1V9fak4GQFP4w3FvyjYPw/exec';
+    const AUTO_REFRESH_INTERVAL = 30000;
+    // Dynamic Pricing Configuration
+const PRICING = {
+    WEEKDAY_OFFPEAK: 13,  // Weekdays 8am-5pm
+    WEEKDAY_PEAK: 15,     // Weekdays 5pm-10pm
+    WEEKEND: 15,          // Weekends all day
+    PEAK_START_HOUR: 17   // 5pm = hour 17
+};
 
-    <!-- LOADING OVERLAY -->
-    <div id="loadingOverlay" class="loading-overlay">
-        <div class="spinner"></div>
-        <p class="loading-text">Loading...</p>
-    </div>
+/**
+ * Calculate dynamic price based on date, time, duration, courts
+ */
+function calculateDynamicPrice(dateStr, startTime, hours, courts) {
+    const bookingDate = new Date(dateStr);
+    const startHour = parseInt(String(startTime).split(':')[0]);
+    const dayOfWeek = bookingDate.getDay(); // 0 = Sunday, 6 = Saturday
+    const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+    
+    let totalPrice = 0;
+    
+    for (let h = 0; h < hours; h++) {
+        const slotHour = startHour + h;
+        let rate;
+        
+        if (isWeekend) {
+            rate = PRICING.WEEKEND;
+        } else if (slotHour >= PRICING.PEAK_START_HOUR) {
+            rate = PRICING.WEEKDAY_PEAK;
+        } else {
+            rate = PRICING.WEEKDAY_OFFPEAK;
+        }
+        
+        totalPrice += rate * courts;
+    }
+    
+    return totalPrice;
+}
 
-    <!-- TOAST -->
-    <div id="toast" class="toast"></div>
+/**
+ * Calculate dynamic price based on date, time, duration, courts
+ */
+function calculateCashDueForRemainingHours(dateStr, startTime, duration, courts, creditsUsed) {
+    const bookingDate = new Date(dateStr);
+    const startHour = parseInt(String(startTime).split(':')[0]);
+    const dayOfWeek = bookingDate.getDay(); // 0 = Sunday, 6 = Saturday
+    const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+    
+    const totalHours = duration * courts;
+    const remainingHours = totalHours - creditsUsed;
+    
+    if (remainingHours <= 0) return 0;
+    
+    // Build array of all court-hours in chronological order
+    const courtHours = [];
+    
+    for (let h = 0; h < duration; h++) {
+        const slotHour = startHour + h;
+        let rate;
+        
+        if (isWeekend) {
+            rate = PRICING.WEEKEND; // $15
+        } else if (slotHour >= PRICING.PEAK_START_HOUR) {
+            rate = PRICING.WEEKDAY_PEAK; // $15
+        } else {
+            rate = PRICING.WEEKDAY_OFFPEAK; // $13
+        }
+        
+        // Add one entry per court for this time slot
+        for (let c = 0; c < courts; c++) {
+            courtHours.push({ slot: h, hour: slotHour, court: c, rate: rate });
+        }
+    }
+    
+    // Credits cover the FIRST N court-hours
+    // Customer pays for the LAST (remainingHours) court-hours
+    const paidHours = courtHours.slice(-remainingHours);
+    
+    let cashDue = 0;
+    for (const ch of paidHours) {
+        cashDue += ch.rate;
+    }
+    
+    console.log('calculateCashDueForRemainingHours:');
+    console.log('  Total court-hours:', totalHours);
+    console.log('  Credits used:', creditsUsed);
+    console.log('  Remaining hours:', remainingHours);
+    console.log('  Paid by customer:', paidHours.map(ch => '$' + ch.rate));
+    console.log('  Cash due: $' + cashDue);
+    
+    return cashDue;
+}
+/**
+ * Get rate label for display
+ */
+function getRateLabel(dateStr, startTime) {
+    const bookingDate = new Date(dateStr);
+    const startHour = parseInt(String(startTime).split(':')[0]);
+    const dayOfWeek = bookingDate.getDay();
+    const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+    
+    if (isWeekend) {
+        return { en: 'Weekend Rate: $15/hr', km: 'តម្លៃចុងសប្តាហ៍: $15/ម៉ោង' };
+    } else if (startHour >= PRICING.PEAK_START_HOUR) {
+        return { en: 'Peak Rate: $15/hr', km: 'តម្លៃម៉ោងកំពូល: $15/ម៉ោង' };
+    }
+    return { en: 'Off-Peak Rate: $13/hr', km: 'តម្លៃម៉ោងធម្មតា: $13/ម៉ោង' };
+}
+    let autoRefreshTimer = null;
+    let currentLang = 'en';
+    const availabilityCache = new Map();
+    const CACHE_DURATION = 30000;
 
-    <script>
-        // ============================================
-        // CONFIGURATION
-        // ============================================
-        const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbySlkS8Yb3ACIfh5izbul6FfwTxgzrWg4_SnEMHsC21JyiaC1V9fak4GQFP4w3FvyjYPw/exec';
-        const ADMIN_PIN = '1234';
+    // Credit system variables
+    let userCreditBalance = 0;
+    let selectedPaymentMethod = 'arrival';
 
-        const PRICING = {
-            WEEKDAY_OFFPEAK: 13,
-            WEEKDAY_PEAK: 15,
-            WEEKEND: 15,
-            PEAK_START_HOUR: 17
+    const TIME_SLOTS = [
+        { value: '08:00', label: '8:00 AM' },
+        { value: '09:00', label: '9:00 AM' },
+        { value: '10:00', label: '10:00 AM' },
+        { value: '11:00', label: '11:00 AM' },
+        { value: '12:00', label: '12:00 PM' },
+        { value: '13:00', label: '1:00 PM' },
+        { value: '14:00', label: '2:00 PM' },
+        { value: '15:00', label: '3:00 PM' },
+        { value: '16:00', label: '4:00 PM' },
+        { value: '17:00', label: '5:00 PM' },
+        { value: '18:00', label: '6:00 PM' },
+        { value: '19:00', label: '7:00 PM' },
+        { value: '20:00', label: '8:00 PM' },
+        { value: '21:00', label: '9:00 PM' }
+    ];
+
+    // ============================================
+    // TRANSLATIONS
+    // ============================================
+    const translations = {
+        en: {
+            title: 'TK PICKLEBALL',
+            subtitle: 'Book your court in seconds',
+            fullName: 'Name',
+            namePlaceholder: 'Enter your name',
+            phoneNumber: 'Phone',
+            phonePlaceholder: '012-345-6789',
+            date: 'Date',
+            today: 'Today',
+            tomorrow: 'Tomorrow',
+            nextWeek: 'Next Week',
+            duration: 'Duration',
+            hours: 'Hour(s)',
+            courts: 'Courts',
+            selectCourts: 'Select courts',
+            court: 'Court',
+            startTime: 'Select Time',
+            selectFirst: 'Select date, duration, and courts first.',
+            hideFull: 'Hide full slots',
+            checking: 'Checking availability...',
+            totalAmount: 'Total Amount',
+            payOnArrival: '💵 Pay on arrival',
+            location: 'TK Pickleball Courts',
+            locationDetails: 'Open daily 8:00 AM - 10:00 PM',
+            confirmBooking: '🏓 Confirm Booking',
+            processing: 'Processing your booking...',
+            confirmTitle: 'Confirm Booking',
+            cancel: 'Cancel',
+            confirm: 'Confirm',
+            courtsAvailable: 'open',
+            full: 'Full',
+            noSlots: 'No available time slots. Try a different date or fewer courts.',
+            errorTelegram: 'Error: Please open this app from Telegram.',
+            errorFillFields: 'Please fill in all fields and select a time',
+            successBooked: 'Booking confirmed! See you at the court! 🎉',
+            successBookedCredits: 'Booking confirmed! Credits applied. See you! 🎉',
+            errorDoubleBooked: 'This slot was just booked. Please select another time.',
+            errorBookingFailed: 'Booking failed. Please try again.',
+            errorConnection: 'Connection error. Please check your internet.',
+            modalDate: 'Date',
+            modalTime: 'Time',
+            modalDuration: 'Duration',
+            modalCourts: 'Courts',
+            modalName: 'Name',
+            modalPhone: 'Phone',
+            modalTotal: 'Total',
+            hour: 'hour',
+            pastTimeError: 'This time slot has passed.',
+            noSlotsToday: 'No more slots today. Try tomorrow!',
+            insufficientCredits: 'Not enough credits. Need {{needed}} hrs, have {{have}} hrs.'
+        },
+        km: {
+            title: 'TK PICKLEBALL',
+            subtitle: 'កក់ទីលានរបស់អ្នកក្នុងពេលប៉ុន្មានវិនាទី',
+            fullName: 'ឈ្មោះ',
+            namePlaceholder: 'បញ្ចូលឈ្មោះរបស់អ្នក',
+            phoneNumber: 'ទូរស័ព្ទ',
+            phonePlaceholder: '០១២-៣៤៥-៦៧៨៩',
+            date: 'កាលបរិច្ឆេទ',
+            today: 'ថ្ងៃនេះ',
+            tomorrow: 'ថ្ងៃស្អែក',
+            nextWeek: 'សប្តាហ៍ក្រោយ',
+            duration: 'រយៈពេល',
+            hours: 'ម៉ោង',
+            courts: 'ទីលាន',
+            selectCourts: 'ជ្រើសរើសទីលាន',
+            court: 'ទីលាន',
+            startTime: 'ជ្រើសរើសពេលវេលា',
+            selectFirst: 'សូមជ្រើសរើសកាលបរិច្ឆេទ រយៈពេល និងទីលានសិន។',
+            hideFull: 'លាក់ទីលានពេញ',
+            checking: 'កំពុងពិនិត្យ...',
+            totalAmount: 'ចំនួនសរុប',
+            payOnArrival: '💵 បង់នៅពេលមកដល់',
+            location: 'ទីលាន TK Pickleball',
+            locationDetails: 'បើកប្រចាំថ្ងៃ ម៉ោង ៨ព្រឹក - ១០យប់',
+            confirmBooking: '🏓 បញ្ជាក់ការកក់',
+            processing: 'កំពុងដំណើរការ...',
+            confirmTitle: 'បញ្ជាក់ការកក់',
+            cancel: 'បោះបង់',
+            confirm: 'បញ្ជាក់',
+            courtsAvailable: 'ទំនេរ',
+            full: 'ពេញ',
+            noSlots: 'គ្មានពេលវេលាទំនេរ។ សូមសាកល្បងថ្ងៃផ្សេង។',
+            errorTelegram: 'កំហុស៖ សូមបើកកម្មវិធីនេះពី Telegram។',
+            errorFillFields: 'សូមបំពេញវាលទាំងអស់ និងជ្រើសរើសពេលវេលា',
+            successBooked: 'ការកក់បានបញ្ជាក់! ជួបគ្នានៅទីលាន! 🎉',
+            successBookedCredits: 'ការកក់បានបញ្ជាក់! ឥណទានត្រូវបានអនុវត្ត។ 🎉',
+            errorDoubleBooked: 'ពេលវេលានេះទើបត្រូវបានកក់។ សូមជ្រើសរើសពេលផ្សេង។',
+            errorBookingFailed: 'ការកក់បរាជ័យ។ សូមសាកល្បងម្តងទៀត។',
+            errorConnection: 'កំហុសការតភ្ជាប់។ សូមពិនិត្យអ៊ីនធឺណិត។',
+            modalDate: 'កាលបរិច្ឆេទ',
+            modalTime: 'ពេលវេលា',
+            modalDuration: 'រយៈពេល',
+            modalCourts: 'ទីលាន',
+            modalName: 'ឈ្មោះ',
+            modalPhone: 'ទូរស័ព្ទ',
+            modalTotal: 'សរុប',
+            hour: 'ម៉ោង',
+            pastTimeError: 'ពេលវេលានេះបានកន្លងផុតហើយ។',
+            noSlotsToday: 'គ្មានពេលវេលាសម្រាប់ថ្ងៃនេះទៀតទេ។ សូមសាកល្បងថ្ងៃស្អែក!',
+            insufficientCredits: 'ឥណទានមិនគ្រប់គ្រាន់។ ត្រូវការ {{needed}} ម៉ោង មាន {{have}} ម៉ោង។'
+        }
+    };
+
+    // ============================================
+    // LANGUAGE SWITCHING
+    // ============================================
+    function switchLanguage(lang) {
+        currentLang = lang;
+        localStorage.setItem('preferredLang', lang);
+
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.lang === lang);
+        });
+
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (translations[lang][key]) {
+                el.innerHTML = translations[lang][key];
+            }
+        });
+
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-i18n-placeholder');
+            if (translations[lang][key]) {
+                el.placeholder = translations[lang][key];
+            }
+        });
+    }
+
+    // ============================================
+    // UTILITY FUNCTIONS
+    // ============================================
+    function showMessage(message, type = 'error') {
+        const messageBox = document.getElementById('messageBox');
+        messageBox.textContent = message;
+        messageBox.className = `message ${type} show`;
+        setTimeout(() => messageBox.classList.remove('show'), 5000);
+    }
+
+    function showLoading(show = true) {
+        const loadingBox = document.getElementById('loadingBox');
+        const form = document.getElementById('bookingForm');
+        const btnBook = document.getElementById('btnBook');
+        
+        if (show) {
+            loadingBox.classList.add('show');
+            form.style.display = 'none';
+            btnBook.disabled = true;
+        } else {
+            loadingBox.classList.remove('show');
+            form.style.display = 'block';
+            btnBook.disabled = false;
+        }
+    }
+
+    function formatDate(date) {
+        const d = new Date(date);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    function getTelegramUserData() {
+        if (typeof Telegram !== 'undefined' && Telegram.WebApp && Telegram.WebApp.initDataUnsafe) {
+            const user = Telegram.WebApp.initDataUnsafe.user;
+            if (user) {
+                return {
+                    telegram_id: user.id,
+                    first_name: user.first_name || '',
+                    last_name: user.last_name || '',
+                    username: user.username || ''
+                };
+            }
+        }
+        return null;
+    }
+
+    // ============================================
+    // CREDIT FUNCTIONS
+    // ============================================
+    async function checkUserCredits() {
+        const telegramUser = getTelegramUserData();
+        if (!telegramUser) {
+            console.log('No Telegram user data available');
+            return 0;
+        }
+
+        try {
+            const url = `${BACKEND_URL}?action=checkCredits&telegram_id=${telegramUser.telegram_id}`;
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (data.success && data.balance > 0) {
+                userCreditBalance = data.balance;
+                updateCreditBanner();
+                console.log('✅ User has ' + userCreditBalance + ' credit hours');
+                return data.balance;
+            }
+        } catch (e) {
+            console.log('Could not check credits:', e);
+        }
+
+        userCreditBalance = 0;
+        updateCreditBanner();
+        return 0;
+    }
+
+    function updateCreditBanner() {
+        const banner = document.getElementById('creditBanner');
+        const balanceDisplay = document.getElementById('creditBalanceDisplay');
+
+        if (userCreditBalance > 0) {
+            banner.classList.add('show');
+            balanceDisplay.textContent = userCreditBalance;
+        } else {
+            banner.classList.remove('show');
+        }
+    }
+
+    function selectPaymentMethod(method) {
+        const duration = parseInt(document.getElementById('duration').value) || 1;
+        const courts = parseInt(document.getElementById('courts').value) || 1;
+        const totalHours = duration * courts;
+
+        if (method === 'credits' && userCreditBalance < totalHours) {
+            showMessage(translations[currentLang].insufficientCredits
+                .replace('{{needed}}', totalHours)
+                .replace('{{have}}', userCreditBalance), 'error');
+            return;
+        }
+
+        selectedPaymentMethod = method;
+        document.getElementById('selectedPaymentMethod').value = method;
+
+        document.querySelectorAll('.payment-option').forEach(opt => {
+            opt.classList.remove('selected');
+        });
+
+        if (method === 'credits') {
+            document.getElementById('creditPaymentOption').classList.add('selected');
+        } else if (method === 'partial') {
+            document.getElementById('partialPaymentOption').classList.add('selected');
+        } else {
+            document.getElementById('arrivalPaymentOption').classList.add('selected');
+        }
+
+        if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
+            Telegram.WebApp.HapticFeedback.impactOccurred('light');
+        }
+    }
+
+    // ============================================
+    // USER DATA FUNCTIONS
+    // ============================================
+    async function prefillUserData() {
+        const telegramUser = getTelegramUserData();
+        
+        if (telegramUser) {
+            const fullName = `${telegramUser.first_name} ${telegramUser.last_name || ''}`.trim();
+            if (fullName) {
+                document.getElementById('name').value = fullName;
+            }
+            
+            try {
+                const url = `${BACKEND_URL}?action=getUserInfo&telegram_id=${telegramUser.telegram_id}`;
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.success && data.phone) {
+                    document.getElementById('phone').value = data.phone;
+                    console.log('✅ Auto-filled phone from previous booking');
+                }
+            } catch (e) {
+                console.log('Could not prefill user data:', e);
+            }
+        }
+    }
+
+    // ============================================
+    // PRICE & SELECTION FUNCTIONS
+    // ============================================
+  function updatePrice() {
+    const duration = parseInt(document.getElementById('duration').value) || 1;
+    const courts = parseInt(document.getElementById('courts').value) || 1;
+    const totalHours = duration * courts;
+    
+    const dateInput = document.getElementById('date');
+    const selectedTime = document.querySelector('.time-slot.selected');
+    
+    let totalPrice;
+    let rateText = '@ $15/hour per court';
+    
+    if (dateInput && dateInput.value && selectedTime) {
+        const time = selectedTime.dataset.time;
+        totalPrice = calculateDynamicPrice(dateInput.value, time, duration, courts);
+        const rateInfo = getRateLabel(dateInput.value, time);
+        rateText = rateInfo[currentLang] || rateInfo.en;
+    } else if (dateInput && dateInput.value) {
+        // No time selected yet - show range or default
+        totalPrice = duration * courts * PRICING.WEEKDAY_OFFPEAK; // Show minimum
+        rateText = currentLang === 'km' ? '$13-$15/ម៉ោង' : '$13-$15/hr';
+    } else {
+        totalPrice = duration * courts * PRICING.WEEKDAY_PEAK; // Default to peak
+    }
+    
+    document.getElementById('totalPrice').textContent = totalPrice;
+    document.getElementById('totalHours').textContent = totalHours;
+    document.getElementById('priceBreakdown').textContent = 
+        `${duration} ${duration === 1 ? 'hour' : 'hours'} × ${courts} ${courts === 1 ? 'court' : 'courts'}`;
+    
+    // Update rate label if element exists
+    const rateLabel = document.getElementById('rateLabel');
+    if (rateLabel) {
+        rateLabel.textContent = rateText;
+    }
+}
+
+    function selectDuration(value) {
+        document.getElementById('duration').value = value;
+        
+        document.querySelectorAll('.duration-btn').forEach(btn => {
+            btn.classList.toggle('selected', btn.dataset.value === String(value));
+        });
+        
+        if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
+            Telegram.WebApp.HapticFeedback.impactOccurred('light');
+        }
+        
+        updatePrice();
+        checkAndLoadAvailability();
+    }
+
+    function selectCourts(value) {
+        document.getElementById('courts').value = value;
+        
+        document.querySelectorAll('.court-btn').forEach(btn => {
+            btn.classList.toggle('selected', btn.dataset.value === String(value));
+        });
+        
+        if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
+            Telegram.WebApp.HapticFeedback.impactOccurred('light');
+        }
+        
+        updatePrice();
+        checkAndLoadAvailability();
+    }
+
+    function setQuickDate(days) {
+        const dateInput = document.getElementById('date');
+        const today = new Date();
+        today.setDate(today.getDate() + days);
+        dateInput.value = formatDate(today);
+        dateInput.dispatchEvent(new Event('change'));
+    }
+
+    function addQuickRebookButton() {
+        const lastBooking = localStorage.getItem('lastBooking');
+        
+        if (lastBooking) {
+            const data = JSON.parse(lastBooking);
+            const quickDatesDiv = document.querySelector('.quick-dates');
+            
+            if (document.getElementById('rebookBtn')) return;
+            
+            const rebookBtn = document.createElement('button');
+            rebookBtn.id = 'rebookBtn';
+            rebookBtn.type = 'button';
+            rebookBtn.className = 'quick-date-btn';
+            rebookBtn.style.background = 'linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%)';
+            rebookBtn.style.color = 'white';
+            rebookBtn.style.border = 'none';
+            rebookBtn.innerHTML = '🔄 Same as Last';
+            
+            rebookBtn.onclick = () => {
+                selectDuration(parseInt(data.duration));
+                selectCourts(parseInt(data.courts));
+                
+                if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
+                    Telegram.WebApp.HapticFeedback.impactOccurred('light');
+                }
+            };
+            
+            quickDatesDiv.appendChild(rebookBtn);
+        }
+    }
+
+    // ============================================
+    // AVAILABILITY FUNCTIONS
+    // ============================================
+    let availabilityCheckTimeout = null;
+
+    function checkAndLoadAvailability() {
+        clearTimeout(availabilityCheckTimeout);
+        
+        const loadingMsg = document.getElementById('timeLoadingMessage');
+        loadingMsg.style.display = 'block';
+        
+        availabilityCheckTimeout = setTimeout(async () => {
+            await performAvailabilityCheck();
+        }, 500);
+    }
+
+    async function performAvailabilityCheck() {
+        const date = document.getElementById('date').value;
+        const duration = document.getElementById('duration').value;
+        const courts = document.getElementById('courts').value;
+
+        if (!date || !duration || !courts) {
+            document.getElementById('timeLoadingMessage').style.display = 'none';
+            return;
+        }
+
+        const cacheKey = `${date}_${duration}_${courts}`;
+        
+        const cached = availabilityCache.get(cacheKey);
+        if (cached && (Date.now() - cached.timestamp < CACHE_DURATION)) {
+            console.log('✅ Using cached availability');
+            renderTimeSlots(cached.data);
+            document.getElementById('timeLoadingMessage').style.display = 'none';
+            return;
+        }
+
+        showSkeletonSlots();
+
+        try {
+            const url = `${BACKEND_URL}?action=checkAvailability&date=${date}&duration=${duration}&courts=${courts}`;
+            const response = await fetch(url);
+            const data = await response.json();
+
+            document.getElementById('timeLoadingMessage').style.display = 'none';
+
+            if (data.status === 'success') {
+                availabilityCache.set(cacheKey, {
+                    timestamp: Date.now(),
+                    data: data.availability
+                });
+                
+                console.log('✅ Cached availability for:', cacheKey);
+                renderTimeSlots(data.availability);
+            } else {
+                showMessage(data.error || translations[currentLang].errorConnection, 'error');
+            }
+        } catch (error) {
+            console.error('💥 Fetch error:', error);
+            document.getElementById('timeLoadingMessage').style.display = 'none';
+            showMessage(translations[currentLang].errorConnection, 'error');
+        }
+    }
+
+    function renderTimeSlots(availability) {
+        const timeGrid = document.getElementById('timeGrid');
+        const requestedCourts = parseInt(document.getElementById('courts').value);
+        const selectedDate = document.getElementById('date').value;
+        
+        timeGrid.innerHTML = '';
+
+        if (!availability || Object.keys(availability).length === 0) {
+            timeGrid.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--gray);">${translations[currentLang].noSlots}</p>`;
+            document.getElementById('availableCount').textContent = '0 available';
+            return;
+        }
+
+        const now = new Date();
+        const todayStr = formatDate(now);
+        const isToday = (selectedDate === todayStr);
+        const currentHour = now.getHours();
+
+        let hasAnySlots = false;
+        let availableSlotCount = 0;
+
+        TIME_SLOTS.forEach(slot => {
+            const slotHour = parseInt(slot.value.split(':')[0]);
+            const availableCourts = availability[slot.value] ?? 0;
+            
+            const isPastSlot = isToday && slotHour <= currentHour;
+            if (isPastSlot) {
+                return;
+            }
+            
+            const isAvailable = availableCourts >= requestedCourts;
+            hasAnySlots = true;
+            if (isAvailable) availableSlotCount++;
+
+            const slotDiv = document.createElement('div');
+            
+            let slotClass = 'time-slot';
+            if (!isAvailable) {
+                slotClass += ' unavailable';
+            } else if (availableCourts === requestedCourts) {
+                slotClass += ' available almost-full';
+            } else if (availableCourts > requestedCourts + 2) {
+                slotClass += ' available plenty';
+            } else {
+                slotClass += ' available';
+            }
+            
+            slotDiv.className = slotClass;
+            slotDiv.dataset.time = slot.value;
+
+            const courtsText = isAvailable 
+                ? (availableCourts > requestedCourts + 2 ? `✓ ${availableCourts} ${translations[currentLang].courtsAvailable}` :
+                   availableCourts === requestedCourts ? `! ${availableCourts} left` :
+                   `${availableCourts} ${translations[currentLang].courtsAvailable}`)
+                : (availableCourts > 0 ? `${availableCourts} ${translations[currentLang].courtsAvailable}` : `● ${translations[currentLang].full}`);
+
+            slotDiv.innerHTML = `
+                <div class="time">${slot.label}</div>
+                <div class="courts-info">${courtsText}</div>
+            `;
+
+            if (isAvailable) {
+                slotDiv.addEventListener('click', () => selectTimeSlot(slot.value));
+            }
+
+            timeGrid.appendChild(slotDiv);
+        });
+
+        document.getElementById('availableCount').textContent = `${availableSlotCount} available`;
+
+        if (!hasAnySlots) {
+            const message = isToday ? translations[currentLang].noSlotsToday : translations[currentLang].noSlots;
+            timeGrid.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--gray);">${message}</p>`;
+        }
+    }
+
+    function showSkeletonSlots() {
+        const timeGrid = document.getElementById('timeGrid');
+        timeGrid.innerHTML = '';
+        
+        for (let i = 0; i < 12; i++) {
+            const skeleton = document.createElement('div');
+            skeleton.className = 'time-slot skeleton';
+            skeleton.innerHTML = `
+                <div class="time" style="background: #e0e0e0; border-radius: 4px; height: 18px; width: 60%; margin: 0 auto;"></div>
+                <div class="courts-info" style="background: #e0e0e0; border-radius: 4px; height: 12px; width: 70%; margin: 6px auto 0;"></div>
+            `;
+            timeGrid.appendChild(skeleton);
+        }
+    }
+
+   function selectTimeSlot(time) {
+    if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
+        Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+    }
+    
+    document.querySelectorAll('.time-slot').forEach(slot => {
+        slot.classList.remove('selected');
+    });
+
+    const selectedSlot = document.querySelector(`[data-time="${time}"]`);
+    if (selectedSlot) {
+        selectedSlot.classList.add('selected');
+    }
+
+    document.getElementById('selectedTime').value = time;
+    document.getElementById('btnBook').disabled = false;
+    
+    // Update price based on selected time (for dynamic pricing)
+    updatePrice();
+}
+
+    // ============================================
+    // FORM SUBMISSION & BOOKING
+    // ============================================
+    function showConfirmationModal() {
+        const name = document.getElementById('name').value;
+        const phone = document.getElementById('phone').value;
+        const date = document.getElementById('date').value;
+        const time = document.getElementById('selectedTime').value;
+        const duration = parseInt(document.getElementById('duration').value);
+        const courts = parseInt(document.getElementById('courts').value);
+        const totalPrice = calculateDynamicPrice(date, time, duration, courts);
+document.getElementById('totalPrice').textContent = totalPrice;
+        const totalHours = duration * courts;
+
+        if (!name || !phone || !date || !time || !duration || !courts) {
+            showMessage(translations[currentLang].errorFillFields, 'error');
+            return false;
+        }
+
+        const now = new Date();
+        const todayStr = formatDate(now);
+        const isToday = (date === todayStr);
+        
+        if (isToday) {
+            const selectedHour = parseInt(time.split(':')[0]);
+            const currentHour = now.getHours();
+            
+            if (selectedHour <= currentHour) {
+                showMessage('⚠️ ' + translations[currentLang].pastTimeError, 'error');
+                availabilityCache.clear();
+                checkAndLoadAvailability();
+                return false;
+            }
+        }
+
+        if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
+            Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+        }
+
+        const timeLabel = TIME_SLOTS.find(slot => slot.value === time)?.label || time;
+        const durationText = duration === 1 ? translations[currentLang].hour : translations[currentLang].hours;
+
+        const confirmDetails = document.getElementById('confirmDetails');
+        confirmDetails.innerHTML = `
+            <strong>${translations[currentLang].modalDate}:</strong> ${date}<br>
+            <strong>${translations[currentLang].modalTime}:</strong> ${timeLabel}<br>
+            <strong>${translations[currentLang].modalDuration}:</strong> ${duration} ${durationText}<br>
+            <strong>${translations[currentLang].modalCourts}:</strong> ${courts}<br>
+            <strong>${translations[currentLang].modalName}:</strong> ${name}<br>
+            <strong>${translations[currentLang].modalPhone}:</strong> ${phone}
+        `;
+
+        // Setup payment options
+        const creditOption = document.getElementById('creditPaymentOption');
+        const partialOption = document.getElementById('partialPaymentOption');
+        const arrivalOption = document.getElementById('arrivalPaymentOption');
+        
+        const creditsToUseSpan = document.getElementById('creditsToUse');
+        const creditsRemainingSpan = document.getElementById('creditsRemaining');
+        const arrivalPriceSpan = document.getElementById('arrivalPrice');
+        const creditOptionPrice = document.getElementById('creditOptionPrice');
+        
+        const partialCreditsSpan = document.getElementById('partialCreditsToUse');
+        const partialCashSpan = document.getElementById('partialCashDue');
+        const partialOptionPrice = document.getElementById('partialOptionPrice');
+
+        arrivalPriceSpan.textContent = totalPrice;
+
+        const hasEnoughCredits = userCreditBalance >= totalHours;
+        const hasPartialCredits = userCreditBalance > 0 && userCreditBalance < totalHours;
+
+        creditOption.style.display = 'none';
+        partialOption.style.display = 'none';
+        creditOption.classList.remove('selected', 'disabled');
+        partialOption.classList.remove('selected', 'disabled');
+        arrivalOption.classList.remove('selected');
+
+        if (hasEnoughCredits) {
+            creditOption.style.display = 'block';
+            creditsToUseSpan.textContent = totalHours;
+            creditsRemainingSpan.textContent = userCreditBalance - totalHours;
+            creditOptionPrice.textContent = 'FREE';
+            creditOption.onclick = () => selectPaymentMethod('credits');
+            partialOption.style.display = 'none';
+            selectPaymentMethod('credits');
+            
+        } else if (hasPartialCredits) {
+    creditOption.style.display = 'none';
+    partialOption.style.display = 'block';
+    const partialCreditsUsed = userCreditBalance;
+    const cashDue = calculateCashDueForRemainingHours(date, time, duration, courts, partialCreditsUsed);
+    
+    partialCreditsSpan.textContent = partialCreditsUsed;
+    partialCashSpan.textContent = cashDue;
+    partialOptionPrice.textContent = '$' + cashDue;
+    partialOption.onclick = () => selectPaymentMethod('partial');
+    selectPaymentMethod('partial');
+} else {
+            creditOption.style.display = 'none';
+            partialOption.style.display = 'none';
+            selectPaymentMethod('arrival');
+        }
+
+        const modal = document.getElementById('confirmModal');
+        modal.style.display = 'flex';
+        return false;
+    }
+
+    function hideConfirmationModal() {
+        const modal = document.getElementById('confirmModal');
+        modal.style.display = 'none';
+    }
+
+    async function submitBooking() {
+        hideConfirmationModal();
+        
+        if (!navigator.onLine) {
+            showMessage('❌ No internet connection.', 'error');
+            return;
+        }
+        
+        showLoading(true);
+
+        const telegramUser = getTelegramUserData();
+        if (!telegramUser) {
+            showLoading(false);
+            showMessage(translations[currentLang].errorTelegram, 'error');
+            return;
+        }
+
+        const name = document.getElementById('name').value;
+        const phone = document.getElementById('phone').value;
+        const date = document.getElementById('date').value;
+        const time = document.getElementById('selectedTime').value;
+        const duration = document.getElementById('duration').value;
+        const courts = document.getElementById('courts').value;
+        const paymentMethod = document.getElementById('selectedPaymentMethod').value;
+        const totalHours = parseInt(duration) * parseInt(courts);
+
+        console.log('📤 Submitting booking:', {
+            name, phone, date, time, duration, courts,
+            telegram_id: telegramUser.telegram_id,
+            paymentMethod: paymentMethod
+        });
+
+        const formData = {
+            action: 'book',
+            name: name,
+            phone: phone,
+            date: date,
+            time: time,
+            duration: duration,
+            courts: courts,
+            telegram_id: telegramUser.telegram_id,
+            payment_method: paymentMethod,
+            source: 'telegram_miniapp'
         };
 
-        const PACKAGES = [
-            { id: 'starter', name: 'Starter', hours: 5, price: 65, savings: 'Save $10' },
-            { id: 'value', name: 'Value', hours: 10, price: 120, savings: 'Save $30' },
-            { id: 'premium', name: 'Premium', hours: 20, price: 220, savings: 'Save $80' },
-            { id: 'ultimate', name: 'Ultimate', hours: 40, price: 400, savings: 'Save $200' }
-        ];
-
-        const TIME_SLOTS = [
-            { value: '08:00', label: '8 AM', hour: 8 },
-            { value: '09:00', label: '9 AM', hour: 9 },
-            { value: '10:00', label: '10 AM', hour: 10 },
-            { value: '11:00', label: '11 AM', hour: 11 },
-            { value: '12:00', label: '12 PM', hour: 12 },
-            { value: '13:00', label: '1 PM', hour: 13 },
-            { value: '14:00', label: '2 PM', hour: 14 },
-            { value: '15:00', label: '3 PM', hour: 15 },
-            { value: '16:00', label: '4 PM', hour: 16 },
-            { value: '17:00', label: '5 PM', hour: 17 },
-            { value: '18:00', label: '6 PM', hour: 18 },
-            { value: '19:00', label: '7 PM', hour: 19 },
-            { value: '20:00', label: '8 PM', hour: 20 },
-            { value: '21:00', label: '9 PM', hour: 21 }
-        ];
-
-        // State
-        let currentPin = '';
-        let selectedPackage = null;
-        let bookingToCancel = null;
-        let currentBookings = [];
-        let selectedDate = new Date();
-        let currentView = 'list';
-        let dateOffset = 0;
-        let customerCreditBalance = 0;
-        let customerCreditName = '';
-        let customerTelegramId = '';
-        let lookupTimeout = null;
-
-        // ============================================
-        // LOGIN
-        // ============================================
-        function enterPin(num) {
-            if (currentPin.length < 4) {
-                currentPin += num;
-                updatePinDisplay();
-                if (currentPin.length === 4) {
-                    setTimeout(submitPin, 200);
-                }
-            }
+        if (paymentMethod === 'partial') {
+            formData.use_credits = 'true';
         }
 
-        function clearPin() {
-            currentPin = '';
-            updatePinDisplay();
-            document.getElementById('loginError').classList.remove('show');
-        }
-
-        function updatePinDisplay() {
-            for (let i = 1; i <= 4; i++) {
-                const dot = document.getElementById('dot' + i);
-                dot.classList.remove('filled', 'error');
-                if (i <= currentPin.length) dot.classList.add('filled');
-            }
-        }
-
-        function submitPin() {
-            if (currentPin.length !== 4) return;
-            if (currentPin === ADMIN_PIN) {
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('dashboard').classList.add('show');
-                localStorage.setItem('adminLoggedIn', 'true');
-                initDashboard();
-            } else {
-                for (let i = 1; i <= 4; i++) {
-                    document.getElementById('dot' + i).classList.add('error');
-                }
-                document.getElementById('loginError').classList.add('show');
-                setTimeout(clearPin, 500);
-            }
-        }
-
-        function logout() {
-            localStorage.removeItem('adminLoggedIn');
-            document.getElementById('dashboard').classList.remove('show');
-            document.getElementById('loginScreen').style.display = 'flex';
-            clearPin();
-        }
-
-        // ============================================
-        // DASHBOARD
-        // ============================================
-        function initDashboard() {
-            selectedDate = new Date();
-            renderDatePills();
-            updateTodaySummaryDate();
-            loadBookings();
-            renderPackages();
-            loadPendingCodes();
-            loadActivatedAccounts();
-            loadStats();
-        }
-
-        function switchTab(tabId) {
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.toggle('active', item.dataset.tab === tabId);
-            });
-            document.querySelectorAll('.content-section').forEach(section => {
-                section.classList.toggle('active', section.id === 'tab-' + tabId);
-            });
-
-            if (tabId === 'credits') loadPendingCodes();
-            if (tabId === 'customers') loadActivatedAccounts();
-            if (tabId === 'stats') loadStats();
-        }
-
-        // ============================================
-        // DATE HANDLING
-        // ============================================
-        function renderDatePills() {
-            const container = document.getElementById('datePills');
-            const today = new Date();
-            let html = '';
-
-            for (let i = -2 + dateOffset; i < 5 + dateOffset; i++) {
-                const date = new Date(today);
-                date.setDate(date.getDate() + i);
-                const isSelected = isSameDay(date, selectedDate);
-                const isToday = isSameDay(date, today);
-                const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
-                const dayNum = date.getDate();
-                const monthShort = date.toLocaleDateString('en-US', { month: 'short' });
-
-                html += `
-                    <button class="date-pill ${isSelected ? 'active' : ''}" onclick="selectDate(${i})">
-                        <div class="date-pill-day">${isToday ? 'Today' : dayName}</div>
-                        <div class="date-pill-date">${dayNum}</div>
-                        <div class="date-pill-month">${monthShort}</div>
-                    </button>
-                `;
-            }
-
-            container.innerHTML = html;
+        try {
+            const params = new URLSearchParams(formData);
+            const url = `${BACKEND_URL}?${params.toString()}`;
             
-            // Update month/year display based on selected date
-            updateMonthYearDisplay();
-        }
-
-        function updateMonthYearDisplay() {
-            const monthYear = selectedDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-            document.getElementById('currentMonthYear').textContent = monthYear;
-            // Also update the calendar picker value
-            document.getElementById('calendarPicker').value = formatDateForAPI(selectedDate);
-        }
-
-        function selectDate(offset) {
-            const today = new Date();
-            selectedDate = new Date(today);
-            selectedDate.setDate(selectedDate.getDate() + offset);
-            renderDatePills();
-            updateTodaySummaryDate();
-            loadBookings();
-        }
-
-        function selectSpecificDate(date) {
-            selectedDate = new Date(date);
-            // Calculate new dateOffset based on selected date
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const selected = new Date(selectedDate);
-            selected.setHours(0, 0, 0, 0);
-            const diffDays = Math.round((selected - today) / (1000 * 60 * 60 * 24));
-            dateOffset = Math.floor((diffDays + 2) / 7) * 7;
-            renderDatePills();
-            updateTodaySummaryDate();
-            loadBookings();
-        }
-
-        function navigateWeek(direction) {
-            dateOffset += direction * 7;
-            renderDatePills();
-        }
-
-        function onDatePickerChange(dateStr) {
-            if (dateStr) {
-                selectSpecificDate(new Date(dateStr + 'T00:00:00'));
-            }
-        }
-
-        function isSameDay(d1, d2) {
-            return d1.getDate() === d2.getDate() && 
-                   d1.getMonth() === d2.getMonth() && 
-                   d1.getFullYear() === d2.getFullYear();
-        }
-
-        function updateTodaySummaryDate() {
-            const today = new Date();
-            const isToday = isSameDay(selectedDate, today);
-            const dateStr = selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
-            document.getElementById('todaySummaryDate').textContent = dateStr;
-            document.getElementById('todayBadge').textContent = isToday ? 'Today' : selectedDate.toLocaleDateString('en-US', { weekday: 'short' });
-        }
-
-        function formatDateForAPI(date) {
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
-
-        // ============================================
-        // VIEW TOGGLE
-        // ============================================
-        function setView(view) {
-            currentView = view;
-            document.getElementById('listViewBtn').classList.toggle('active', view === 'list');
-            document.getElementById('timelineViewBtn').classList.toggle('active', view === 'timeline');
-            document.getElementById('bookingsListView').style.display = view === 'list' ? 'block' : 'none';
-            document.getElementById('timelineView').style.display = view === 'timeline' ? 'block' : 'none';
+            console.log('🌐 Booking URL:', url);
             
-            if (view === 'timeline') renderTimeline();
-        }
-
-        // ============================================
-        // BOOKINGS
-        // ============================================
-        async function loadBookings() {
-            const dateStr = formatDateForAPI(selectedDate);
-            showLoading(true);
-
-            try {
-                const response = await fetch(`${BACKEND_URL}?action=getBookings&date=${dateStr}`);
-                const data = await response.json();
-
-                if (data.success) {
-                    currentBookings = data.bookings || [];
-                    renderBookings(currentBookings);
-                    updateBookingStats(currentBookings);
-                    if (currentView === 'timeline') renderTimeline();
-                } else {
-                    showToast(data.error || 'Failed to load', 'error');
-                }
-            } catch (error) {
-                showToast('Connection error', 'error');
-            }
+            const response = await fetch(url);
+            console.log('📡 Response status:', response.status);
+            
+            const data = await response.json();
+            console.log('📦 Response data:', data);
 
             showLoading(false);
-        }
 
-        function renderBookings(bookings) {
-            const container = document.getElementById('bookingsList');
-
-            if (bookings.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">📅</div>
-                        <div class="empty-state-title">No Bookings</div>
-                        <p class="empty-state-text">No bookings for this date yet</p>
-                    </div>
-                `;
-                return;
-            }
-
-            bookings.sort((a, b) => a.time.localeCompare(b.time));
-
-            // Get current time info for past booking detection
-            const now = new Date();
-            const isToday = selectedDate.toDateString() === now.toDateString();
-            const currentHour = now.getHours();
-            const isPastDate = selectedDate < new Date(now.toDateString());
-
-            container.innerHTML = bookings.map(booking => {
-                const timeLabel = TIME_SLOTS.find(t => t.value === booking.time)?.label || booking.time;
-                const paymentMethod = booking.payment_method || 'cash';
-                const paymentStatus = booking.payment_status || 'pending';
-                const creditsUsed = booking.credits_used || 0;
-                const cashDue = booking.cash_due || 0;
-
-                // Payment badge
-                let paymentBadge = '';
-                if (paymentMethod === 'credits') {
-                    paymentBadge = '<span class="status-badge credits">🎫 Credits</span>';
-                } else if (paymentMethod === 'partial') {
-                    paymentBadge = `<span class="status-badge partial">💳+💵 $${cashDue}</span>`;
-                } else {
-                    paymentBadge = `<span class="status-badge cash">💵 $${booking.amount}</span>`;
-                }
-
-                // Status badge
-                let statusBadge = '';
-                let actionBtns = '';
-
-                if (paymentMethod === 'credits') {
-                    statusBadge = '<span class="status-badge paid">✔ Paid</span>';
-                } else {
-                    if (paymentStatus === 'paid') {
-                        statusBadge = '<span class="status-badge paid">✔ Paid</span>';
-                        actionBtns = `<button class="action-btn secondary" onclick="updatePaymentStatus('${booking.booking_id}', 'pending')">↩ Undo</button>`;
-                    } else if (paymentStatus === 'unpaid') {
-                        statusBadge = '<span class="status-badge unpaid">✗ Unpaid</span>';
-                        actionBtns = `<button class="action-btn primary" onclick="updatePaymentStatus('${booking.booking_id}', 'paid')">✔ Paid</button>`;
-                    } else if (paymentStatus === 'no-show') {
-                        statusBadge = '<span class="status-badge noshow">👻 No-Show</span>';
-                        actionBtns = `<button class="action-btn primary" onclick="updatePaymentStatus('${booking.booking_id}', 'paid')">✔ Paid</button>`;
-                    } else {
-                        statusBadge = '<span class="status-badge pending">⏳ Pending</span>';
-                        actionBtns = `
-                            <button class="action-btn primary" onclick="updatePaymentStatus('${booking.booking_id}', 'paid')">✔ Paid</button>
-                            <select class="form-input" style="padding: 10px; width: auto;" onchange="updatePaymentStatus('${booking.booking_id}', this.value); this.value='';">
-                                <option value="">•••</option>
-                                <option value="unpaid">✗ Unpaid</option>
-                                <option value="no-show">👻 No-Show</option>
-                            </select>
-                        `;
-                    }
-                }
-
-                
-                // Check if booking is in the past
-                const startHour = parseInt(booking.time.split(':')[0]);
-                const duration = parseInt(booking.duration);
-                const bookingEndHour = startHour + duration;
-                const isPastBooking = isPastDate || (isToday && bookingEndHour <= currentHour);
-
-                const cardClass = paymentMethod === 'credits' ? 'credits' : (paymentStatus === 'paid' ? 'paid' : 'pending');
-                const pastClass = isPastBooking ? ' past-booking' : '';
-
-                // Don't show cancel button for past bookings
-                const cancelBtn = isPastBooking ? '' : `<button class="action-btn danger" onclick="showCancelModal('${booking.booking_id}')">✕</button>`;
-
-                return `
-                    <div class="booking-card ${cardClass}${pastClass}">
-                        <div class="booking-card-header">
-                            <div class="booking-time-badge">${timeLabel}</div>
-                            <div class="booking-status-badges">
-                                ${paymentBadge}
-                                ${statusBadge}
-                            </div>
-                        </div>
-                        <div class="booking-card-body">
-                            <div class="booking-customer">
-                                <div class="booking-customer-name">${booking.name}</div>
-                                <div class="booking-customer-details">
-                                    <span>📞 ${booking.phone}</span>
-                                    <span>🎾 ${booking.courts} court${booking.courts > 1 ? 's' : ''}</span>
-                                    <span>⏱️ ${booking.duration} hr${booking.duration > 1 ? 's' : ''}</span>
-                                </div>
-                            </div>
-                            <div class="booking-card-actions">
-                                ${actionBtns}
-                                ${cancelBtn}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function renderTimeline() {
-            const container = document.getElementById('courtTimeline');
-            const courts = [1, 2, 3, 4, 5, 6, 7, 8]; // All 8 courts
-            const hours = TIME_SLOTS.filter(t => t.hour >= 8 && t.hour <= 21);
-
-            // Calculate current time position for needle (only show for today)
-            const now = new Date();
-            const isToday = selectedDate.toDateString() === now.toDateString();
-            const currentHour = now.getHours();
-            const currentMinutes = now.getMinutes();
-            const needlePosition = isToday && currentHour >= 8 && currentHour < 22 
-                ? ((currentHour - 8) * 60 + currentMinutes) 
-                : null;
-
-            let headerHtml = `
-                <div class="timeline-header">
-                    <div class="timeline-court-label">Court</div>
-                    <div class="timeline-hours">
-                        ${hours.map(h => `<div class="timeline-hour">${h.label}</div>`).join('')}
-                    </div>
-                </div>
-            `;
-
-            let rowsHtml = courts.map(court => {
-                const courtBookings = currentBookings.filter(b => {
-                    const courtNums = String(b.court_numbers || '').split(',').map(c => parseInt(c.trim()));
-                    return courtNums.includes(court);
-                });
-
-                let bookingsHtml = courtBookings.map(b => {
-                    const startHour = parseInt(b.time.split(':')[0]);
-                    const duration = parseInt(b.duration);
-                    const left = (startHour - 8) * 60;
-                    const width = duration * 60 - 4;
-                    const paymentClass = b.payment_method === 'credits' ? 'credits' : (b.payment_method === 'partial' ? 'partial' : 'cash');
-                    
-                    // Check if booking is in the past
-                    const bookingEndHour = startHour + duration;
-                    const isPast = isToday 
-                        ? (bookingEndHour <= currentHour || (bookingEndHour === currentHour + 1 && currentMinutes > 0 && startHour + duration <= currentHour + (currentMinutes / 60)))
-                        : selectedDate < new Date(now.toDateString());
-                    const pastClass = isPast ? ' past' : '';
-
-                    // Don't allow clicking on past bookings - show info only modal instead
-                    const clickHandler = isPast 
-                        ? `onclick="showBookingInfoModal('${b.booking_id}')"` 
-                        : `onclick="showCancelModal('${b.booking_id}')"`;
-
-                    return `<div class="timeline-booking ${paymentClass}${pastClass}" style="left: ${left}px; width: ${width}px;" ${clickHandler}>${b.name}</div>`;
-                }).join('');
-
-                // Add current time needle for each row (only for today and within operating hours)
-                const needleHtml = needlePosition !== null 
-                    ? `<div class="timeline-needle" style="left: ${needlePosition}px;"></div>` 
-                    : '';
-
-                return `
-                    <div class="timeline-row">
-                        <div class="timeline-court-name">Court ${court}</div>
-                        <div class="timeline-slots">
-                            ${hours.map(() => '<div class="timeline-slot"></div>').join('')}
-                            ${bookingsHtml}
-                            ${needleHtml}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            container.innerHTML = headerHtml + rowsHtml;
-        }
-
-        function updateBookingStats(bookings) {
-            const totalBookings = bookings.length;
-            const totalHours = bookings.reduce((sum, b) => sum + (b.duration * b.courts), 0);
-            
-            let revenue = 0;
-            bookings.forEach(b => {
-                if (b.payment_method !== 'credits') {
-                    if (b.payment_method === 'partial') {
-                        revenue += parseFloat(b.cash_due) || 0;
-                    } else {
-                        revenue += parseFloat(b.amount) || 0;
-                    }
-                }
-            });
-
-            document.getElementById('statTodayBookings').textContent = totalBookings;
-            document.getElementById('statTodayHours').textContent = totalHours;
-            document.getElementById('statTodayRevenue').textContent = revenue;
-        }
-
-        async function updatePaymentStatus(bookingId, status) {
-            showLoading(true);
-            try {
-                const params = new URLSearchParams({
-                    action: 'updatePaymentStatus',
-                    booking_id: bookingId,
-                    status: status,
-                    staff: 'Admin'
-                });
-                const response = await fetch(`${BACKEND_URL}?${params}`);
-                const data = await response.json();
-
-                if (data.success) {
-                    showToast('Status updated', 'success');
-                    loadBookings();
-                } else {
-                    showToast(data.error || 'Failed', 'error');
-                }
-            } catch (error) {
-                showToast('Connection error', 'error');
-            }
-            showLoading(false);
-        }
-
-        // ============================================
-        // NEW BOOKING
-        // ============================================
-        function showNewBookingModal() {
-            document.getElementById('newBookingDate').value = formatDateForAPI(selectedDate);
-            document.getElementById('newBookingName').value = '';
-            document.getElementById('newBookingPhone').value = '';
-            document.getElementById('newBookingDuration').value = '1';
-            document.getElementById('newBookingCourts').value = '1';
-            document.getElementById('newBookingTime').value = '08:00';
-            document.getElementById('newBookingPayment').value = 'cash';
-            
-            // Reset credit balance info
-            customerCreditBalance = 0;
-            customerCreditName = '';
-            customerTelegramId = '';
-            document.getElementById('creditBalanceInfo').style.display = 'none';
-            document.getElementById('noCreditInfo').style.display = 'none';
-            document.getElementById('partialPaymentNotice').style.display = 'none';
-            document.getElementById('insufficientCreditsWarning').style.display = 'none';
-            
-            updateNewBookingPrice();
-            showModal('newBookingModal');
-        }
-
-        // Lookup credit balance when phone is entered
-        async function lookupCreditBalance() {
-            const phone = document.getElementById('newBookingPhone').value.trim();
-            
-            // Reset display
-            document.getElementById('creditBalanceInfo').style.display = 'none';
-            document.getElementById('noCreditInfo').style.display = 'none';
-            customerCreditBalance = 0;
-            customerCreditName = '';
-            customerTelegramId = '';
-            
-            // Debounce - wait for user to stop typing
-            clearTimeout(lookupTimeout);
-            
-            if (phone.length < 6) {
-                updateNewBookingPrice();
-                return;
-            }
-            
-            lookupTimeout = setTimeout(async () => {
-                try {
-                    const response = await fetch(`${BACKEND_URL}?action=checkCreditsByPhone&phone=${encodeURIComponent(phone)}`);
-                    const data = await response.json();
-                    
-                    if (data.success && data.hasCredits) {
-                        customerCreditBalance = parseFloat(data.balance) || 0;
-                        customerCreditName = data.name || '';
-                        customerTelegramId = data.telegramId || '';
-                        
-                        document.getElementById('creditBalanceValue').textContent = customerCreditBalance;
-                        document.getElementById('creditCustomerName').textContent = customerCreditName;
-                        document.getElementById('creditBalanceInfo').style.display = 'block';
-                        document.getElementById('noCreditInfo').style.display = 'none';
-                        
-                        // Auto-fill name if empty
-                        const nameInput = document.getElementById('newBookingName');
-                        if (!nameInput.value.trim() && customerCreditName) {
-                            nameInput.value = customerCreditName;
-                        }
-                        
-                        // If credits found, suggest using credits
-                        if (customerCreditBalance > 0) {
-                            document.getElementById('newBookingPayment').value = 'credits';
-                        }
-                    } else {
-                        document.getElementById('creditBalanceInfo').style.display = 'none';
-                        document.getElementById('noCreditInfo').style.display = 'block';
-                    }
-                    
-                    updateNewBookingPrice();
-                } catch (error) {
-                    console.error('Credit lookup error:', error);
-                }
-            }, 500);
-        }
-
-        function updateNewBookingPrice() {
-            const duration = parseInt(document.getElementById('newBookingDuration').value) || 1;
-            const courts = parseInt(document.getElementById('newBookingCourts').value) || 1;
-            const dateInput = document.getElementById('newBookingDate').value;
-            const timeInput = document.getElementById('newBookingTime').value;
-            const paymentMethod = document.getElementById('newBookingPayment').value;
-            
-            const totalHours = duration * courts;
-            const totalPrice = calculateDynamicPrice(dateInput, timeInput, duration, courts);
-            
-            // Update total hours display
-            document.getElementById('totalHoursNeeded').textContent = totalHours;
-            
-            // Hide all conditional elements first
-            document.getElementById('summaryCreditsUsed').style.display = 'none';
-            document.getElementById('summaryCreditsRemaining').style.display = 'none';
-            document.getElementById('partialPaymentNotice').style.display = 'none';
-            document.getElementById('insufficientCreditsWarning').style.display = 'none';
-            
-            if (paymentMethod === 'credits') {
-                // Calculate credits and cash breakdown
-                const creditsAvailable = customerCreditBalance;
-                
-                if (creditsAvailable <= 0) {
-                    // No credits available - show cash price
-                    document.getElementById('newBookingPrice').textContent = totalPrice;
-                    document.getElementById('insufficientCreditsWarning').style.display = 'block';
-                    document.getElementById('hoursShort').textContent = totalHours;
-                    return;
+            if (data.success === true || data.status === 'success') {
+                if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
+                    Telegram.WebApp.HapticFeedback.notificationOccurred('success');
                 }
                 
-                if (creditsAvailable >= totalHours) {
-                    // Full credits - no cash needed
-                    document.getElementById('summaryCreditsUsed').style.display = 'flex';
-                    document.getElementById('summaryCreditsRemaining').style.display = 'flex';
-                    document.getElementById('creditsToUse').textContent = totalHours;
-                    document.getElementById('creditsRemaining').textContent = creditsAvailable - totalHours;
-                    document.getElementById('newBookingPrice').textContent = '0';
-                    document.getElementById('summaryCashDue').querySelector('span:first-child').innerHTML = '💵 Cash Due';
-                } else {
-                    // Partial payment - some credits + some cash
-                    const creditsUsed = creditsAvailable;
-                    const hoursRemaining = totalHours - creditsUsed;
-                    
-                    // Calculate cash for remaining hours at average rate
-                    const avgRate = totalPrice / totalHours;
-                    const cashDue = Math.round(hoursRemaining * avgRate);
-                    
-                    document.getElementById('summaryCreditsUsed').style.display = 'flex';
-                    document.getElementById('summaryCreditsRemaining').style.display = 'flex';
-                    document.getElementById('creditsToUse').textContent = creditsUsed;
-                    document.getElementById('creditsRemaining').textContent = 0;
-                    document.getElementById('newBookingPrice').textContent = cashDue;
-                    
-                    // Show partial payment notice
-                    document.getElementById('partialPaymentNotice').style.display = 'block';
-                    document.getElementById('partialCreditsHours').textContent = creditsUsed;
-                    document.getElementById('partialCashHours').textContent = hoursRemaining;
-                    document.getElementById('partialCashAmount').textContent = cashDue;
-                    
-                    document.getElementById('summaryCashDue').querySelector('span:first-child').innerHTML = '💵 Cash Due (Partial)';
-                }
-            } else {
-                // Cash payment
-                document.getElementById('newBookingPrice').textContent = totalPrice;
-                document.getElementById('summaryCashDue').querySelector('span:first-child').innerHTML = '💵 Cash Due';
-            }
-        }
-
-        function calculateDynamicPrice(dateStr, startTime, hours, courts) {
-            const bookingDate = new Date(dateStr);
-            const startHour = parseInt(startTime.split(':')[0]);
-            const isWeekend = bookingDate.getDay() === 0 || bookingDate.getDay() === 6;
-            
-            let total = 0;
-            for (let h = 0; h < hours; h++) {
-                const slotHour = startHour + h;
-                let rate = isWeekend ? PRICING.WEEKEND : (slotHour >= PRICING.PEAK_START_HOUR ? PRICING.WEEKDAY_PEAK : PRICING.WEEKDAY_OFFPEAK);
-                total += rate * courts;
-            }
-            return total;
-        }
-
-        async function createNewBooking() {
-            const name = document.getElementById('newBookingName').value.trim();
-            const phone = document.getElementById('newBookingPhone').value.trim();
-            const date = document.getElementById('newBookingDate').value;
-            const time = document.getElementById('newBookingTime').value;
-            const duration = parseInt(document.getElementById('newBookingDuration').value);
-            const courts = parseInt(document.getElementById('newBookingCourts').value);
-            const selectedPayment = document.getElementById('newBookingPayment').value;
-
-            if (!name || !phone || !date || !time) {
-                showToast('Please fill all fields', 'error');
-                return;
-            }
-
-            const totalHours = duration * courts;
-            const totalPrice = calculateDynamicPrice(date, time, duration, courts);
-            
-            // Determine actual payment method and amounts
-            let paymentMethod = selectedPayment;
-            let creditsUsed = 0;
-            let cashDue = totalPrice;
-            
-            if (selectedPayment === 'credits') {
-                if (customerCreditBalance >= totalHours) {
-                    // Full credits
-                    paymentMethod = 'credits';
-                    creditsUsed = totalHours;
-                    cashDue = 0;
-                } else if (customerCreditBalance > 0) {
-                    // Partial payment
-                    paymentMethod = 'partial';
-                    creditsUsed = customerCreditBalance;
-                    const hoursRemaining = totalHours - creditsUsed;
-                    const avgRate = totalPrice / totalHours;
-                    cashDue = Math.round(hoursRemaining * avgRate);
-                } else {
-                    // No credits - switch to cash
-                    paymentMethod = 'cash';
-                    creditsUsed = 0;
-                    cashDue = totalPrice;
-                }
-            }
-            
-            // For admin bookings without telegram_id, use 'admin_' + timestamp
-            const telegramId = customerTelegramId || ('admin_' + Date.now());
-
-            console.log('Creating booking:', { name, phone, date, time, duration, courts, paymentMethod, creditsUsed, cashDue, telegramId });
-
-            showLoading(true);
-            try {
-                const params = new URLSearchParams({
-                    action: 'book',
-                    name: name,
-                    phone: phone,
-                    date: date,
-                    time: time,
+                const lastBooking = {
                     duration: duration,
                     courts: courts,
-                    payment_method: paymentMethod,
-                    credits_used: creditsUsed,
-                    cash_due: cashDue,
-                    telegram_id: telegramId,
-                    source: 'admin'
-                });
-                const response = await fetch(`${BACKEND_URL}?${params}`);
-                const data = await response.json();
-
-                console.log('Booking response:', data);
-
-                if (data.success || data.status === 'success') {
-                    let msg = 'Booking created!';
-                    if (paymentMethod === 'credits') {
-                        msg = `Booking created! ${creditsUsed} credit hrs used.`;
-                    } else if (paymentMethod === 'partial') {
-                        msg = `Booking created! ${creditsUsed} credits + $${cashDue} cash.`;
-                    }
-                    showToast(msg, 'success');
-                    hideModal('newBookingModal');
-                    loadBookings();
-                } else {
-                    showToast(data.error || 'Failed', 'error');
+                    time: time
+                };
+                localStorage.setItem('lastBooking', JSON.stringify(lastBooking));
+                console.log('💾 Saved last booking for quick rebook');
+                
+                availabilityCache.clear();
+                console.log('🗑️ Cleared availability cache');
+                
+                if (data.creditsUsed) {
+                    userCreditBalance = data.newCreditBalance !== undefined ? data.newCreditBalance : (userCreditBalance - data.creditsUsed);
+                    updateCreditBanner();
                 }
-            } catch (error) {
-                console.error('Booking error:', error);
-                showToast('Connection error', 'error');
-            }
-            showLoading(false);
-        }
-
-        // ============================================
-        // CANCEL BOOKING
-        // ============================================
-        function showCancelModal(bookingId) {
-            const booking = currentBookings.find(b => b.booking_id === bookingId);
-            if (!booking) return showToast('Booking not found', 'error');
-
-            const creditsUsed = parseFloat(booking.credits_used) || 0;
-            const cashDue = parseFloat(booking.cash_due) || 0;
-            const paymentMethod = booking.payment_method || 'cash';
-            const timeLabel = TIME_SLOTS.find(t => t.value === booking.time)?.label || booking.time;
-
-            bookingToCancel = { bookingId: booking.booking_id, telegramId: booking.telegram_id || '' };
-
-            let paymentDisplay = paymentMethod === 'credits' ? `🎫 Credits (${creditsUsed} hrs)` :
-                                 paymentMethod === 'partial' ? `💳+💵 ${creditsUsed} hrs + $${cashDue}` :
-                                 `💵 Cash ($${booking.amount})`;
-
-            document.getElementById('cancelBookingDetails').innerHTML = `
-                <div class="summary-row"><span>Customer</span><span>${booking.name}</span></div>
-                <div class="summary-row"><span>Time</span><span>${timeLabel}</span></div>
-                <div class="summary-row"><span>Duration</span><span>${booking.duration} hr(s) × ${booking.courts} court(s)</span></div>
-                <div class="summary-row"><span>Payment</span><span>${paymentDisplay}</span></div>
-            `;
-
-            const refundInfo = document.getElementById('cancelRefundInfo');
-            if ((paymentMethod === 'credits' || paymentMethod === 'partial') && creditsUsed > 0) {
-                refundInfo.style.display = 'block';
-                document.getElementById('cancelRefundAmount').textContent = creditsUsed;
+                
+                let successMsg;
+                if (paymentMethod === 'credits') {
+                    successMsg = translations[currentLang].successBookedCredits;
+                } else if (paymentMethod === 'partial' && data.creditsUsed > 0) {
+                    const creditsUsed = data.creditsUsed;
+                    const cashDue = data.cashDue || ((totalHours - creditsUsed) * PRICING.WEEKDAY_PEAK);
+                    successMsg = `✅ Booking confirmed! ${creditsUsed} hrs credits used, $${cashDue} due on arrival. 🎉`;
+                } else {
+                    successMsg = translations[currentLang].successBooked;
+                }
+                showMessage(successMsg, 'success');
+                
+                // Reset form
+                document.getElementById('bookingForm').reset();
+                document.getElementById('timeGrid').innerHTML = '';
+                document.getElementById('selectedTime').value = '';
+                document.getElementById('totalPrice').textContent = '13';
+                document.getElementById('totalHours').textContent = '1';
+                document.getElementById('priceBreakdown').textContent = '1 hour × 1 court';
+                
+                // Reset duration and courts buttons
+                selectDuration(1);
+                selectCourts(1);
+                
+                const today = new Date();
+                document.getElementById('date').value = formatDate(today);
+                
+                setTimeout(() => {
+                    if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
+                        Telegram.WebApp.close();
+                    }
+                }, 3000);
             } else {
-                refundInfo.style.display = 'none';
-            }
-
-            showModal('cancelBookingModal');
-        }
-
-        // Show booking info (view only) for past bookings
-        function showBookingInfoModal(bookingId) {
-            const booking = currentBookings.find(b => b.booking_id === bookingId);
-            if (!booking) return showToast('Booking not found', 'error');
-
-            const creditsUsed = parseFloat(booking.credits_used) || 0;
-            const cashDue = parseFloat(booking.cash_due) || 0;
-            const paymentMethod = booking.payment_method || 'cash';
-            const paymentStatus = booking.payment_status || 'pending';
-            const timeLabel = TIME_SLOTS.find(t => t.value === booking.time)?.label || booking.time;
-
-            let paymentDisplay = paymentMethod === 'credits' ? `🎫 Credits (${creditsUsed} hrs)` :
-                                 paymentMethod === 'partial' ? `💳+💵 ${creditsUsed} hrs + $${cashDue}` :
-                                 `💵 Cash ($${booking.amount})`;
-
-            let statusDisplay = paymentStatus === 'paid' ? '✔ Paid' :
-                               paymentStatus === 'unpaid' ? '✗ Unpaid' :
-                               paymentStatus === 'no-show' ? '👻 No-Show' : '⏳ Pending';
-
-            document.getElementById('bookingInfoDetails').innerHTML = `
-                <div class="summary-row"><span>Customer</span><span>${booking.name}</span></div>
-                <div class="summary-row"><span>Phone</span><span>${booking.phone}</span></div>
-                <div class="summary-row"><span>Time</span><span>${timeLabel}</span></div>
-                <div class="summary-row"><span>Duration</span><span>${booking.duration} hr(s) × ${booking.courts} court(s)</span></div>
-                <div class="summary-row"><span>Payment</span><span>${paymentDisplay}</span></div>
-                <div class="summary-row"><span>Status</span><span>${statusDisplay}</span></div>
-            `;
-
-            showModal('bookingInfoModal');
-        }
-
-        async function confirmCancelBooking() {
-            if (!bookingToCancel) return;
-            showLoading(true);
-
-            try {
-                const params = new URLSearchParams({
-                    action: 'cancelBookingAdmin',
-                    booking_id: bookingToCancel.bookingId,
-                    telegram_id: bookingToCancel.telegramId
-                });
-                const response = await fetch(`${BACKEND_URL}?${params}`);
-                const data = await response.json();
-
-                if (data.success) {
-                    let msg = 'Booking cancelled';
-                    if (data.refunded > 0) msg += `. ${data.refunded} hrs refunded.`;
-                    showToast(msg, 'success');
-                    hideModal('cancelBookingModal');
-                    loadBookings();
-                } else {
-                    showToast(data.error || 'Failed', 'error');
+                const errorMsg = data.error || data.message || translations[currentLang].errorBookingFailed;
+                console.error('❌ Booking error:', errorMsg);
+                showMessage(errorMsg, 'error');
+                
+                if (errorMsg.includes('already booked') || errorMsg.includes('not available')) {
+                    availabilityCache.clear();
+                    checkAndLoadAvailability();
                 }
-            } catch (error) {
-                showToast('Connection error', 'error');
             }
-
+        } catch (error) {
             showLoading(false);
-            bookingToCancel = null;
+            console.error('💥 Network error:', error);
+            showMessage(translations[currentLang].errorConnection + ': ' + error.message, 'error');
         }
+    }
 
-        // ============================================
-        // CREDITS
-        // ============================================
-        function renderPackages() {
-            const container = document.getElementById('packageGrid');
-            container.innerHTML = PACKAGES.map(pkg => `
-                <div class="package-card" data-package="${pkg.id}" onclick="selectPackage('${pkg.id}')">
-                    <div class="package-hours">${pkg.hours}</div>
-                    <div class="package-hours-label">hours</div>
-                    <div class="package-name">${pkg.name}</div>
-                    <div class="package-price">$${pkg.price}</div>
-                    <div class="package-savings">${pkg.savings}</div>
-                </div>
-            `).join('');
-        }
+    // ============================================
+    // AUTO-REFRESH
+    // ============================================
+    let isTabVisible = true;
+    let visibilityListenerAdded = false;
 
-        function selectPackage(packageId) {
-            selectedPackage = PACKAGES.find(p => p.id === packageId);
-            document.querySelectorAll('.package-card').forEach(card => {
-                card.classList.toggle('selected', card.dataset.package === packageId);
-            });
-            document.getElementById('generateSection').style.display = 'block';
-            document.getElementById('summaryPackage').textContent = selectedPackage.name;
-            document.getElementById('summaryHours').textContent = selectedPackage.hours + ' hours';
-            document.getElementById('summaryPrice').textContent = selectedPackage.price;
-        }
-
-        async function generateCode() {
-            if (!selectedPackage) return showToast('Select a package', 'error');
-            showLoading(true);
-
-            try {
-                const params = new URLSearchParams({
-                    action: 'generateActivationCode',
-                    package: selectedPackage.id,
-                    staff: 'Admin'
-                });
-                const response = await fetch(`${BACKEND_URL}?${params}`);
-                const data = await response.json();
-
-                if (data.success) {
-                    showActivationCodeModal(data.activationCode, data.packageName, data.hours, data.amountPaid);
-                    loadPendingCodes();
-                } else {
-                    showToast(data.error || 'Failed', 'error');
+    function startAutoRefresh() {
+        stopAutoRefresh();
+        
+        if (!visibilityListenerAdded) {
+            document.addEventListener('visibilitychange', () => {
+                isTabVisible = !document.hidden;
+                
+                if (isTabVisible) {
+                    console.log('Tab visible - refreshing availability');
+                    availabilityCache.clear();
+                    checkAndLoadAvailability();
                 }
-            } catch (error) {
-                showToast('Connection error', 'error');
-            }
-            showLoading(false);
-        }
-
-        function showActivationCodeModal(code, packageName, hours, amount) {
-            document.getElementById('activationCodeDisplay').textContent = code;
-            document.getElementById('codePackageName').textContent = packageName;
-            document.getElementById('codeHoursAdded').textContent = hours + ' hours';
-            document.getElementById('codeAmountCollect').textContent = '$' + amount;
-            document.getElementById('copyCodeBtn').innerHTML = '📋 Copy Code';
-            showModal('activationCodeModal');
-        }
-
-        function hideActivationCodeModal() {
-            hideModal('activationCodeModal');
-            selectedPackage = null;
-            document.querySelectorAll('.package-card').forEach(c => c.classList.remove('selected'));
-            document.getElementById('generateSection').style.display = 'none';
-        }
-
-        function copyActivationCode() {
-            const code = document.getElementById('activationCodeDisplay').textContent;
-            navigator.clipboard.writeText(code).then(() => {
-                document.getElementById('copyCodeBtn').innerHTML = '✔ Copied!';
-                showToast('Code copied!', 'success');
-            }).catch(() => {
-                showToast('Copy failed', 'error');
             });
+            visibilityListenerAdded = true;
         }
-
-        async function loadPendingCodes() {
-            try {
-                const response = await fetch(`${BACKEND_URL}?action=getPendingCodes`);
-                const data = await response.json();
-                if (data.success) {
-                    renderPendingCodes(data.codes || []);
-                    const badge = document.getElementById('pendingBadge');
-                    if (data.codes && data.codes.length > 0) {
-                        badge.textContent = data.codes.length;
-                        badge.style.display = 'block';
-                    } else {
-                        badge.style.display = 'none';
-                    }
-                }
-            } catch (error) {
-                console.error(error);
-            }
-        }
-
-        function renderPendingCodes(codes) {
-            const container = document.getElementById('pendingCodesList');
-            if (codes.length === 0) {
-                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🎫</div><p class="empty-state-text">No pending codes</p></div>';
+        
+        autoRefreshTimer = setInterval(() => {
+            if (!isTabVisible) {
+                console.log('Tab hidden - skipping refresh');
                 return;
             }
-            container.innerHTML = codes.map(code => `
-                <div class="booking-card" style="border-left-color: var(--warning);">
-                    <div class="booking-card-header">
-                        <div class="code-display" style="font-size: 20px; padding: 8px 16px; letter-spacing: 6px;">${code.code}</div>
-                        <span class="status-badge pending">⏳ Pending</span>
-                    </div>
-                    <div class="booking-card-body">
-                        <div class="booking-customer">
-                            <div class="booking-customer-name">${code.packageName} Package</div>
-                            <div class="booking-customer-details">${code.hours} hours • ${code.createdDate}</div>
-                        </div>
-                        <button class="action-btn danger" onclick="deleteCode('${code.code}')">🗑️</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        async function deleteCode(code) {
-            if (!confirm('Delete this code?')) return;
-            showLoading(true);
-            try {
-                const response = await fetch(`${BACKEND_URL}?action=deletePendingCode&code=${code}`);
-                const data = await response.json();
-                if (data.success) {
-                    showToast('Code deleted', 'success');
-                    loadPendingCodes();
-                } else {
-                    showToast(data.error || 'Failed to delete code', 'error');
-                }
-            } catch (error) {
-                console.error('Delete code error:', error);
-                showToast('Connection error - check backend', 'error');
-            }
-            showLoading(false);
-        }
-
-        // ============================================
-        // CUSTOMERS
-        // ============================================
-        async function loadActivatedAccounts() {
-            showLoading(true);
-            try {
-                const response = await fetch(`${BACKEND_URL}?action=getActivatedAccounts`);
-                const data = await response.json();
-                if (data.success) {
-                    renderCustomers(data.accounts || []);
-                    document.getElementById('statTotalCustomers').textContent = data.count || 0;
-                    const totalBalance = (data.accounts || []).reduce((sum, a) => sum + (a.balance || 0), 0);
-                    document.getElementById('statTotalCreditsBalance').textContent = totalBalance;
-                }
-            } catch (error) {
-                console.error(error);
-            }
-            showLoading(false);
-        }
-
-        function renderCustomers(accounts) {
-            const container = document.getElementById('customersList');
-            if (accounts.length === 0) {
-                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">👥</div><p class="empty-state-text">No members yet</p></div>';
-                return;
-            }
-            container.innerHTML = accounts.map(account => {
-                const initials = (account.name || 'U').charAt(0).toUpperCase();
-                const accountData = encodeURIComponent(JSON.stringify(account));
-                return `
-                    <div class="customer-card" onclick="showCustomerDetails('${accountData}')">
-                        <div class="customer-avatar">${initials}</div>
-                        <div class="customer-info">
-                            <div class="customer-name">${account.name || 'Unknown'}</div>
-                            <div class="customer-phone">📞 ${account.phone || 'No phone'}</div>
-                        </div>
-                        <div class="customer-balance">
-                            <div class="customer-balance-value">${account.balance || 0}</div>
-                            <div class="customer-balance-label">hours</div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function showCustomerDetails(accountDataEncoded) {
-            const account = JSON.parse(decodeURIComponent(accountDataEncoded));
-            const initials = (account.name || 'U').charAt(0).toUpperCase();
             
-            document.getElementById('viewCustomerContent').innerHTML = `
-                <div style="text-align: center; padding: 20px 0;">
-                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary), #8b5cf6); border-radius: 20px; display: flex; align-items: center; justify-content: center; color: white; font-size: 32px; font-weight: 700; margin: 0 auto 16px;">${initials}</div>
-                    <h2 style="font-size: 22px; font-weight: 700;">${account.name}</h2>
-                    <p style="color: var(--gray-500);">📞 ${account.phone || 'No phone'}</p>
-                    <div style="font-size: 48px; font-weight: 800; color: var(--primary); margin: 20px 0;">${account.balance} hrs</div>
-                    <p style="color: var(--gray-500); font-size: 13px;">Current Balance</p>
-                </div>
-                <div class="summary-box">
-                    <div class="summary-row"><span>Total Purchased</span><span>${account.totalPurchased} hours</span></div>
-                    <div class="summary-row"><span>Total Used</span><span>${account.totalUsed} hours</span></div>
-                    <div class="summary-row"><span>Member Since</span><span>${account.createdDate || 'Unknown'}</span></div>
-                </div>
-            `;
-            showModal('viewCustomerModal');
-        }
-
-        // ============================================
-        // STATS
-        // ============================================
-        async function loadStats() {
-            showLoading(true);
-            try {
-                const response = await fetch(`${BACKEND_URL}?action=getDashboardStats`);
-                const data = await response.json();
-
-                if (data.success) {
-                    document.getElementById('statTotalBookings').textContent = data.totalBookings || 0;
-                    document.getElementById('statTotalRevenue').textContent = data.totalRevenue || 0;
-                    document.getElementById('statTotalMembers').textContent = data.totalMembers || 0;
-                    document.getElementById('statTotalCreditHours').textContent = data.totalCreditHours || 0;
-
-                    document.getElementById('statCashRevenue').textContent = data.cashRevenue || 0;
-                    document.getElementById('statPendingRevenue').textContent = data.pendingRevenue || 0;
-                    document.getElementById('statPackageRevenue').textContent = data.packageRevenue || 0;
-                    document.getElementById('statCombinedRevenue').textContent = (data.cashRevenue || 0) + (data.packageRevenue || 0);
-
-                    document.getElementById('statPaidBookings').textContent = data.paidBookingsCount || 0;
-                    document.getElementById('statPendingBookings').textContent = data.pendingBookingsCount || 0;
-                    document.getElementById('statUnpaidBookings').textContent = data.unpaidBookingsCount || 0;
-                    document.getElementById('statNoShowBookings').textContent = data.noShowBookingsCount || 0;
-
-                    if (data.topCustomers) renderTopCustomers(data.topCustomers);
-                }
-            } catch (error) {
-                console.error(error);
+            const date = document.getElementById('date').value;
+            const duration = document.getElementById('duration').value;
+            const courts = document.getElementById('courts').value;
+            
+            if (date && duration && courts) {
+                availabilityCache.clear();
+                checkAndLoadAvailability();
             }
-            showLoading(false);
+        }, AUTO_REFRESH_INTERVAL);
+    }
+
+    function stopAutoRefresh() {
+        if (autoRefreshTimer) {
+            clearInterval(autoRefreshTimer);
+            autoRefreshTimer = null;
         }
+    }
 
-        function renderTopCustomers(customers) {
-            const container = document.getElementById('topCustomers');
-            if (!customers || customers.length === 0) {
-                container.innerHTML = '<div class="empty-state" style="padding: 20px;"><p class="empty-state-text">No data yet</p></div>';
-                return;
-            }
-            container.innerHTML = `<div class="summary-box" style="margin: 0;">
-                ${customers.map((c, i) => {
-                    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1) + '.';
-                    return `<div class="summary-row"><span>${medal} ${c.name}</span><span><strong>${c.bookings}</strong> bookings</span></div>`;
-                }).join('')}
-            </div>`;
-        }
-
-        // ============================================
-        // UTILITIES
-        // ============================================
-        function showModal(id) { document.getElementById(id).classList.add('show'); }
-        function hideModal(id) { document.getElementById(id).classList.remove('show'); }
-        function showLoading(show) { document.getElementById('loadingOverlay').classList.toggle('show', show); }
-
-        function showToast(message, type = 'info') {
-            const toast = document.getElementById('toast');
-            const icon = type === 'success' ? '✔' : type === 'error' ? '✕' : 'â„¹';
-            toast.innerHTML = `<span class="toast-icon">${icon}</span>${message}`;
-            toast.className = `toast ${type} show`;
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
-
-        // ============================================
-        // INIT
-        // ============================================
-        document.addEventListener('DOMContentLoaded', function() {
-            if (localStorage.getItem('adminLoggedIn') === 'true') {
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('dashboard').classList.add('show');
-                initDashboard();
-            }
-
-            // Event listeners for price updates
-            ['newBookingDate', 'newBookingTime', 'newBookingDuration', 'newBookingCourts'].forEach(id => {
-                document.getElementById(id)?.addEventListener('change', updateNewBookingPrice);
-            });
+    // ============================================
+    // EVENT LISTENERS
+    // ============================================
+    function setupEventListeners() {
+        // Language buttons
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', () => switchLanguage(btn.dataset.lang));
         });
-    </script>
+
+        // Quick date buttons
+        document.getElementById('btnToday').addEventListener('click', () => setQuickDate(0));
+        document.getElementById('btnTomorrow').addEventListener('click', () => setQuickDate(1));
+        document.getElementById('btnNextWeek').addEventListener('click', () => setQuickDate(7));
+
+        // Date change
+        document.getElementById('date').addEventListener('change', () => {
+    checkAndLoadAvailability();
+    startAutoRefresh();
+    updatePrice();  // Recalculate price for new date
+});
+
+        // Duration buttons
+        document.querySelectorAll('.duration-btn').forEach(btn => {
+            btn.addEventListener('click', () => selectDuration(parseInt(btn.dataset.value)));
+        });
+
+        // Court buttons
+        document.querySelectorAll('.court-btn').forEach(btn => {
+            btn.addEventListener('click', () => selectCourts(parseInt(btn.dataset.value)));
+        });
+
+        // Form submission
+        document.getElementById('bookingForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            showConfirmationModal();
+        });
+
+        // Modal buttons
+        document.getElementById('confirmCancel').addEventListener('click', hideConfirmationModal);
+        document.getElementById('confirmSubmit').addEventListener('click', submitBooking);
+
+        // Modal backdrop click
+        document.getElementById('confirmModal').addEventListener('click', (e) => {
+            if (e.target.id === 'confirmModal') {
+                hideConfirmationModal();
+            }
+        });
+    }
+
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+    async function init() {
+        const savedLang = localStorage.getItem('preferredLang') || 'en';
+        switchLanguage(savedLang);
+
+        setupEventListeners();
+        prefillUserData();
+        addQuickRebookButton();
+
+        await checkUserCredits();
+
+        const today = new Date();
+        document.getElementById('date').value = formatDate(today);
+        document.getElementById('date').setAttribute('min', formatDate(today));
+
+        const maxDate = new Date();
+        maxDate.setDate(maxDate.getDate() + 30);
+        document.getElementById('date').setAttribute('max', formatDate(maxDate));
+
+        if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
+            Telegram.WebApp.ready();
+            Telegram.WebApp.expand();
+            
+            if (Telegram.WebApp.themeParams) {
+                document.body.style.setProperty('--tg-theme-bg-color', Telegram.WebApp.themeParams.bg_color || '#ffffff');
+                document.body.style.setProperty('--tg-theme-text-color', Telegram.WebApp.themeParams.text_color || '#000000');
+            }
+        }
+
+        updatePrice();
+        checkAndLoadAvailability();
+        startAutoRefresh();
+
+        window.addEventListener('online', () => {
+            showMessage('✅ Back online! Refreshing...', 'success');
+            availabilityCache.clear();
+            checkAndLoadAvailability();
+        });
+
+        window.addEventListener('offline', () => {
+            showMessage('⚠️ No internet connection.', 'error');
+        });
+
+        console.log('TK Pickleball Booking System Initialized ✅');
+    }
+
+    // ============================================
+    // START THE APPLICATION
+    // ============================================
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+
+    window.addEventListener('beforeunload', () => {
+        stopAutoRefresh();
+    });
+</script>
 </body>
 </html>
