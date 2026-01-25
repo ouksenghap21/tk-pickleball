@@ -913,9 +913,7 @@
             color: white;
         }
 
-        .court-tile.available:hover {
-            /* Handled in media query below */
-        }
+
 
         @media (hover: hover) {
             .court-tile.available:hover {
@@ -1640,6 +1638,16 @@
             }
         }
 
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
         /* Bottom Navigation */
         .bottom-nav {
             position: fixed;
@@ -2107,7 +2115,7 @@
         </div>
     </div>
 
-    </div><!-- End Container -->
+
 
     <nav class="bottom-nav">
         <div class="nav-item active" id="nav-book" onclick="switchTab('book')">
@@ -3182,9 +3190,6 @@
                     document.getElementById('bookingForm').reset();
                     document.getElementById('timeGrid').innerHTML = '';
                     document.getElementById('selectedTime').value = '';
-                    document.getElementById('bookingForm').reset();
-                    document.getElementById('timeGrid').innerHTML = '';
-                    document.getElementById('selectedTime').value = '';
                     document.getElementById('checkoutTotal').textContent = '13'; // Reset footer total
                     document.getElementById('checkoutSummary').textContent = '1 hr • 1 court';
                     document.getElementById('totalHours').textContent = '1';
@@ -3598,7 +3603,6 @@
             const res = await fetch(slotsUrl);
             const data = await res.json();
 
-            const list = document.getElementById('openPlayList');
             list.innerHTML = '';
 
             if (data.success && data.slots.length > 0) {
