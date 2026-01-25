@@ -3726,8 +3726,17 @@
                 showLoading(false);
 
                 if (data.success) {
-                    showMessage("Joined successfully! 🎾", "success");
+                    // Extract info from slotId (format: yyyy-MM-dd_HH:mm_CourtNum)
+                    const parts = slotId.split('_');
+                    const cDate = parts[0];
+                    const cTime = parts[1];
+                    const cCourt = parts[2];
+
+                    // Simple alert for now, can be modal
+                    alert(`✅ You have successfully joined the game!\n\n📅 Date: ${cDate}\n⏰ Time: ${cTime}\nCOURT: ${cCourt}\n\nSee you on the court! 🎾`);
+
                     loadCommunityData(); // Refresh
+
                 } else {
                     showMessage(data.error, "error");
                 }
@@ -3883,16 +3892,18 @@
 
             const date = document.getElementById('createSlotDate').value;
             const time = document.getElementById('createSlotTime').value;
-            const court = document.getElementById('createSlotCourt').value;
+            // Court is auto-allocated by backend
             const level = document.getElementById('createSlotLevel').value;
+            const duration = document.getElementById('createSlotDuration').value;
+            const max = document.getElementById('createSlotMax').value;
             const name = document.getElementById('editProfileName').value || user.first_name;
 
-            if (!date || !time || !court) {
+            if (!date || !time) {
                 return showMessage("Please fill all fields", "error");
             }
 
             showLoading(true);
-            const url = `${BACKEND_URL}?action=createUserOpenPlaySlot&telegram_id=${user.telegram_id}&date=${date}&time=${time}&court=${court}&level=${encodeURIComponent(level)}&name=${encodeURIComponent(name)}&duration=2&max=4`;
+            const url = `${BACKEND_URL}?action=createUserOpenPlaySlot&telegram_id=${user.telegram_id}&date=${date}&time=${time}&level=${encodeURIComponent(level)}&name=${encodeURIComponent(name)}&duration=${duration}&max=${max}`;
 
             try {
                 const res = await fetch(url);
@@ -3902,7 +3913,7 @@
                 if (data.success) {
                     showMessage("Slot created! You're player #1 🎾", "success");
                     hideCreateSlotModal();
-                    loadCommunityData();
+                    await loadCommunityData(); // Ensure refresh completes
                 } else {
                     showMessage(data.error || "Error creating slot", "error");
                 }
@@ -3942,19 +3953,28 @@
                 </select>
             </div>
             <div class="form-group">
-                <label>Court</label>
-                <select id="createSlotCourt" class="form-input">
-                    <option value="1">Court 1</option>
-                    <option value="2">Court 2</option>
-                </select>
-            </div>
-            <div class="form-group">
                 <label>Skill Level</label>
                 <select id="createSlotLevel" class="form-input">
                     <option value="All Levels (Fun)">All Levels (Fun)</option>
                     <option value="Beginner">Beginner</option>
                     <option value="Intermediate">Intermediate</option>
                     <option value="Advanced">Advanced</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Max Players (per court)</label>
+                <select id="createSlotMax" class="form-input">
+                    <option value="4">4 Players</option>
+                    <option value="5">5 Players</option>
+                    <option value="6">6 Players</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Duration</label>
+                <select id="createSlotDuration" class="form-input">
+                    <option value="1">1 Hour</option>
+                    <option value="2" selected>2 Hours</option>
+                    <option value="3">3 Hours</option>
                 </select>
             </div>
             <button class="btn-primary" style="width:100%;" onclick="submitCreateSlot()">Create Slot & Join</button>
