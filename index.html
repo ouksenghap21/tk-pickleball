@@ -3569,7 +3569,7 @@
             const profileHeader = document.querySelector('.community-header');
 
             if (!profileData.hasProfile) {
-                // FORCE PROFILE CREATION
+                // FORCE PROFILE CREATION - BUT DO NOT POPUP AUTOMATICALLY
                 list.innerHTML = `
                     <div style="text-align:center; padding:40px;">
                         <h3>Create Profile to Join 🎾</h3>
@@ -3579,9 +3579,9 @@
                 `;
                 if (profileHeader) profileHeader.style.display = 'none';
 
-                // Pre-fill name from Telegram if possible
+                // Pre-fill name from Telegram if possible but DO NOT navigate
                 document.getElementById('editProfileName').value = user.first_name + " " + (user.last_name || "");
-                editProfile(); // Open modal immediately
+                // editProfile(); // REMOVED AUTO-POPUP
                 return;
             } else {
                 if (profileHeader) profileHeader.style.display = 'flex';
@@ -3606,36 +3606,63 @@
             list.innerHTML = '';
 
             if (data.success && data.slots.length > 0) {
-                data.slots.forEach(slot => {
-                    const percent = slot.count / slot.max;
-                    let dotsHtml = '';
-                    for (let i = 0; i < slot.max; i++) {
-                        dotsHtml += `<div class="slot-dot ${i < slot.count ? 'filled' : ''}">${i + 1}</div>`;
-                    }
+                // Group slots by Date
+                const grouped = {};
+                const now = new Date();
+                const todayStr = formatDate(now);
+                const tomorrow = new Date(now); tomorrow.setDate(tomorrow.getDate() + 1);
+                const tomorrowStr = formatDate(tomorrow);
 
-                    const div = document.createElement('div');
-                    div.className = 'open-play-card';
-                    div.innerHTML = `
-                      <div class="open-play-header">
-                          <div class="play-time">${formatTimeRange(slot.time, slot.duration)} • ${formatDateDisplay(slot.date)}</div>
-                          <div class="skill-badge">${slot.level}</div>
-                      </div>
-                      <div class="player-slots">
-                          ${dotsHtml}
-                      </div>
-                      <div style="margin-bottom:12px; font-size:12px; color:var(--text-muted);">
-                          Court ${slot.court} • ${slot.count}/${slot.max} players joined
-                          ${slot.players.length > 0 ?
-                            `<div style="margin-top:4px; color:var(--text-primary);">
-                               ${slot.players.map(p => p.name).join(", ")}
-                             </div>`
-                            : ''}
-                      </div>
-                      <button class="btn-join" onclick="joinOpenPlaySlot('${slot.id}')">
-                          ${percent >= 1 ? 'FULL' : 'JOIN GAME'}
-                      </button>
-                  `;
-                    list.appendChild(div);
+                data.slots.forEach(slot => {
+                    const date = slot.date; // YYYY-MM-DD
+                    if (!grouped[date]) grouped[date] = [];
+                    grouped[date].push(slot);
+                });
+
+                // Render groups
+                Object.keys(grouped).sort().forEach(dateKey => {
+                    let displayDate = formatDateDisplay(dateKey);
+                    if (dateKey === todayStr) displayDate = "Today 📢";
+                    else if (dateKey === tomorrowStr) displayDate = "Tomorrow 🚀";
+
+                    // Header for the day
+                    const dayHeader = document.createElement('div');
+                    dayHeader.style.cssText = "color:var(--text-muted); font-size:13px; font-weight:700; margin:20px 0 10px 4px; text-transform:uppercase; letter-spacing:1px;";
+                    dayHeader.textContent = displayDate;
+                    list.appendChild(dayHeader);
+
+                    // Render slots for this day
+                    grouped[dateKey].forEach(slot => {
+                        const percent = slot.count / slot.max;
+                        let dotsHtml = '';
+                        for (let i = 0; i < slot.max; i++) {
+                            dotsHtml += `<div class="slot-dot ${i < slot.count ? 'filled' : ''}">${i + 1}</div>`;
+                        }
+
+                        const div = document.createElement('div');
+                        div.className = 'open-play-card';
+                        div.innerHTML = `
+                          <div class="open-play-header">
+                              <div class="play-time">${formatTimeRange(slot.time, slot.duration)}</div>
+                              <div class="skill-badge">${slot.level}</div>
+                          </div>
+                          <div class="player-slots">
+                              ${dotsHtml}
+                          </div>
+                          <div style="margin-bottom:12px; font-size:12px; color:var(--text-muted);">
+                              Court ${slot.court} • ${slot.count}/${slot.max} players joined
+                              ${slot.players.length > 0 ?
+                                `<div style="margin-top:4px; color:var(--text-primary);">
+                                   ${slot.players.map(p => p.name).join(", ")}
+                                 </div>`
+                                : ''}
+                          </div>
+                          <button class="btn-join" onclick="joinOpenPlaySlot('${slot.id}')">
+                              ${percent >= 1 ? 'FULL' : 'JOIN GAME'}
+                          </button>
+                      `;
+                        list.appendChild(div);
+                    });
                 });
             } else {
                 list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted);">No open games available right now.</div>';
