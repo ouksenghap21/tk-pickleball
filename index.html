@@ -1683,7 +1683,7 @@
             /* Nav height + padding */
         }
 
-        /* Community Tab */
+        /* Open Play Tab */
         .community-header {
             background: linear-gradient(135deg, var(--bg-card) 0%, rgba(30, 30, 40, 0.9) 100%);
             border-radius: 24px;
@@ -2115,8 +2115,8 @@
             <span>Book</span>
         </div>
         <div class="nav-item" id="nav-community" onclick="switchTab('community')">
-            <span class="nav-icon">👥</span>
-            <span>Community</span>
+            <span class="nav-icon">🎾</span>
+            <span>Open Play</span>
         </div>
     </nav>
 
@@ -3555,18 +3555,43 @@
             const user = getTelegramUserData();
             if (!user) return;
 
-            // Fetch Profile
-            const profileUrl = `${BACKEND_URL}?action=getUserProfile&telegram_id=${user.telegram_id}`;
-            fetch(profileUrl).then(r => r.json()).then(data => {
-                if (data.success && data.profile) {
-                    document.getElementById('profileName').textContent = data.profile.name;
-                    document.getElementById('profileSkill').textContent = "Skill: " + data.profile.skillLevel;
-                    document.getElementById('lookingForGameToggle').checked = (data.profile.lookingForGame === "TRUE");
-                    // Avatar: initials
-                    const initial = data.profile.name.charAt(0).toUpperCase();
-                    document.getElementById('userAvatar').textContent = initial;
-                }
-            });
+            // Check Profile First
+            const checkProfileUrl = `${BACKEND_URL}?action=checkUserHasProfile&telegram_id=${user.telegram_id}`;
+            const profileRes = await fetch(checkProfileUrl);
+            const profileData = await profileRes.json();
+
+            const list = document.getElementById('openPlayList');
+            const profileHeader = document.querySelector('.community-header');
+
+            if (!profileData.hasProfile) {
+                // FORCE PROFILE CREATION
+                list.innerHTML = `
+                    <div style="text-align:center; padding:40px;">
+                        <h3>Create Profile to Join 🎾</h3>
+                        <p style="color:var(--text-muted); margin-bottom:20px;">You need a profile to see and join Open Play games.</p>
+                        <button class="btn-primary" onclick="editProfile()">Create Details</button>
+                    </div>
+                `;
+                if (profileHeader) profileHeader.style.display = 'none';
+
+                // Pre-fill name from Telegram if possible
+                document.getElementById('editProfileName').value = user.first_name + " " + (user.last_name || "");
+                editProfile(); // Open modal immediately
+                return;
+            } else {
+                if (profileHeader) profileHeader.style.display = 'flex';
+                // Update Header UI
+                const p = profileData.profile;
+                document.getElementById('profileName').textContent = p.name;
+                document.getElementById('profileSkill').textContent = "Skill: " + p.skillLevel;
+                document.getElementById('lookingForGameToggle').checked = (p.lookingForGame === "TRUE");
+                document.getElementById('userAvatar').textContent = p.name.charAt(0).toUpperCase();
+
+                // Pre-fill edit form
+                document.getElementById('editProfileName').value = p.name;
+                document.getElementById('editProfilePhone').value = p.phone;
+                // Skill selection logic is in editProfile() helper
+            }
 
             // Fetch Slots
             const slotsUrl = `${BACKEND_URL}?action=getOpenPlaySlots`;
@@ -3596,6 +3621,11 @@
                       </div>
                       <div style="margin-bottom:12px; font-size:12px; color:var(--text-muted);">
                           Court ${slot.court} • ${slot.count}/${slot.max} players joined
+                          ${slot.players.length > 0 ?
+                            `<div style="margin-top:4px; color:var(--text-primary);">
+                               ${slot.players.map(p => p.name).join(", ")}
+                             </div>`
+                            : ''}
                       </div>
                       <button class="btn-join" onclick="joinOpenPlaySlot('${slot.id}')">
                           ${percent >= 1 ? 'FULL' : 'JOIN GAME'}
@@ -3627,9 +3657,14 @@
             const user = getTelegramUserData();
             if (!user) return showMessage("Please open in Telegram", "error");
 
+            // Get data from profile form (which is populated on load)
+            const name = document.getElementById('editProfileName').value || user.first_name;
+            const phone = document.getElementById('editProfilePhone').value || "";
+
             showLoading(true);
 
-            const url = `${BACKEND_URL}?action=joinOpenPlay&slot_id=${slotId}&telegram_id=${user.telegram_id}&name=${encodeURIComponent(user.first_name)}`;
+            // Pass phone and name
+            const url = `${BACKEND_URL}?action=joinOpenPlay&slot_id=${slotId}&telegram_id=${user.telegram_id}&name=${encodeURIComponent(name)}&phone=${encodeURIComponent(phone)}`;
             try {
                 const res = await fetch(url);
                 const data = await res.json();
@@ -3693,8 +3728,11 @@
             const skill = document.getElementById('editProfileSkill').value;
             const phone = document.getElementById('editProfilePhone').value;
 
+            if (!name || name.trim() === "") return showMessage("Display Name is required", "error");
+            if (!phone || phone.trim() === "") return showMessage("Phone Number is required", "error");
+
             showLoading(true);
-            const url = `${BACKEND_URL}?action=updateUserProfile&telegram_id=${user.telegram_id}&name=${encodeURIComponent(name)}&skill_level=${encodeURIComponent(skill)}&phone=${encodeURIComponent(phone)}`;
+            const url = `${BACKEND_URL}?action=updateUserProfile&telegram_id=${user.telegram_id}&name=${encodeURIComponent(name)}&skill_level=${encodeURIComponent(skill)}&phone=${encodeURIComponent(phone)}&looking_for_game=${document.getElementById('lookingForGameToggle').checked ? 'TRUE' : 'FALSE'}`;
 
             try {
                 await fetch(url);
