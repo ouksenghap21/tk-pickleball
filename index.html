@@ -2079,7 +2079,11 @@
                 </div>
             </div>
 
-            <h3 style="margin-bottom:16px;">Open Play Slots 🎾</h3>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h3 style="margin:0;">Open Play Slots 🎾</h3>
+                <button class="btn-primary" style="padding:8px 16px; font-size:13px;" onclick="showCreateSlotModal()">+
+                    Create Slot</button>
+            </div>
             <div id="openPlayList">
                 <!-- JS will populate -->
                 <div style="text-align:center; padding:40px; color:var(--text-muted);">Loading games...</div>
@@ -3643,6 +3647,19 @@
                                 dotsHtml += `<div class="slot-dot ${i < slot.count ? 'filled' : ''}">${i + 1}</div>`;
                             }
 
+                            // Check if current user is in this slot
+                            const isJoined = slot.players.some(p => String(p.id) === String(user.telegram_id));
+                            const isFull = slot.count >= slot.max;
+
+                            let actionButton = '';
+                            if (isJoined) {
+                                actionButton = `<button class="btn-leave" onclick="leaveOpenPlaySlot('${slot.id}')" style="background: linear-gradient(135deg, #EF4444, #DC2626);">LEAVE GAME</button>`;
+                            } else if (isFull) {
+                                actionButton = `<button class="btn-join" onclick="joinWaitlist('${slot.id}')" style="background: linear-gradient(135deg, #F59E0B, #D97706);">JOIN WAITLIST</button>`;
+                            } else {
+                                actionButton = `<button class="btn-join" onclick="joinOpenPlaySlot('${slot.id}')">JOIN GAME</button>`;
+                            }
+
                             const div = document.createElement('div');
                             div.className = 'open-play-card';
                             div.innerHTML = `
@@ -3655,15 +3672,14 @@
                               </div>
                               <div style="margin-bottom:12px; font-size:12px; color:var(--text-muted);">
                                   Court ${slot.court} • ${slot.count}/${slot.max} players joined
+                                  ${slot.count < 2 ? '<span style="color:#F59E0B;"> (Need 2 to play)</span>' : ''}
                                   ${slot.players.length > 0 ?
                                     `<div style="margin-top:4px; color:var(--text-primary);">
-                                       ${slot.players.map(p => p.name).join(", ")}
+                                       ${slot.players.map(p => p.name + (p.isCreator ? ' 👑' : '')).join(", ")}
                                      </div>`
                                     : ''}
                               </div>
-                              <button class="btn-join" onclick="joinOpenPlaySlot('${slot.id}')">
-                                  ${percent >= 1 ? 'FULL' : 'JOIN GAME'}
-                              </button>
+                              ${actionButton}
                           `;
                             list.appendChild(div);
                         });
@@ -3719,6 +3735,35 @@
                 showLoading(false);
                 showMessage("Error joining game", "error");
             }
+        }
+
+        async function leaveOpenPlaySlot(slotId) {
+            const user = getTelegramUserData();
+            if (!user) return showMessage("Please open in Telegram", "error");
+
+            if (!confirm("Are you sure you want to leave this game?")) return;
+
+            showLoading(true);
+            const url = `${BACKEND_URL}?action=leaveOpenPlay&slot_id=${slotId}&telegram_id=${user.telegram_id}`;
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                showLoading(false);
+
+                if (data.success) {
+                    showMessage("You left the game", "success");
+                    loadCommunityData();
+                } else {
+                    showMessage(data.error, "error");
+                }
+            } catch (e) {
+                showLoading(false);
+                showMessage("Error leaving game", "error");
+            }
+        }
+
+        async function joinWaitlist(slotId) {
+            showMessage("Waitlist feature coming soon! The slot is currently full.", "error");
         }
 
         async function toggleLookingForGame(el) {
@@ -3811,7 +3856,112 @@
 
             return `${h1}:${m1} ${ampm1} - ${h2}:${m2} ${ampm2}`;
         }
+
+        // ============================================
+        // USER CREATE SLOT
+        // ============================================
+        function showCreateSlotModal() {
+            const user = getTelegramUserData();
+            if (!user) return showMessage("Please open in Telegram", "error");
+
+            // Set default date to tomorrow
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            document.getElementById('createSlotDate').value = formatDate(tomorrow);
+            document.getElementById('createSlotTime').value = '09:00';
+            document.getElementById('createSlotCourt').value = '1';
+            document.getElementById('createSlotModal').style.display = 'flex';
+        }
+
+        function hideCreateSlotModal() {
+            document.getElementById('createSlotModal').style.display = 'none';
+        }
+
+        async function submitCreateSlot() {
+            const user = getTelegramUserData();
+            if (!user) return showMessage("Please open in Telegram", "error");
+
+            const date = document.getElementById('createSlotDate').value;
+            const time = document.getElementById('createSlotTime').value;
+            const court = document.getElementById('createSlotCourt').value;
+            const level = document.getElementById('createSlotLevel').value;
+            const name = document.getElementById('editProfileName').value || user.first_name;
+
+            if (!date || !time || !court) {
+                return showMessage("Please fill all fields", "error");
+            }
+
+            showLoading(true);
+            const url = `${BACKEND_URL}?action=createUserOpenPlaySlot&telegram_id=${user.telegram_id}&date=${date}&time=${time}&court=${court}&level=${encodeURIComponent(level)}&name=${encodeURIComponent(name)}&duration=2&max=4`;
+
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                showLoading(false);
+
+                if (data.success) {
+                    showMessage("Slot created! You're player #1 🎾", "success");
+                    hideCreateSlotModal();
+                    loadCommunityData();
+                } else {
+                    showMessage(data.error || "Error creating slot", "error");
+                }
+            } catch (e) {
+                showLoading(false);
+                showMessage("Network error", "error");
+            }
+        }
     </script>
+
+    <!-- CREATE SLOT MODAL -->
+    <div id="createSlotModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h2 class="modal-header">Create Open Play Slot</h2>
+            <p style="color:var(--text-muted); font-size:13px; margin-bottom:16px;">
+                Create a slot and invite others to join! Minimum 2 players needed.
+            </p>
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="createSlotDate" class="form-input">
+            </div>
+            <div class="form-group">
+                <label>Time</label>
+                <select id="createSlotTime" class="form-input">
+                    <option value="09:00">9:00 AM</option>
+                    <option value="10:00">10:00 AM</option>
+                    <option value="11:00">11:00 AM</option>
+                    <option value="12:00">12:00 PM</option>
+                    <option value="13:00">1:00 PM</option>
+                    <option value="14:00">2:00 PM</option>
+                    <option value="15:00">3:00 PM</option>
+                    <option value="16:00">4:00 PM</option>
+                    <option value="17:00">5:00 PM</option>
+                    <option value="18:00">6:00 PM</option>
+                    <option value="19:00">7:00 PM</option>
+                    <option value="20:00">8:00 PM</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Court</label>
+                <select id="createSlotCourt" class="form-input">
+                    <option value="1">Court 1</option>
+                    <option value="2">Court 2</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Skill Level</label>
+                <select id="createSlotLevel" class="form-input">
+                    <option value="All Levels (Fun)">All Levels (Fun)</option>
+                    <option value="Beginner">Beginner</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="Advanced">Advanced</option>
+                </select>
+            </div>
+            <button class="btn-primary" style="width:100%;" onclick="submitCreateSlot()">Create Slot & Join</button>
+            <button class="btn-secondary" style="width:100%; margin-top:8px;"
+                onclick="hideCreateSlotModal()">Cancel</button>
+        </div>
+    </div>
 </body>
 
 </html>
