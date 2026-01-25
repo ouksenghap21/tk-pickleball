@@ -3558,114 +3558,122 @@
 
         async function loadCommunityData() {
             const user = getTelegramUserData();
-            if (!user) return;
-
-            // Check Profile First
-            const checkProfileUrl = `${BACKEND_URL}?action=checkUserHasProfile&telegram_id=${user.telegram_id}`;
-            const profileRes = await fetch(checkProfileUrl);
-            const profileData = await profileRes.json();
-
             const list = document.getElementById('openPlayList');
             const profileHeader = document.querySelector('.community-header');
 
-            if (!profileData.hasProfile) {
-                // FORCE PROFILE CREATION - BUT DO NOT POPUP AUTOMATICALLY
-                list.innerHTML = `
-                    <div style="text-align:center; padding:40px;">
-                        <h3>Create Profile to Join 🎾</h3>
-                        <p style="color:var(--text-muted); margin-bottom:20px;">You need a profile to see and join Open Play games.</p>
-                        <button class="btn-primary" onclick="editProfile()">Create Details</button>
-                    </div>
-                `;
-                if (profileHeader) profileHeader.style.display = 'none';
-
-                // Pre-fill name from Telegram if possible but DO NOT navigate
-                document.getElementById('editProfileName').value = user.first_name + " " + (user.last_name || "");
-                // editProfile(); // REMOVED AUTO-POPUP
+            if (!user) {
+                list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted);">Please open in Telegram.</div>';
                 return;
-            } else {
-                if (profileHeader) profileHeader.style.display = 'flex';
-                // Update Header UI
-                const p = profileData.profile;
-                document.getElementById('profileName').textContent = p.name;
-                document.getElementById('profileSkill').textContent = "Skill: " + p.skillLevel;
-                document.getElementById('lookingForGameToggle').checked = (p.lookingForGame === "TRUE");
-                document.getElementById('userAvatar').textContent = p.name.charAt(0).toUpperCase();
-
-                // Pre-fill edit form
-                document.getElementById('editProfileName').value = p.name;
-                document.getElementById('editProfilePhone').value = p.phone;
-                // Skill selection logic is in editProfile() helper
             }
 
-            // Fetch Slots
-            const slotsUrl = `${BACKEND_URL}?action=getOpenPlaySlots`;
-            const res = await fetch(slotsUrl);
-            const data = await res.json();
+            list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted);">Loading...</div>';
 
-            list.innerHTML = '';
+            try {
+                // Check Profile First
+                const checkProfileUrl = `${BACKEND_URL}?action=checkUserHasProfile&telegram_id=${user.telegram_id}`;
+                const profileRes = await fetch(checkProfileUrl);
+                const profileData = await profileRes.json();
 
-            if (data.success && data.slots.length > 0) {
-                // Group slots by Date
-                const grouped = {};
-                const now = new Date();
-                const todayStr = formatDate(now);
-                const tomorrow = new Date(now); tomorrow.setDate(tomorrow.getDate() + 1);
-                const tomorrowStr = formatDate(tomorrow);
+                if (!profileData.hasProfile) {
+                    // FORCE PROFILE CREATION - BUT DO NOT POPUP AUTOMATICALLY
+                    list.innerHTML = `
+                        <div style="text-align:center; padding:40px;">
+                            <h3>Create Profile to Join 🎾</h3>
+                            <p style="color:var(--text-muted); margin-bottom:20px;">You need a profile to see and join Open Play games.</p>
+                            <button class="btn-primary" onclick="editProfile()">Create Details</button>
+                        </div>
+                    `;
+                    if (profileHeader) profileHeader.style.display = 'none';
 
-                data.slots.forEach(slot => {
-                    const date = slot.date; // YYYY-MM-DD
-                    if (!grouped[date]) grouped[date] = [];
-                    grouped[date].push(slot);
-                });
+                    // Pre-fill name from Telegram if possible but DO NOT navigate
+                    document.getElementById('editProfileName').value = user.first_name + " " + (user.last_name || "");
+                    return;
+                } else {
+                    if (profileHeader) profileHeader.style.display = 'flex';
+                    // Update Header UI
+                    const p = profileData.profile;
+                    document.getElementById('profileName').textContent = p.name;
+                    document.getElementById('profileSkill').textContent = "Skill: " + p.skillLevel;
+                    document.getElementById('lookingForGameToggle').checked = (p.lookingForGame === "TRUE");
+                    document.getElementById('userAvatar').textContent = p.name.charAt(0).toUpperCase();
 
-                // Render groups
-                Object.keys(grouped).sort().forEach(dateKey => {
-                    let displayDate = formatDateDisplay(dateKey);
-                    if (dateKey === todayStr) displayDate = "Today 📢";
-                    else if (dateKey === tomorrowStr) displayDate = "Tomorrow 🚀";
+                    // Pre-fill edit form
+                    document.getElementById('editProfileName').value = p.name;
+                    document.getElementById('editProfilePhone').value = p.phone;
+                }
 
-                    // Header for the day
-                    const dayHeader = document.createElement('div');
-                    dayHeader.style.cssText = "color:var(--text-muted); font-size:13px; font-weight:700; margin:20px 0 10px 4px; text-transform:uppercase; letter-spacing:1px;";
-                    dayHeader.textContent = displayDate;
-                    list.appendChild(dayHeader);
+                // Fetch Slots
+                const slotsUrl = `${BACKEND_URL}?action=getOpenPlaySlots`;
+                const res = await fetch(slotsUrl);
+                const data = await res.json();
 
-                    // Render slots for this day
-                    grouped[dateKey].forEach(slot => {
-                        const percent = slot.count / slot.max;
-                        let dotsHtml = '';
-                        for (let i = 0; i < slot.max; i++) {
-                            dotsHtml += `<div class="slot-dot ${i < slot.count ? 'filled' : ''}">${i + 1}</div>`;
-                        }
+                list.innerHTML = '';
 
-                        const div = document.createElement('div');
-                        div.className = 'open-play-card';
-                        div.innerHTML = `
-                          <div class="open-play-header">
-                              <div class="play-time">${formatTimeRange(slot.time, slot.duration)}</div>
-                              <div class="skill-badge">${slot.level}</div>
-                          </div>
-                          <div class="player-slots">
-                              ${dotsHtml}
-                          </div>
-                          <div style="margin-bottom:12px; font-size:12px; color:var(--text-muted);">
-                              Court ${slot.court} • ${slot.count}/${slot.max} players joined
-                              ${slot.players.length > 0 ?
-                                `<div style="margin-top:4px; color:var(--text-primary);">
-                                   ${slot.players.map(p => p.name).join(", ")}
-                                 </div>`
-                                : ''}
-                          </div>
-                          <button class="btn-join" onclick="joinOpenPlaySlot('${slot.id}')">
-                              ${percent >= 1 ? 'FULL' : 'JOIN GAME'}
-                          </button>
-                      `;
-                        list.appendChild(div);
+                if (data.success && data.slots.length > 0) {
+                    // Group slots by Date
+                    const grouped = {};
+                    const now = new Date();
+                    const todayStr = formatDate(now);
+                    const tomorrow = new Date(now); tomorrow.setDate(tomorrow.getDate() + 1);
+                    const tomorrowStr = formatDate(tomorrow);
+
+                    data.slots.forEach(slot => {
+                        const date = slot.date; // YYYY-MM-DD
+                        if (!grouped[date]) grouped[date] = [];
+                        grouped[date].push(slot);
                     });
-                });
-            } else {
-                list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted);">No open games available right now.</div>';
+
+                    // Render groups
+                    Object.keys(grouped).sort().forEach(dateKey => {
+                        let displayDate = formatDateDisplay(dateKey);
+                        if (dateKey === todayStr) displayDate = "Today 📢";
+                        else if (dateKey === tomorrowStr) displayDate = "Tomorrow 🚀";
+
+                        // Header for the day
+                        const dayHeader = document.createElement('div');
+                        dayHeader.style.cssText = "color:var(--text-muted); font-size:13px; font-weight:700; margin:20px 0 10px 4px; text-transform:uppercase; letter-spacing:1px;";
+                        dayHeader.textContent = displayDate;
+                        list.appendChild(dayHeader);
+
+                        // Render slots for this day
+                        grouped[dateKey].forEach(slot => {
+                            const percent = slot.count / slot.max;
+                            let dotsHtml = '';
+                            for (let i = 0; i < slot.max; i++) {
+                                dotsHtml += `<div class="slot-dot ${i < slot.count ? 'filled' : ''}">${i + 1}</div>`;
+                            }
+
+                            const div = document.createElement('div');
+                            div.className = 'open-play-card';
+                            div.innerHTML = `
+                              <div class="open-play-header">
+                                  <div class="play-time">${formatTimeRange(slot.time, slot.duration)}</div>
+                                  <div class="skill-badge">${slot.level}</div>
+                              </div>
+                              <div class="player-slots">
+                                  ${dotsHtml}
+                              </div>
+                              <div style="margin-bottom:12px; font-size:12px; color:var(--text-muted);">
+                                  Court ${slot.court} • ${slot.count}/${slot.max} players joined
+                                  ${slot.players.length > 0 ?
+                                    `<div style="margin-top:4px; color:var(--text-primary);">
+                                       ${slot.players.map(p => p.name).join(", ")}
+                                     </div>`
+                                    : ''}
+                              </div>
+                              <button class="btn-join" onclick="joinOpenPlaySlot('${slot.id}')">
+                                  ${percent >= 1 ? 'FULL' : 'JOIN GAME'}
+                              </button>
+                          `;
+                            list.appendChild(div);
+                        });
+                    });
+                } else {
+                    list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted);">No open games available for the next 7 days.</div>';
+                }
+            } catch (error) {
+                console.error("loadCommunityData error:", error);
+                list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted);">Error loading games. Please try again.</div>';
             }
         }
 
