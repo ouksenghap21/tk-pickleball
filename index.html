@@ -81,7 +81,7 @@
             background: var(--bg-primary);
             color: var(--text-primary);
             min-height: 100vh;
-            padding-bottom: 120px;
+            padding-bottom: 150px;
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
         }
@@ -914,9 +914,21 @@
         }
 
         .court-tile.available:hover {
-            transform: translateY(-8px) scale(1.05);
-            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.3), 0 0 30px var(--emerald-glow);
-            border-color: var(--emerald-light);
+            /* Handled in media query below */
+        }
+
+        @media (hover: hover) {
+            .court-tile.available:hover {
+                transform: translateY(-8px) scale(1.05);
+                box-shadow: 0 20px 40px rgba(16, 185, 129, 0.3), 0 0 30px var(--emerald-glow);
+                border-color: var(--emerald-light);
+            }
+        }
+
+        .court-tile {
+            /* ... previous props ... */
+            touch-action: manipulation;
+            /* Improves touch handling */
         }
 
         .court-tile.selected {
@@ -1222,9 +1234,82 @@
             box-shadow: none;
         }
 
-        .btn-book:not(:disabled):active {
-            transform: scale(0.98);
+        /* ============================================
+           CHECKOUT BAR - Integrated Footer
+           ============================================ */
+        .checkout-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 15, 26, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 16px 20px;
+            padding-bottom: max(16px, env(safe-area-inset-bottom));
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            z-index: 100;
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
+        .checkout-bar.show {
+            transform: translateY(0);
+        }
+
+        .checkout-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .checkout-total {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-primary);
+            line-height: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .checkout-total .currency {
+            font-size: 16px;
+            margin-right: 2px;
+            color: var(--accent);
+        }
+
+        .checkout-details {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pay-badge-mini {
+            background: var(--success-light);
+            color: var(--success);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 10px;
+            text-transform: uppercase;
+        }
+
+        .btn-book {
+            flex: 1;
+            max-width: 200px;
+            padding: 14px;
+            font-size: 15px;
+            margin: 0;
+            /* Override */
+        }
+
 
         /* Messages */
         .message {
@@ -1779,23 +1864,17 @@
                 </div>
             </div>
 
-            <!-- Price Card -->
+            <!-- Price Card - SIMPLIFIED -->
             <div class="price-card">
                 <div class="price-card-inner">
-                    <div class="price-breakdown">
+                    <div class="price-breakdown" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
                         <div class="price-breakdown-left">
                             <span id="priceBreakdown">1 hour × 1 court</span>
                             <span id="rateLabel">@ $13-$15/hour per court</span>
                         </div>
                         <div class="price-hours-badge"><span id="totalHours">1</span> total hrs</div>
                     </div>
-                    <div class="price-total">
-                        <div class="price-total-left">
-                            <div class="label" data-i18n="totalAmount">Total Amount</div>
-                            <div class="amount">$<span id="totalPrice">15</span></div>
-                        </div>
-                        <div class="price-pay-badge" data-i18n="payOnArrival">💵 Pay on arrival</div>
-                    </div>
+                    <!-- Total Price removed from here, moved to footer -->
                 </div>
             </div>
 
@@ -1809,11 +1888,23 @@
             </div>
         </form>
 
-        <div class="btn-container">
-            <button type="submit" form="bookingForm" id="btnBook" class="btn-book" data-i18n="confirmBooking">🏓 Confirm
-                Booking</button>
+    </div><!-- End Container -->
+
+    <!-- Checkout Bar Footer -->
+    <div class="checkout-bar show" id="checkoutBar">
+        <div class="checkout-info">
+            <div class="checkout-total">
+                <span class="currency">$</span><span id="checkoutTotal">15</span>
+            </div>
+            <div class="checkout-details">
+                <span id="checkoutSummary">1 hr • 1 court</span>
+                <span class="pay-badge-mini" data-i18n="payOnArrival">Pay on arrival</span>
+            </div>
         </div>
+        <button type="submit" form="bookingForm" id="btnBook" class="btn-book"
+            data-i18n="confirmBooking">Confirm</button>
     </div>
+
 
     <!-- Confirmation Modal -->
     <div id="confirmModal" class="modal">
@@ -2331,8 +2422,14 @@
                 totalPrice = duration * courts * PRICING.WEEKDAY_PEAK; // Default to peak
             }
 
-            document.getElementById('totalPrice').textContent = totalPrice;
-            document.getElementById('totalHours').textContent = totalHours;
+            // Update Checkout Bar
+            document.getElementById('checkoutTotal').textContent = totalPrice;
+            document.getElementById('checkoutSummary').textContent = `${totalHours} hrs • ${courts} ${courts === 1 ? 'court' : 'courts'}`;
+
+            // Also update internal fields if needed
+            const totalHoursEl = document.getElementById('totalHours');
+            if (totalHoursEl) totalHoursEl.textContent = totalHours;
+
             document.getElementById('priceBreakdown').textContent =
                 `${duration} ${duration === 1 ? 'hour' : 'hours'} × ${courts} ${courts === 1 ? 'court' : 'courts'}`;
 
@@ -2652,7 +2749,8 @@
             const duration = parseInt(document.getElementById('duration').value);
             const courts = parseInt(document.getElementById('courts').value);
             const totalPrice = calculateDynamicPrice(date, time, duration, courts);
-            document.getElementById('totalPrice').textContent = totalPrice;
+            // document.getElementById('totalPrice').textContent = totalPrice; // Element removed
+            document.getElementById('checkoutTotal').textContent = totalPrice; // Update footer instead
             const totalHours = duration * courts;
 
             if (!name || !phone || !date || !time || !duration || !courts) {
@@ -2854,7 +2952,11 @@
                     document.getElementById('bookingForm').reset();
                     document.getElementById('timeGrid').innerHTML = '';
                     document.getElementById('selectedTime').value = '';
-                    document.getElementById('totalPrice').textContent = '13';
+                    document.getElementById('bookingForm').reset();
+                    document.getElementById('timeGrid').innerHTML = '';
+                    document.getElementById('selectedTime').value = '';
+                    document.getElementById('checkoutTotal').textContent = '13'; // Reset footer total
+                    document.getElementById('checkoutSummary').textContent = '1 hr • 1 court';
                     document.getElementById('totalHours').textContent = '1';
                     document.getElementById('priceBreakdown').textContent = '1 hour × 1 court';
 
