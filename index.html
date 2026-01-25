@@ -3570,7 +3570,12 @@
                 return;
             }
 
-            list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted);">Loading...</div>';
+            // Only show full loading state if list is empty (prevents flickering on refresh)
+            if (list.children.length === 0) {
+                list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted);">Loading...</div>';
+            } else {
+                // Optional: Show small spinner or status indicator elsewhere
+            }
 
             try {
                 // Check Profile First
@@ -3824,18 +3829,25 @@
             if (!name || name.trim() === "") return showMessage("Display Name is required", "error");
             if (!phone || phone.trim() === "") return showMessage("Phone Number is required", "error");
 
-            showLoading(true);
+            // Optimistic UI: Close immediately
+            closeProfileModal();
+            showMessage("Saving profile...", "success"); // Show saving message
+
+            // Update local header immediately (eager update)
+            document.getElementById('profileName').textContent = name;
+            document.getElementById('profileSkill').textContent = "Skill: " + skill;
+            document.getElementById('userAvatar').textContent = name.charAt(0).toUpperCase();
+
             const url = `${BACKEND_URL}?action=updateUserProfile&telegram_id=${user.telegram_id}&name=${encodeURIComponent(name)}&skill_level=${encodeURIComponent(skill)}&phone=${encodeURIComponent(phone)}&looking_for_game=${document.getElementById('lookingForGameToggle').checked ? 'TRUE' : 'FALSE'}`;
 
             try {
+                // Background save
                 await fetch(url);
-                showLoading(false);
-                closeProfileModal();
-                loadCommunityData(); // Refresh UI
-                showMessage("Profile updated!", "success");
+                // Success - maybe refresh data silently to sync any backend adjustments
+                loadCommunityData(true); // Silent refresh
             } catch (e) {
-                showLoading(false);
-                showMessage("Error saving profile", "error");
+                showMessage("Error saving profile. Please check connection.", "error");
+                // Optionally re-open modal or warn
             }
         }
         function formatTimeRange(start, duration) {
@@ -3878,7 +3890,7 @@
             tomorrow.setDate(tomorrow.getDate() + 1);
             document.getElementById('createSlotDate').value = formatDate(tomorrow);
             document.getElementById('createSlotTime').value = '09:00';
-            document.getElementById('createSlotCourt').value = '1';
+            // Court is auto-assigned
             document.getElementById('createSlotModal').style.display = 'flex';
         }
 
@@ -3929,7 +3941,9 @@
         <div class="modal-content">
             <h2 class="modal-header">Create Open Play Slot</h2>
             <p style="color:var(--text-muted); font-size:13px; margin-bottom:16px;">
-                Create a slot and invite others to join! Minimum 2 players needed.
+                Create a slot and invite others to join! <br>
+                <span style="color:#F59E0B">⚠️ Fee: $5/hr per player (Walk-in)</span><br>
+                <span style="color:#EF4444">⚠️ Slots with 0 players will be removed 1h before game time.</span>
             </p>
             <div class="form-group">
                 <label>Date</label>
