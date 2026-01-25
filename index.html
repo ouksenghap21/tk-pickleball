@@ -1639,6 +1639,163 @@
                 transform: translateY(0);
             }
         }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 15, 26, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0 30px;
+            /* Safe area */
+            z-index: 200;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-muted);
+            font-size: 10px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active {
+            color: var(--accent);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+        }
+
+        /* Adjust checkout bar to sit above nav */
+        .checkout-bar {
+            bottom: 80px;
+            /* Nav height + padding */
+        }
+
+        /* Community Tab */
+        .community-header {
+            background: linear-gradient(135deg, var(--bg-card) 0%, rgba(30, 30, 40, 0.9) 100%);
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .user-profile-summary {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .avatar-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .skill-badge {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            color: var(--accent-light);
+            border: 1px solid var(--accent);
+            margin-top: 4px;
+            display: inline-block;
+        }
+
+        .looking-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px 16px;
+            border-radius: 16px;
+            margin-top: 16px;
+        }
+
+        /* Open Play Cards */
+        .open-play-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid var(--glass-border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .open-play-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .play-time {
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .player-slots {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .slot-dot {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+
+        .slot-dot.filled {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-join {
+            width: 100%;
+            background: var(--bg-secondary);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
     </style>
 </head>
 
@@ -1659,236 +1816,309 @@
     </div>
 
     <div class="container">
-        <!-- Credit Banner -->
-        <div id="creditBanner" class="credit-banner">
-            <div class="credit-banner-left">
-                <div class="credit-icon">💳</div>
-                <div class="credit-info">
-                    <div class="label">Credit Balance</div>
-                    <div class="balance"><span id="creditBalanceDisplay">0</span> hours</div>
+        <!-- BOOKING TAB -->
+        <div id="tab-book" class="tab-content active">
+            <!-- Credit Banner -->
+            <div id="creditBanner" class="credit-banner">
+                <div class="credit-banner-left">
+                    <div class="credit-icon">💳</div>
+                    <div class="credit-info">
+                        <div class="label">Credit Balance</div>
+                        <div class="balance"><span id="creditBalanceDisplay">0</span> hours</div>
+                    </div>
+                </div>
+                <div class="credit-status">● Active</div>
+            </div>
+
+            <div id="messageBox" class="message"></div>
+            <div id="loadingBox" class="loading">
+                <div class="spinner"></div>
+                <p data-i18n="processing">Processing your booking...</p>
+            </div>
+
+            <form id="bookingForm" style="display: block;">
+                <!-- Form Card -->
+                <div class="form-card">
+                    <!-- Name & Phone Row -->
+                    <div class="form-row">
+                        <div>
+                            <label class="form-label" for="name"><span data-i18n="fullName">Name</span></label>
+                            <input type="text" id="name" name="name" class="form-input" required
+                                data-i18n-placeholder="namePlaceholder">
+                        </div>
+                        <div>
+                            <label class="form-label" for="phone"><span data-i18n="phoneNumber">Phone</span></label>
+                            <input type="tel" id="phone" name="phone" class="form-input" required
+                                data-i18n-placeholder="phonePlaceholder">
+                        </div>
+                    </div>
+
+                    <!-- Date Field -->
+                    <div class="form-group">
+                        <label class="form-label" for="date"><span data-i18n="date">Date</span></label>
+                        <input type="date" id="date" name="date" class="form-input" required>
+                        <div class="quick-dates">
+                            <button type="button" id="btnToday" class="quick-date-btn" data-i18n="today">Today</button>
+                            <button type="button" id="btnTomorrow" class="quick-date-btn"
+                                data-i18n="tomorrow">Tomorrow</button>
+                            <button type="button" id="btnNextWeek" class="quick-date-btn" data-i18n="nextWeek">Next
+                                Week</button>
+                        </div>
+                    </div>
+
+                    <!-- Duration Buttons -->
+                    <div class="form-group">
+                        <label class="form-label"><span data-i18n="duration">Duration</span></label>
+                        <div class="selector-grid" id="durationSelector">
+                            <button type="button" class="selector-btn duration-btn selected" data-value="1">
+                                <div class="value">1</div>
+                                <div class="unit">hour</div>
+                            </button>
+                            <button type="button" class="selector-btn duration-btn" data-value="2">
+                                <div class="value">2</div>
+                                <div class="unit">hours</div>
+                            </button>
+                            <button type="button" class="selector-btn duration-btn" data-value="3">
+                                <div class="value">3</div>
+                                <div class="unit">hours</div>
+                            </button>
+                            <button type="button" class="selector-btn duration-btn" data-value="4">
+                                <div class="value">4</div>
+                                <div class="unit">hours</div>
+                            </button>
+                        </div>
+                        <input type="hidden" id="duration" name="duration" value="1">
+                    </div>
+
+                    <!-- Courts Buttons - Hidden, use 3D court tiles instead -->
+                    <div class="form-group" style="display: none;">
+                        <label class="form-label"><span data-i18n="courts">Courts</span></label>
+                        <div class="selector-grid" id="courtsSelector">
+                            <button type="button" class="selector-btn court-btn selected" data-value="1">
+                                <div class="value">1</div>
+                                <div class="unit">court</div>
+                            </button>
+                            <button type="button" class="selector-btn court-btn" data-value="2">
+                                <div class="value">2</div>
+                                <div class="unit">courts</div>
+                            </button>
+                            <button type="button" class="selector-btn court-btn" data-value="3">
+                                <div class="value">3</div>
+                                <div class="unit">courts</div>
+                            </button>
+                            <button type="button" class="selector-btn court-btn" data-value="4">
+                                <div class="value">4</div>
+                                <div class="unit">courts</div>
+                            </button>
+                        </div>
+                        <input type="hidden" id="courts" name="courts" value="1">
+                    </div>
+                </div>
+
+                <!-- Time Slots Card - Hidden, replaced by Court Venue time slider -->
+                <div class="time-card" style="display: none;">
+                    <div class="time-header">
+                        <label class="form-label" style="margin-bottom: 0;"><span data-i18n="startTime">Select
+                                Time</span></label>
+                        <span id="availableCount" class="time-count"></span>
+                    </div>
+                    <p class="helper-text" style="margin-top: 0; margin-bottom: 12px;" data-i18n="selectFirst">Select
+                        date,
+                        duration, and courts first.</p>
+                    <div id="timeLoadingMessage" class="time-loading" style="display: none;" data-i18n="checking">
+                        Checking
+                        availability...</div>
+                    <div id="timeGrid" class="time-grid"></div>
+                    <input type="hidden" id="selectedTime" name="time" required>
+                </div>
+
+                <!-- Visual Court Venue - Cinema Style -->
+                <div class="court-venue" id="courtVenue">
+                    <div class="venue-header">
+                        <div class="venue-title">🏟️ TK Pickleball Arena</div>
+                        <div class="venue-subtitle">Select your courts below</div>
+                    </div>
+
+                    <!-- Time Slider -->
+                    <div class="time-slider-container">
+                        <div class="time-slider-label">Choose Time Slot</div>
+                        <div class="time-slider-scroll" id="timeSliderScroll">
+                            <div class="time-slot-pill" data-time="08:00">8:00 AM</div>
+                            <div class="time-slot-pill" data-time="09:00">9:00 AM</div>
+                            <div class="time-slot-pill" data-time="10:00">10:00 AM</div>
+                            <div class="time-slot-pill" data-time="11:00">11:00 AM</div>
+                            <div class="time-slot-pill" data-time="12:00">12:00 PM</div>
+                            <div class="time-slot-pill" data-time="13:00">1:00 PM</div>
+                            <div class="time-slot-pill" data-time="14:00">2:00 PM</div>
+                            <div class="time-slot-pill" data-time="15:00">3:00 PM</div>
+                            <div class="time-slot-pill" data-time="16:00">4:00 PM</div>
+                            <div class="time-slot-pill peak" data-time="17:00">5:00 PM</div>
+                            <div class="time-slot-pill peak" data-time="18:00">6:00 PM</div>
+                            <div class="time-slot-pill peak" data-time="19:00">7:00 PM</div>
+                            <div class="time-slot-pill peak" data-time="20:00">8:00 PM</div>
+                            <div class="time-slot-pill" data-time="21:00">9:00 PM</div>
+                        </div>
+                    </div>
+
+                    <!-- 3D Court Arena -->
+                    <div class="court-arena">
+                        <div class="court-grid-3d" id="courtGrid3D">
+                            <!-- Row 1 -->
+                            <div class="court-tile available" data-court="1">
+                                <div class="court-number">1</div>
+                                <div class="court-label">Court</div>
+                                <div class="court-status">OPEN</div>
+                            </div>
+                            <div class="court-tile available" data-court="2">
+                                <div class="court-number">2</div>
+                                <div class="court-label">Court</div>
+                                <div class="court-status">OPEN</div>
+                            </div>
+                            <div class="court-tile available" data-court="3">
+                                <div class="court-number">3</div>
+                                <div class="court-label">Court</div>
+                                <div class="court-status">OPEN</div>
+                            </div>
+                            <div class="court-tile available" data-court="4">
+                                <div class="court-number">4</div>
+                                <div class="court-label">Court</div>
+                                <div class="court-status">OPEN</div>
+                            </div>
+                            <!-- Row 2 -->
+                            <div class="court-tile available" data-court="5">
+                                <div class="court-number">5</div>
+                                <div class="court-label">Court</div>
+                                <div class="court-status">OPEN</div>
+                            </div>
+                            <div class="court-tile available" data-court="6">
+                                <div class="court-number">6</div>
+                                <div class="court-label">Court</div>
+                                <div class="court-status">OPEN</div>
+                            </div>
+                            <div class="court-tile available" data-court="7">
+                                <div class="court-number">7</div>
+                                <div class="court-label">Court</div>
+                                <div class="court-status">OPEN</div>
+                            </div>
+                            <div class="court-tile available" data-court="8">
+                                <div class="court-number">8</div>
+                                <div class="court-label">Court</div>
+                                <div class="court-status">OPEN</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="court-legend">
+                        <div class="legend-item">
+                            <div class="legend-dot available"></div>
+                            <span>Available</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-dot selected"></div>
+                            <span>Your Selection</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-dot unavailable"></div>
+                            <span>Booked</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Price Card - SIMPLIFIED -->
+                <div class="price-card">
+                    <div class="price-card-inner">
+                        <div class="price-breakdown" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
+                            <div class="price-breakdown-left">
+                                <span id="priceBreakdown">1 hour × 1 court</span>
+                                <span id="rateLabel">@ $13-$15/hour per court</span>
+                            </div>
+                            <div class="price-hours-badge"><span id="totalHours">1</span> total hrs</div>
+                        </div>
+                        <!-- Total Price removed from here, moved to footer -->
+                    </div>
+                </div>
+
+                <!-- Location Card -->
+                <div class="location-card">
+                    <div class="location-icon">📍</div>
+                    <div class="location-info">
+                        <h3 data-i18n="location">TK Pickleball Courts</h3>
+                        <p data-i18n="locationDetails">Open daily 8:00 AM - 10:00 PM</p>
+                    </div>
+                </div>
+            </form>
+
+        </div> <!-- End tab-book -->
+
+        <!-- COMMUNITY TAB -->
+        <div id="tab-community" class="tab-content">
+            <div class="community-header">
+                <div class="user-profile-summary">
+                    <div class="avatar-circle" id="userAvatar" onclick="editProfile()" style="cursor:pointer">U</div>
+                    <div onclick="editProfile()" style="cursor:pointer">
+                        <div style="font-weight:700; font-size:18px;" id="profileName">Loading...</div>
+                        <div class="skill-badge" id="profileSkill">Skill: Unrated <span style="font-size:10px">✎</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="looking-toggle">
+                    <span>Looking for game?</span>
+                    <label class="switch">
+                        <input type="checkbox" id="lookingForGameToggle" onchange="toggleLookingForGame(this)">
+                        <span class="slider round"></span>
+                    </label>
                 </div>
             </div>
-            <div class="credit-status">● Active</div>
+
+            <h3 style="margin-bottom:16px;">Open Play Slots 🎾</h3>
+            <div id="openPlayList">
+                <!-- JS will populate -->
+                <div style="text-align:center; padding:40px; color:var(--text-muted);">Loading games...</div>
+            </div>
         </div>
+    </div>
 
-        <div id="messageBox" class="message"></div>
-        <div id="loadingBox" class="loading">
-            <div class="spinner"></div>
-            <p data-i18n="processing">Processing your booking...</p>
+    <!-- PROFILE EDIT MODAL -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <h2 class="modal-header">Edit Profile</h2>
+            <div class="form-group">
+                <label>Display Name</label>
+                <input type="text" id="editProfileName" class="form-input" placeholder="Your Name">
+            </div>
+            <div class="form-group">
+                <label>Skill Level</label>
+                <select id="editProfileSkill" class="form-input">
+                    <option value="Beginner (1.0-2.5)">Beginner (1.0 - 2.5)</option>
+                    <option value="Intermediate (3.0-3.5)">Intermediate (3.0 - 3.5)</option>
+                    <option value="Advanced (4.0-5.0)">Advanced (4.0+)</option>
+                    <option value="Pro (5.0+)">Pro (5.0+)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Phone (Optional)</label>
+                <input type="tel" id="editProfilePhone" class="form-input" placeholder="012...">
+            </div>
+            <div class="btn-container">
+                <button type="button" class="btn-secondary" onclick="closeProfileModal()">Cancel</button>
+                <button type="button" class="btn-primary" onclick="saveProfile()">Save Profile</button>
+            </div>
         </div>
-
-        <form id="bookingForm" style="display: block;">
-            <!-- Form Card -->
-            <div class="form-card">
-                <!-- Name & Phone Row -->
-                <div class="form-row">
-                    <div>
-                        <label class="form-label" for="name"><span data-i18n="fullName">Name</span></label>
-                        <input type="text" id="name" name="name" class="form-input" required
-                            data-i18n-placeholder="namePlaceholder">
-                    </div>
-                    <div>
-                        <label class="form-label" for="phone"><span data-i18n="phoneNumber">Phone</span></label>
-                        <input type="tel" id="phone" name="phone" class="form-input" required
-                            data-i18n-placeholder="phonePlaceholder">
-                    </div>
-                </div>
-
-                <!-- Date Field -->
-                <div class="form-group">
-                    <label class="form-label" for="date"><span data-i18n="date">Date</span></label>
-                    <input type="date" id="date" name="date" class="form-input" required>
-                    <div class="quick-dates">
-                        <button type="button" id="btnToday" class="quick-date-btn" data-i18n="today">Today</button>
-                        <button type="button" id="btnTomorrow" class="quick-date-btn"
-                            data-i18n="tomorrow">Tomorrow</button>
-                        <button type="button" id="btnNextWeek" class="quick-date-btn" data-i18n="nextWeek">Next
-                            Week</button>
-                    </div>
-                </div>
-
-                <!-- Duration Buttons -->
-                <div class="form-group">
-                    <label class="form-label"><span data-i18n="duration">Duration</span></label>
-                    <div class="selector-grid" id="durationSelector">
-                        <button type="button" class="selector-btn duration-btn selected" data-value="1">
-                            <div class="value">1</div>
-                            <div class="unit">hour</div>
-                        </button>
-                        <button type="button" class="selector-btn duration-btn" data-value="2">
-                            <div class="value">2</div>
-                            <div class="unit">hours</div>
-                        </button>
-                        <button type="button" class="selector-btn duration-btn" data-value="3">
-                            <div class="value">3</div>
-                            <div class="unit">hours</div>
-                        </button>
-                        <button type="button" class="selector-btn duration-btn" data-value="4">
-                            <div class="value">4</div>
-                            <div class="unit">hours</div>
-                        </button>
-                    </div>
-                    <input type="hidden" id="duration" name="duration" value="1">
-                </div>
-
-                <!-- Courts Buttons - Hidden, use 3D court tiles instead -->
-                <div class="form-group" style="display: none;">
-                    <label class="form-label"><span data-i18n="courts">Courts</span></label>
-                    <div class="selector-grid" id="courtsSelector">
-                        <button type="button" class="selector-btn court-btn selected" data-value="1">
-                            <div class="value">1</div>
-                            <div class="unit">court</div>
-                        </button>
-                        <button type="button" class="selector-btn court-btn" data-value="2">
-                            <div class="value">2</div>
-                            <div class="unit">courts</div>
-                        </button>
-                        <button type="button" class="selector-btn court-btn" data-value="3">
-                            <div class="value">3</div>
-                            <div class="unit">courts</div>
-                        </button>
-                        <button type="button" class="selector-btn court-btn" data-value="4">
-                            <div class="value">4</div>
-                            <div class="unit">courts</div>
-                        </button>
-                    </div>
-                    <input type="hidden" id="courts" name="courts" value="1">
-                </div>
-            </div>
-
-            <!-- Time Slots Card - Hidden, replaced by Court Venue time slider -->
-            <div class="time-card" style="display: none;">
-                <div class="time-header">
-                    <label class="form-label" style="margin-bottom: 0;"><span data-i18n="startTime">Select
-                            Time</span></label>
-                    <span id="availableCount" class="time-count"></span>
-                </div>
-                <p class="helper-text" style="margin-top: 0; margin-bottom: 12px;" data-i18n="selectFirst">Select date,
-                    duration, and courts first.</p>
-                <div id="timeLoadingMessage" class="time-loading" style="display: none;" data-i18n="checking">Checking
-                    availability...</div>
-                <div id="timeGrid" class="time-grid"></div>
-                <input type="hidden" id="selectedTime" name="time" required>
-            </div>
-
-            <!-- Visual Court Venue - Cinema Style -->
-            <div class="court-venue" id="courtVenue">
-                <div class="venue-header">
-                    <div class="venue-title">🏟️ TK Pickleball Arena</div>
-                    <div class="venue-subtitle">Select your courts below</div>
-                </div>
-
-                <!-- Time Slider -->
-                <div class="time-slider-container">
-                    <div class="time-slider-label">Choose Time Slot</div>
-                    <div class="time-slider-scroll" id="timeSliderScroll">
-                        <div class="time-slot-pill" data-time="08:00">8:00 AM</div>
-                        <div class="time-slot-pill" data-time="09:00">9:00 AM</div>
-                        <div class="time-slot-pill" data-time="10:00">10:00 AM</div>
-                        <div class="time-slot-pill" data-time="11:00">11:00 AM</div>
-                        <div class="time-slot-pill" data-time="12:00">12:00 PM</div>
-                        <div class="time-slot-pill" data-time="13:00">1:00 PM</div>
-                        <div class="time-slot-pill" data-time="14:00">2:00 PM</div>
-                        <div class="time-slot-pill" data-time="15:00">3:00 PM</div>
-                        <div class="time-slot-pill" data-time="16:00">4:00 PM</div>
-                        <div class="time-slot-pill peak" data-time="17:00">5:00 PM</div>
-                        <div class="time-slot-pill peak" data-time="18:00">6:00 PM</div>
-                        <div class="time-slot-pill peak" data-time="19:00">7:00 PM</div>
-                        <div class="time-slot-pill peak" data-time="20:00">8:00 PM</div>
-                        <div class="time-slot-pill" data-time="21:00">9:00 PM</div>
-                    </div>
-                </div>
-
-                <!-- 3D Court Arena -->
-                <div class="court-arena">
-                    <div class="court-grid-3d" id="courtGrid3D">
-                        <!-- Row 1 -->
-                        <div class="court-tile available" data-court="1">
-                            <div class="court-number">1</div>
-                            <div class="court-label">Court</div>
-                            <div class="court-status">OPEN</div>
-                        </div>
-                        <div class="court-tile available" data-court="2">
-                            <div class="court-number">2</div>
-                            <div class="court-label">Court</div>
-                            <div class="court-status">OPEN</div>
-                        </div>
-                        <div class="court-tile available" data-court="3">
-                            <div class="court-number">3</div>
-                            <div class="court-label">Court</div>
-                            <div class="court-status">OPEN</div>
-                        </div>
-                        <div class="court-tile available" data-court="4">
-                            <div class="court-number">4</div>
-                            <div class="court-label">Court</div>
-                            <div class="court-status">OPEN</div>
-                        </div>
-                        <!-- Row 2 -->
-                        <div class="court-tile available" data-court="5">
-                            <div class="court-number">5</div>
-                            <div class="court-label">Court</div>
-                            <div class="court-status">OPEN</div>
-                        </div>
-                        <div class="court-tile available" data-court="6">
-                            <div class="court-number">6</div>
-                            <div class="court-label">Court</div>
-                            <div class="court-status">OPEN</div>
-                        </div>
-                        <div class="court-tile available" data-court="7">
-                            <div class="court-number">7</div>
-                            <div class="court-label">Court</div>
-                            <div class="court-status">OPEN</div>
-                        </div>
-                        <div class="court-tile available" data-court="8">
-                            <div class="court-number">8</div>
-                            <div class="court-label">Court</div>
-                            <div class="court-status">OPEN</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Legend -->
-                <div class="court-legend">
-                    <div class="legend-item">
-                        <div class="legend-dot available"></div>
-                        <span>Available</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-dot selected"></div>
-                        <span>Your Selection</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-dot unavailable"></div>
-                        <span>Booked</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Price Card - SIMPLIFIED -->
-            <div class="price-card">
-                <div class="price-card-inner">
-                    <div class="price-breakdown" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
-                        <div class="price-breakdown-left">
-                            <span id="priceBreakdown">1 hour × 1 court</span>
-                            <span id="rateLabel">@ $13-$15/hour per court</span>
-                        </div>
-                        <div class="price-hours-badge"><span id="totalHours">1</span> total hrs</div>
-                    </div>
-                    <!-- Total Price removed from here, moved to footer -->
-                </div>
-            </div>
-
-            <!-- Location Card -->
-            <div class="location-card">
-                <div class="location-icon">📍</div>
-                <div class="location-info">
-                    <h3 data-i18n="location">TK Pickleball Courts</h3>
-                    <p data-i18n="locationDetails">Open daily 8:00 AM - 10:00 PM</p>
-                </div>
-            </div>
-        </form>
+    </div>
 
     </div><!-- End Container -->
+
+    <nav class="bottom-nav">
+        <div class="nav-item active" id="nav-book" onclick="switchTab('book')">
+            <span class="nav-icon">📅</span>
+            <span>Book</span>
+        </div>
+        <div class="nav-item" id="nav-community" onclick="switchTab('community')">
+            <span class="nav-icon">👥</span>
+            <span>Community</span>
+        </div>
+    </nav>
 
     <!-- Checkout Bar Footer -->
     <div class="checkout-bar show" id="checkoutBar">
@@ -3295,6 +3525,215 @@
         window.addEventListener('beforeunload', () => {
             stopAutoRefresh();
         });
+        // ============================================
+        // COMMUNITY / MATCHMAKING LOGIC
+        // ============================================
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+            // Show selected
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            document.getElementById(`nav-${tabName}`).classList.add('active');
+
+            // Toggle Checkout Bar (Only on 'book')
+            const checkoutBar = document.getElementById('checkoutBar');
+            if (tabName === 'book') {
+                // Restore logic: show if total > 0 or whatever. 
+                // For now, let's just make sure it respects the "Show" if needed
+                // But generally "checkoutBar" has "show" class if valid booking.
+                // We'll leave it visible if booking is ready, or hidden.
+                checkoutBar.style.display = 'flex';
+            } else {
+                checkoutBar.style.display = 'none';
+                loadCommunityData();
+            }
+        }
+
+        async function loadCommunityData() {
+            const user = getTelegramUserData();
+            if (!user) return;
+
+            // Fetch Profile
+            const profileUrl = `${BACKEND_URL}?action=getUserProfile&telegram_id=${user.telegram_id}`;
+            fetch(profileUrl).then(r => r.json()).then(data => {
+                if (data.success && data.profile) {
+                    document.getElementById('profileName').textContent = data.profile.name;
+                    document.getElementById('profileSkill').textContent = "Skill: " + data.profile.skillLevel;
+                    document.getElementById('lookingForGameToggle').checked = (data.profile.lookingForGame === "TRUE");
+                    // Avatar: initials
+                    const initial = data.profile.name.charAt(0).toUpperCase();
+                    document.getElementById('userAvatar').textContent = initial;
+                }
+            });
+
+            // Fetch Slots
+            const slotsUrl = `${BACKEND_URL}?action=getOpenPlaySlots`;
+            const res = await fetch(slotsUrl);
+            const data = await res.json();
+
+            const list = document.getElementById('openPlayList');
+            list.innerHTML = '';
+
+            if (data.success && data.slots.length > 0) {
+                data.slots.forEach(slot => {
+                    const percent = slot.count / slot.max;
+                    let dotsHtml = '';
+                    for (let i = 0; i < slot.max; i++) {
+                        dotsHtml += `<div class="slot-dot ${i < slot.count ? 'filled' : ''}">${i + 1}</div>`;
+                    }
+
+                    const div = document.createElement('div');
+                    div.className = 'open-play-card';
+                    div.innerHTML = `
+                      <div class="open-play-header">
+                          <div class="play-time">${formatTimeRange(slot.time, slot.duration)} • ${formatDateDisplay(slot.date)}</div>
+                          <div class="skill-badge">${slot.level}</div>
+                      </div>
+                      <div class="player-slots">
+                          ${dotsHtml}
+                      </div>
+                      <div style="margin-bottom:12px; font-size:12px; color:var(--text-muted);">
+                          Court ${slot.court} • ${slot.count}/${slot.max} players joined
+                      </div>
+                      <button class="btn-join" onclick="joinOpenPlaySlot('${slot.id}')">
+                          ${percent >= 1 ? 'FULL' : 'JOIN GAME'}
+                      </button>
+                  `;
+                    list.appendChild(div);
+                });
+            } else {
+                list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted);">No open games available right now.</div>';
+            }
+        }
+
+        function formatTimeDisplay(time) {
+            // "14:00" -> "2:00 PM"
+            const [h, m] = time.split(':');
+            const hour = parseInt(h);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const h12 = hour % 12 || 12;
+            return `${h12}:${m} ${ampm}`;
+        }
+
+        function formatDateDisplay(dateStr) {
+            // "2023-10-25" -> "Oct 25"
+            const d = new Date(dateStr);
+            return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        async function joinOpenPlaySlot(slotId) {
+            const user = getTelegramUserData();
+            if (!user) return showMessage("Please open in Telegram", "error");
+
+            showLoading(true);
+
+            const url = `${BACKEND_URL}?action=joinOpenPlay&slot_id=${slotId}&telegram_id=${user.telegram_id}&name=${encodeURIComponent(user.first_name)}`;
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                showLoading(false);
+
+                if (data.success) {
+                    showMessage("Joined successfully! 🎾", "success");
+                    loadCommunityData(); // Refresh
+                } else {
+                    showMessage(data.error, "error");
+                }
+            } catch (e) {
+                showLoading(false);
+                showMessage("Error joining game", "error");
+            }
+        }
+
+        async function toggleLookingForGame(el) {
+            const user = getTelegramUserData();
+            if (!user) return;
+
+            const status = el.checked ? "TRUE" : "FALSE";
+            const url = `${BACKEND_URL}?action=updateUserProfile&telegram_id=${user.telegram_id}&looking_for_game=${status}&name=${encodeURIComponent(user.first_name)}`;
+            fetch(url); // Fire and forget
+
+            if (status === "TRUE") {
+                showMessage("You are now visible to other players! 👋", "success");
+            }
+        }
+        // Profile Editing Logic
+        function editProfile() {
+            // Populate current values
+            const name = document.getElementById('profileName').textContent;
+            const skill = document.getElementById('profileSkill').textContent.replace("Skill: ", "");
+
+            document.getElementById('editProfileName').value = name === "Loading..." ? "" : name;
+            // Best effort skill match
+            const skillSelect = document.getElementById('editProfileSkill');
+            // Default 0
+            skillSelect.selectedIndex = 0;
+
+            for (let i = 0; i < skillSelect.options.length; i++) {
+                if (skillSelect.options[i].value.includes(skill.split(" ")[0])) {
+                    skillSelect.selectedIndex = i;
+                    break;
+                }
+            }
+
+            document.getElementById('profileModal').style.display = 'flex';
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profileModal').style.display = 'none';
+        }
+
+        async function saveProfile() {
+            const user = getTelegramUserData();
+            if (!user) return;
+
+            const name = document.getElementById('editProfileName').value;
+            const skill = document.getElementById('editProfileSkill').value;
+            const phone = document.getElementById('editProfilePhone').value;
+
+            showLoading(true);
+            const url = `${BACKEND_URL}?action=updateUserProfile&telegram_id=${user.telegram_id}&name=${encodeURIComponent(name)}&skill_level=${encodeURIComponent(skill)}&phone=${encodeURIComponent(phone)}`;
+
+            try {
+                await fetch(url);
+                showLoading(false);
+                closeProfileModal();
+                loadCommunityData(); // Refresh UI
+                showMessage("Profile updated!", "success");
+            } catch (e) {
+                showLoading(false);
+                showMessage("Error saving profile", "error");
+            }
+        }
+        function formatTimeRange(start, duration) {
+            const [h, m] = start.split(':');
+            let hour = parseInt(h);
+            const mins = parseInt(m);
+            const dur = parseFloat(duration || 1);
+
+            // Calculate end
+            let endHour = hour + Math.floor(dur);
+            let endMins = mins + (dur % 1) * 60;
+            if (endMins >= 60) {
+                endHour++;
+                endMins -= 60;
+            }
+
+            // Format Start
+            const ampm1 = hour >= 12 ? 'PM' : 'AM';
+            const h1 = hour % 12 || 12;
+            const m1 = mins < 10 ? '0' + mins : mins;
+
+            // Format End
+            let endH = endHour % 24;
+            const ampm2 = endH >= 12 ? 'PM' : 'AM';
+            const h2 = endH % 12 || 12;
+            const m2 = endMins < 10 ? '0' + endMins : endMins;
+
+            return `${h1}:${m1} ${ampm1} - ${h2}:${m2} ${ampm2}`;
+        }
     </script>
 </body>
 
