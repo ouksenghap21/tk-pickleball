@@ -1796,6 +1796,33 @@
             font-weight: 600;
         }
 
+        .btn-leave-game {
+            width: 100%;
+            background: linear-gradient(135deg, #DC2626, #B91C1C);
+            border: none;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+            transition: all 0.2s ease;
+        }
+        
+        .btn-leave-game:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4);
+        }
+        
+        .btn-leave-game:active {
+            transform: translateY(0);
+        }
+
         .tab-content {
             display: none;
             animation: fadeIn 0.3s ease;
@@ -1944,12 +1971,12 @@
                 <div class="court-venue" id="courtVenue">
                     <div class="venue-header">
                         <div class="venue-title">🏟️ TK Pickleball Arena</div>
-                        <div class="venue-subtitle">Select your courts below</div>
+                        <div class="venue-subtitle" data-translate="selectCourtsBelow">Select your courts below</div>
                     </div>
 
                     <!-- Time Slider -->
                     <div class="time-slider-container">
-                        <div class="time-slider-label">Choose Time Slot</div>
+                        <div class="time-slider-label" data-translate="chooseTimeSlot">Choose Time Slot</div>
                         <div class="time-slider-scroll" id="timeSliderScroll">
                             <div class="time-slot-pill" data-time="08:00">8:00 AM</div>
                             <div class="time-slot-pill" data-time="09:00">9:00 AM</div>
@@ -1974,44 +2001,44 @@
                             <!-- Row 1 -->
                             <div class="court-tile available" data-court="1">
                                 <div class="court-number">1</div>
-                                <div class="court-label">Court</div>
-                                <div class="court-status">OPEN</div>
+                                <div class="court-label" data-translate="courtLabel">Court</div>
+                                <div class="court-status" data-translate="openStatus">OPEN</div>
                             </div>
                             <div class="court-tile available" data-court="2">
                                 <div class="court-number">2</div>
-                                <div class="court-label">Court</div>
-                                <div class="court-status">OPEN</div>
+                                <div class="court-label" data-translate="courtLabel">Court</div>
+                                <div class="court-status" data-translate="openStatus">OPEN</div>
                             </div>
                             <div class="court-tile available" data-court="3">
                                 <div class="court-number">3</div>
-                                <div class="court-label">Court</div>
-                                <div class="court-status">OPEN</div>
+                                <div class="court-label" data-translate="courtLabel">Court</div>
+                                <div class="court-status" data-translate="openStatus">OPEN</div>
                             </div>
                             <div class="court-tile available" data-court="4">
                                 <div class="court-number">4</div>
-                                <div class="court-label">Court</div>
-                                <div class="court-status">OPEN</div>
+                                <div class="court-label" data-translate="courtLabel">Court</div>
+                                <div class="court-status" data-translate="openStatus">OPEN</div>
                             </div>
                             <!-- Row 2 -->
                             <div class="court-tile available" data-court="5">
                                 <div class="court-number">5</div>
-                                <div class="court-label">Court</div>
-                                <div class="court-status">OPEN</div>
+                                <div class="court-label" data-translate="courtLabel">Court</div>
+                                <div class="court-status" data-translate="openStatus">OPEN</div>
                             </div>
                             <div class="court-tile available" data-court="6">
                                 <div class="court-number">6</div>
-                                <div class="court-label">Court</div>
-                                <div class="court-status">OPEN</div>
+                                <div class="court-label" data-translate="courtLabel">Court</div>
+                                <div class="court-status" data-translate="openStatus">OPEN</div>
                             </div>
                             <div class="court-tile available" data-court="7">
                                 <div class="court-number">7</div>
-                                <div class="court-label">Court</div>
-                                <div class="court-status">OPEN</div>
+                                <div class="court-label" data-translate="courtLabel">Court</div>
+                                <div class="court-status" data-translate="openStatus">OPEN</div>
                             </div>
                             <div class="court-tile available" data-court="8">
                                 <div class="court-number">8</div>
-                                <div class="court-label">Court</div>
-                                <div class="court-status">OPEN</div>
+                                <div class="court-label" data-translate="courtLabel">Court</div>
+                                <div class="court-status" data-translate="openStatus">OPEN</div>
                             </div>
                         </div>
                     </div>
@@ -2020,15 +2047,15 @@
                     <div class="court-legend">
                         <div class="legend-item">
                             <div class="legend-dot available"></div>
-                            <span>Available</span>
+                            <span data-translate="legendAvailable">Available</span>
                         </div>
                         <div class="legend-item">
                             <div class="legend-dot selected"></div>
-                            <span>Your Selection</span>
+                            <span data-translate="legendSelected">Your Selection</span>
                         </div>
                         <div class="legend-item">
                             <div class="legend-dot unavailable"></div>
-                            <span>Booked</span>
+                            <span data-translate="legendBooked">Booked</span>
                         </div>
                     </div>
                 </div>
@@ -2039,9 +2066,9 @@
                         <div class="price-breakdown" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
                             <div class="price-breakdown-left">
                                 <span id="priceBreakdown">1 hour × 1 court</span>
-                                <span id="rateLabel">@ $13-$15/hour per court</span>
+                                <span id="rateLabel">@ $13-$15/hr</span>
                             </div>
-                            <div class="price-hours-badge"><span id="totalHours">1</span> total hrs</div>
+                            <div class="price-hours-badge"><span id="totalHours">1</span> <span data-translate="totalHrs">total hrs</span></div>
                         </div>
                         <!-- Total Price removed from here, moved to footer -->
                     </div>
@@ -2071,7 +2098,7 @@
                     </div>
                 </div>
                 <div class="looking-toggle">
-                    <span>Looking for game?</span>
+                    <span data-i18n="lookingForGame">Looking for game?</span>
                     <label class="switch">
                         <input type="checkbox" id="lookingForGameToggle" onchange="toggleLookingForGame(this)">
                         <span class="slider round"></span>
@@ -2080,13 +2107,12 @@
             </div>
 
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                <h3 style="margin:0;">Open Play Slots 🎾</h3>
-                <button class="btn-primary" style="padding:8px 16px; font-size:13px;" onclick="showCreateSlotModal()">+
-                    Create Slot</button>
+                <h3 style="margin:0;" data-i18n="openPlaySlots">Open Play Slots 🎾</h3>
+                <button class="btn-primary" style="padding:8px 16px; font-size:13px;" onclick="showCreateSlotModal()" data-i18n="createSlot">+ Create Slot</button>
             </div>
             <div id="openPlayList">
                 <!-- JS will populate -->
-                <div style="text-align:center; padding:40px; color:var(--text-muted);">Loading games...</div>
+                <div style="text-align:center; padding:40px; color:var(--text-muted);" data-i18n="loadingGames">Loading...</div>
             </div>
         </div>
     </div>
@@ -2102,15 +2128,17 @@
             <div class="form-group">
                 <label>Skill Level</label>
                 <select id="editProfileSkill" class="form-input">
-                    <option value="Beginner (1.0-2.5)">Beginner (1.0 - 2.5)</option>
-                    <option value="Intermediate (3.0-3.5)">Intermediate (3.0 - 3.5)</option>
-                    <option value="Advanced (4.0-5.0)">Advanced (4.0+)</option>
-                    <option value="Pro (5.0+)">Pro (5.0+)</option>
+                    <option value="Beginner">Beginner</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="Advanced">Advanced</option>
                 </select>
             </div>
             <div class="form-group">
-                <label>Phone (Optional)</label>
-                <input type="tel" id="editProfilePhone" class="form-input" placeholder="012...">
+                <label>Phone <span style="color:#EF4444;">*</span></label>
+                <input type="tel" id="editProfilePhone" class="form-input" placeholder="012..." required>
+                <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">
+                    🔒 Your phone number is private and will NOT be shared with other players.
+                </div>
             </div>
             <div class="btn-container">
                 <button type="button" class="btn-secondary" onclick="closeProfileModal()">Cancel</button>
@@ -2126,11 +2154,11 @@
     <nav class="bottom-nav">
         <div class="nav-item active" id="nav-book" onclick="switchTab('book')">
             <span class="nav-icon">📅</span>
-            <span>Book</span>
+            <span data-i18n="navBook">Book</span>
         </div>
         <div class="nav-item" id="nav-community" onclick="switchTab('community')">
             <span class="nav-icon">🎾</span>
-            <span>Open Play</span>
+            <span data-i18n="navOpenPlay">Open Play</span>
         </div>
     </nav>
 
@@ -2323,11 +2351,11 @@
             const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
 
             if (isWeekend) {
-                return { en: 'Weekend Rate: $15/hr', km: 'ážáž˜áŸ’áž›áŸƒáž…áž»áž„ážŸáž”áŸ’ážáž¶áž áŸ: $15/áž˜áŸ‰áŸ„áž„' };
+                return { en: 'Weekend Rate: $15/hr', km: 'តម្លៃចុងសប្តាហ៍: $15/ម៉ោង' };
             } else if (startHour >= PRICING.PEAK_START_HOUR) {
-                return { en: 'Peak Rate: $15/hr', km: 'ážáž˜áŸ’áž›áŸƒáž˜áŸ‰áŸ„áž„áž€áŸ†áž–áž¼áž›: $15/áž˜áŸ‰áŸ„áž„' };
+                return { en: 'Peak Rate: $15/hr', km: 'តម្លៃម៉ោងកំពូល: $15/ម៉ោង' };
             }
-            return { en: 'Off-Peak Rate: $13/hr', km: 'ážáž˜áŸ’áž›áŸƒáž˜áŸ‰áŸ„áž„áž’áž˜áŸ’áž˜ážáž¶: $13/áž˜áŸ‰áŸ„áž„' };
+            return { en: 'Off-Peak Rate: $13/hr', km: 'តម្លៃម៉ោងទំនាប: $13/ម៉ោង' };
         }
         let autoRefreshTimer = null;
         let currentLang = 'en';
@@ -2408,58 +2436,112 @@
                 hour: 'hour',
                 pastTimeError: 'This time slot has passed.',
                 noSlotsToday: 'No more slots today. Try tomorrow!',
-                insufficientCredits: 'Not enough credits. Need {{needed}} hrs, have {{have}} hrs.'
+                insufficientCredits: 'Not enough credits. Need {{needed}} hrs, have {{have}} hrs.',
+                // New venue translations
+                venueTitle: '🏟️ TK Pickleball Arena',
+                selectCourtsBelow: 'Select your courts below',
+                chooseTimeSlot: 'Choose Time Slot',
+                courtLabel: 'Court',
+                openStatus: 'OPEN',
+                legendAvailable: 'Available',
+                legendSelected: 'Your Selection',
+                legendBooked: 'Booked',
+                totalHrs: 'total hrs',
+                hourSingular: 'hour',
+                hourPlural: 'hours',
+                pricePerHour: '/hr',
+                navBook: 'Book',
+                navOpenPlay: 'Open Play'
             },
             km: {
+                // === BOOK TAB TRANSLATIONS ===
                 title: 'TK PICKLEBALL',
-                subtitle: 'áž€áž€áŸ‹áž‘áž¸áž›áž¶áž“ážšáž”ážŸáŸ‹áž¢áŸ’áž“áž€áž€áŸ’áž“áž»áž„áž–áŸáž›áž”áŸ‰áž»áž“áŸ’áž˜áž¶áž“ážœáž·áž“áž¶áž‘áž¸',
-                fullName: 'ážˆáŸ’áž˜áŸ„áŸ‡',
-                namePlaceholder: 'áž”áž‰áŸ’áž…áž¼áž›ážˆáŸ’áž˜áŸ„áŸ‡ážšáž”ážŸáŸ‹áž¢áŸ’áž“áž€',
-                phoneNumber: 'áž‘áž¼ážšážŸáŸáž–áŸ’áž‘',
-                phonePlaceholder: 'áŸ áŸ¡áŸ¢-áŸ£áŸ¤áŸ¥-áŸ¦áŸ§áŸ¨áŸ©',
-                date: 'áž€áž¶áž›áž”ážšáž·áž…áŸ’áž†áŸáž‘',
-                today: 'ážáŸ’áž„áŸƒáž“áŸáŸ‡',
-                tomorrow: 'ážáŸ’áž„áŸƒážŸáŸ’áž¢áŸ‚áž€',
-                nextWeek: 'ážŸáž”áŸ’ážáž¶áž áŸáž€áŸ’ážšáŸ„áž™',
-                duration: 'ážšáž™áŸˆáž–áŸáž›',
-                hours: 'áž˜áŸ‰áŸ„áž„',
-                courts: 'áž‘áž¸áž›áž¶áž“',
-                selectCourts: 'áž‡áŸ’ážšáž¾ážŸážšáž¾ážŸáž‘áž¸áž›áž¶áž“',
-                court: 'áž‘áž¸áž›áž¶áž“',
-                startTime: 'áž‡áŸ’ážšáž¾ážŸážšáž¾ážŸáž–áŸáž›ážœáŸáž›áž¶',
-                selectFirst: 'ážŸáž¼áž˜áž‡áŸ’ážšáž¾ážŸážšáž¾ážŸáž€áž¶áž›áž”ážšáž·áž…áŸ’áž†áŸáž‘ ážšáž™áŸˆáž–áŸáž› áž“áž·áž„áž‘áž¸áž›áž¶áž“ážŸáž·áž“áŸ”',
-                hideFull: 'áž›áž¶áž€áŸ‹áž‘áž¸áž›áž¶áž“áž–áŸáž‰',
-                checking: 'áž€áŸ†áž–áž»áž„áž–áž·áž“áž·ážáŸ’áž™...',
-                totalAmount: 'áž…áŸ†áž“áž½áž“ážŸážšáž»áž”',
-                payOnArrival: '💵 áž”áž„áŸ‹áž“áŸ…áž–áŸáž›áž˜áž€ážŠáž›áŸ‹',
-                location: 'áž‘áž¸áž›áž¶áž“ TK Pickleball',
-                locationDetails: 'áž”áž¾áž€áž”áŸ’ážšáž…áž¶áŸ†ážáŸ’áž„áŸƒ áž˜áŸ‰áŸ„áž„ áŸ¨áž–áŸ’ážšáž¹áž€ - áŸ¡áŸ áž™áž”áŸ‹',
-                confirmBooking: '🏓 áž”áž‰áŸ’áž‡áž¶áž€áŸ‹áž€áž¶ážšáž€áž€áŸ‹',
-                processing: 'áž€áŸ†áž–áž»áž„ážŠáŸ†ážŽáž¾ážšáž€áž¶ážš...',
-                confirmTitle: 'áž”áž‰áŸ’áž‡áž¶áž€áŸ‹áž€áž¶ážšáž€áž€áŸ‹',
-                cancel: 'áž”áŸ„áŸ‡áž”áž„áŸ‹',
-                confirm: 'áž”áž‰áŸ’áž‡áž¶áž€áŸ‹',
-                courtsAvailable: 'áž‘áŸ†áž“áŸážš',
-                full: 'áž–áŸáž‰',
-                noSlots: 'áž‚áŸ’áž˜áž¶áž“áž–áŸáž›ážœáŸáž›áž¶áž‘áŸ†áž“áŸážšáŸ” ážŸáž¼áž˜ážŸáž¶áž€áž›áŸ’áž”áž„ážáŸ’áž„áŸƒáž•áŸ’ážŸáŸáž„áŸ”',
-                errorTelegram: 'áž€áŸ†áž áž»ážŸáŸ– ážŸáž¼áž˜áž”áž¾áž€áž€áž˜áŸ’áž˜ážœáž·áž’áž¸áž“áŸáŸ‡áž–áž¸ TelegramáŸ”',
-                errorFillFields: 'ážŸáž¼áž˜áž”áŸ†áž–áŸáž‰ážœáž¶áž›áž‘áž¶áŸ†áž„áž¢ážŸáŸ‹ áž“áž·áž„áž‡áŸ’ážšáž¾ážŸážšáž¾ážŸáž–áŸáž›ážœáŸáž›áž¶',
-                successBooked: 'áž€áž¶ážšáž€áž€áŸ‹áž”áž¶áž“áž”áž‰áŸ’áž‡áž¶áž€áŸ‹! áž‡áž½áž”áž‚áŸ’áž“áž¶áž“áŸ…áž‘áž¸áž›áž¶áž“! 🎉',
-                successBookedCredits: 'áž€áž¶ážšáž€áž€áŸ‹áž”áž¶áž“áž”áž‰áŸ’áž‡áž¶áž€áŸ‹! áž¥ážŽáž‘áž¶áž“ážáŸ’ážšáž¼ážœáž”áž¶áž“áž¢áž“áž»ážœážáŸ’ážáŸ” 🎉',
-                errorDoubleBooked: 'áž–áŸáž›ážœáŸáž›áž¶áž“áŸáŸ‡áž‘áž¾áž”ážáŸ’ážšáž¼ážœáž”áž¶áž“áž€áž€áŸ‹áŸ” ážŸáž¼áž˜áž‡áŸ’ážšáž¾ážŸážšáž¾ážŸáž–áŸáž›áž•áŸ’ážŸáŸáž„áŸ”',
-                errorBookingFailed: 'áž€áž¶ážšáž€áž€áŸ‹áž”ážšáž¶áž‡áŸáž™áŸ” ážŸáž¼áž˜ážŸáž¶áž€áž›áŸ’áž”áž„áž˜áŸ’ážáž„áž‘áŸ€ážáŸ”',
-                errorConnection: 'áž€áŸ†áž áž»ážŸáž€áž¶ážšážáž—áŸ’áž‡áž¶áž”áŸ‹áŸ” ážŸáž¼áž˜áž–áž·áž“áž·ážáŸ’áž™áž¢áŸŠáž¸áž“áž’ážºážŽáž·ážáŸ”',
-                modalDate: 'áž€áž¶áž›áž”ážšáž·áž…áŸ’áž†áŸáž‘',
-                modalTime: 'áž–áŸáž›ážœáŸáž›áž¶',
-                modalDuration: 'ážšáž™áŸˆáž–áŸáž›',
-                modalCourts: 'áž‘áž¸áž›áž¶áž“',
-                modalName: 'ážˆáŸ’áž˜áŸ„áŸ‡',
-                modalPhone: 'áž‘áž¼ážšážŸáŸáž–áŸ’áž‘',
-                modalTotal: 'ážŸážšáž»áž”',
-                hour: 'áž˜áŸ‰áŸ„áž„',
-                pastTimeError: 'áž–áŸáž›ážœáŸáž›áž¶áž“áŸáŸ‡áž”áž¶áž“áž€áž“áŸ’áž›áž„áž•áž»ážáž áž¾áž™áŸ”',
-                noSlotsToday: 'áž‚áŸ’áž˜áž¶áž“áž–áŸáž›ážœáŸáž›áž¶ážŸáž˜áŸ’ážšáž¶áž”áŸ‹ážáŸ’áž„áŸƒáž“áŸáŸ‡áž‘áŸ€ážáž‘áŸáŸ” ážŸáž¼áž˜ážŸáž¶áž€áž›áŸ’áž”áž„ážáŸ’áž„áŸƒážŸáŸ’áž¢áŸ‚áž€!',
-                insufficientCredits: 'áž¥ážŽáž‘áž¶áž“áž˜áž·áž“áž‚áŸ’ážšáž”áŸ‹áž‚áŸ’ážšáž¶áž“áŸ‹áŸ” ážáŸ’ážšáž¼ážœáž€áž¶ážš {{needed}} áž˜áŸ‰áŸ„áž„ áž˜áž¶áž“ {{have}} áž˜áŸ‰áŸ„áž„áŸ”'
+                subtitle: 'កក់ទីលានបានក្នុងរយៈពេលតែប៉ុន្មានវិនាទី',
+                fullName: 'ឈ្មោះ',
+                namePlaceholder: 'បញ្ចូលឈ្មោះរបស់អ្នក',
+                phoneNumber: 'លេខទូរស័ព្ទ',
+                phonePlaceholder: '012-345-6789',
+                date: 'កាលបរិច្ឆេទ',
+                today: 'ថ្ងៃនេះ',
+                tomorrow: 'ថ្ងៃស្អែក',
+                nextWeek: 'សប្តាហ៍ក្រោយ',
+                duration: 'រយៈពេល',
+                hours: 'ម៉ោង',
+                courts: 'ទីលាន',
+                selectCourts: 'ជ្រើសរើសទីលាន',
+                court: 'ទីលាន',
+                startTime: 'ជ្រើសរើសម៉ោង',
+                selectFirst: 'សូមជ្រើសរើសកាលបរិច្ឆេទ រយៈពេល និងទីលានជាមុន',
+                hideFull: 'លាក់ពេលពេញ',
+                checking: 'កំពុងពិនិត្យមើលភាពទំនេរ...',
+                totalAmount: 'ចំនួនទឹកប្រាក់សរុប',
+                payOnArrival: '💵 បង់ប្រាក់នៅពេលមកដល់',
+                location: 'ទីលាន Pickleball TK',
+                locationDetails: 'បើករៀងរាល់ថ្ងៃ ម៉ោង 8:00 ព្រឹក - 10:00 យប់',
+                confirmBooking: '🏓 បញ្ជាក់ការកក់',
+                processing: 'កំពុងដំណើរការការកក់...',
+                confirmTitle: 'បញ្ជាក់ការកក់',
+                cancel: 'បោះបង់',
+                confirm: 'បញ្ជាក់',
+                courtsAvailable: 'ទំនេរ',
+                full: 'ពេញ',
+                noSlots: 'មិនមានម៉ោងទំនេរ។ សូមសាកល្បងថ្ងៃផ្សេង ឬកាត់បន្ថយចំនួនទីលាន',
+                errorTelegram: 'កំហុស៖ សូមបើកកម្មវិធីនេះតាម Telegram',
+                errorFillFields: 'សូមបំពេញព័ត៌មានទាំងអស់ និងជ្រើសរើសម៉ោង',
+                successBooked: 'ការកក់បានជោគជ័យ! ជួបគ្នានៅទីលាន! 🎉',
+                successBookedCredits: 'ការកក់បានជោគជ័យ! បានប្រើក្រេឌីតរួចរាល់! 🎉',
+                errorDoubleBooked: 'ម៉ោងនេះទើបតែមានអ្នកកក់។ សូមជ្រើសរើសម៉ោងផ្សេង',
+                errorBookingFailed: 'ការកក់បរាជ័យ។ សូមព្យាយាមម្តងទៀត',
+                errorConnection: 'បញ្ហាការតភ្ជាប់អ៊ីនធឺណិត។ សូមពិនិត្យមើលការតភ្ជាប់របស់អ្នក',
+                modalDate: 'កាលបរិច្ឆេទ',
+                modalTime: 'ម៉ោង',
+                modalDuration: 'រយៈពេល',
+                modalCourts: 'ទីលាន',
+                modalName: 'ឈ្មោះ',
+                modalPhone: 'លេខទូរស័ព្ទ',
+                modalTotal: 'សរុប',
+                hour: 'ម៉ោង',
+                pastTimeError: 'ម៉ោងនេះបានកន្លងផុតទៅហើយ',
+                noSlotsToday: 'ថ្ងៃនេះមិនមានម៉ោងទំនេរទៀតទេ។ សូមសាកល្បងថ្ងៃស្អែក!',
+                insufficientCredits: 'ក្រេឌីតមិនគ្រប់គ្រាន់។ ត្រូវការ {{needed}} ម៉ោង ប៉ុន្តែមានតែ {{have}} ម៉ោង',
+                // === VENUE / COURT SELECTION TRANSLATIONS ===
+                venueTitle: '🏟️ ទីលាន TK Pickleball',
+                selectCourtsBelow: 'ជ្រើសរើសទីលានរបស់អ្នកខាងក្រោម',
+                chooseTimeSlot: 'ជ្រើសរើសម៉ោង',
+                courtLabel: 'ទីលាន',
+                openStatus: 'ទំនេរ',
+                legendAvailable: 'ទំនេរ',
+                legendSelected: 'ការជ្រើសរើសរបស់អ្នក',
+                legendBooked: 'កក់រួចហើយ',
+                totalHrs: 'ម៉ោងសរុប',
+                hourSingular: 'ម៉ោង',
+                hourPlural: 'ម៉ោង',
+                pricePerHour: '/ម៉ោង',
+                // === NAVIGATION TRANSLATIONS ===
+                navBook: 'កក់',
+                navOpenPlay: 'លេងរួមគ្នា',
+                // === OPEN PLAY / COMMUNITY TAB TRANSLATIONS ===
+                lookingForGame: 'កំពុងរកគូប្រកួត?',
+                openPlaySlots: 'ម៉ោងលេងសំរាប់គ្រប់គ្នា 🎾',
+                createSlot: '+ បង្កើតម៉ោង',
+                loadingGames: 'កំពុងផ្ទុក...',
+                editProfile: 'កែប្រែប្រវត្តិរូប',
+                displayName: 'ឈ្មោះបង្ហាញ',
+                skillLevel: 'កម្រិតជំនាញ',
+                beginner: 'អ្នកចាប់ផ្ដើម',
+                intermediate: 'មធ្យម',
+                advanced: 'កម្រិតខ្ពស់',
+                phonePrivateNote: '🔒 លេខទូរស័ព្ទរបស់អ្នកមិនត្រូវបានចែករំលែកជាមួយអ្នកលេងដ៏ទៃឡើយ។',
+                saveProfile: 'រក្សាទុកប្រវត្តិរូប',
+                joinGame: 'ចូលលេង',
+                leaveGame: 'ចាកចេញ',
+                // === PAYMENT OPTIONS TRANSLATIONS ===
+                payWithCredits: 'បង់ប្រាក់ដោយក្រេឌីត',
+                free: 'ឥតគិតថ្លៃ',
+                hrsLeft: 'ម៉ោងនៅសល់',
+                creditsAndCash: 'ក្រេឌីត + សាច់ប្រាក់',
+                onArrival: 'នៅពេលមកដល់',
+                payFullAtCounter: 'បង់ប្រាក់ទាំងអស់នៅបញ្ជរ'
             }
         };
 
@@ -2474,6 +2556,7 @@
                 btn.classList.toggle('active', btn.dataset.lang === lang);
             });
 
+            // Handle data-i18n attributes
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (translations[lang][key]) {
@@ -2481,6 +2564,15 @@
                 }
             });
 
+            // Handle data-translate attributes (for court venue elements)
+            document.querySelectorAll('[data-translate]').forEach(el => {
+                const key = el.getAttribute('data-translate');
+                if (translations[lang][key]) {
+                    el.innerHTML = translations[lang][key];
+                }
+            });
+
+            // Handle data-i18n-placeholder attributes
             document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
                 const key = el.getAttribute('data-i18n-placeholder');
                 if (translations[lang][key]) {
@@ -2661,7 +2753,7 @@
             } else if (dateInput && dateInput.value) {
                 // No time selected yet - show range or default
                 totalPrice = duration * courts * PRICING.WEEKDAY_OFFPEAK; // Show minimum
-                rateText = currentLang === 'km' ? '$13-$15/áž˜áŸ‰áŸ„áž„' : '$13-$15/hr';
+                rateText = currentLang === 'km' ? '$13-$15/ម៉ោង' : '$13-$15/hr';
             } else {
                 totalPrice = duration * courts * PRICING.WEEKDAY_PEAK; // Default to peak
             }
@@ -2738,7 +2830,7 @@
                 rebookBtn.style.background = 'linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%)';
                 rebookBtn.style.color = 'white';
                 rebookBtn.style.border = 'none';
-                rebookBtn.innerHTML = '🔄 Same as Last';
+                rebookBtn.innerHTML = '🔞 Same as Last';
 
                 rebookBtn.onclick = () => {
                     selectDuration(parseInt(data.duration));
@@ -2868,7 +2960,7 @@
                 slotDiv.dataset.time = slot.value;
 
                 const courtsText = isAvailable
-                    ? (availableCourts > requestedCourts + 2 ? `✔ ${availableCourts} ${translations[currentLang].courtsAvailable}` :
+                    ? (availableCourts > requestedCourts + 2 ? `âœ” ${availableCourts} ${translations[currentLang].courtsAvailable}` :
                         availableCourts === requestedCourts ? `! ${availableCourts} left` :
                             `${availableCourts} ${translations[currentLang].courtsAvailable}`)
                     : (availableCourts > 0 ? `${availableCourts} ${translations[currentLang].courtsAvailable}` : `â— ${translations[currentLang].full}`);
@@ -3011,7 +3103,7 @@
                 const currentHour = now.getHours();
 
                 if (selectedHour <= currentHour) {
-                    showMessage('âš ️ ' + translations[currentLang].pastTimeError, 'error');
+                    showMessage('âš ï¸ ' + translations[currentLang].pastTimeError, 'error');
                     availabilityCache.clear();
                     checkAndLoadAvailability();
                     return false;
@@ -3173,7 +3265,7 @@
                     console.log('💾 Saved last booking for quick rebook');
 
                     availabilityCache.clear();
-                    console.log('🗑️ Cleared availability cache');
+                    console.log('🔒ï¸ Cleared availability cache');
 
                     if (data.creditsUsed) {
                         userCreditBalance = data.newCreditBalance !== undefined ? data.newCreditBalance : (userCreditBalance - data.creditsUsed);
@@ -3518,7 +3610,7 @@
             });
 
             window.addEventListener('offline', () => {
-                showMessage('âš ️ No internet connection.', 'error');
+                showMessage('âš ï¸ No internet connection.', 'error');
             });
 
             console.log('TK Pickleball Booking System Initialized âœ…');
@@ -3650,6 +3742,7 @@
                         // Render slots for this day
                         grouped[dateKey].forEach(slot => {
                             const percent = slot.count / slot.max;
+                            const isPast = slot.isPast || false;
                             let dotsHtml = '';
                             for (let i = 0; i < slot.max; i++) {
                                 dotsHtml += `<div class="slot-dot ${i < slot.count ? 'filled' : ''}">${i + 1}</div>`;
@@ -3660,8 +3753,13 @@
                             const isFull = slot.count >= slot.max;
 
                             let actionButton = '';
-                            if (isJoined) {
-                                actionButton = `<button class="btn-leave" onclick="leaveOpenPlaySlot('${slot.id}')" style="background: linear-gradient(135deg, #EF4444, #DC2626);">LEAVE GAME</button>`;
+                            if (isPast) {
+                                // Past slot - no action buttons
+                                actionButton = `<div style="text-align:center; padding:10px; color:var(--text-muted); font-size:12px; background:rgba(0,0,0,0.2); border-radius:8px;">â± This session has ended</div>`;
+                            } else if (isJoined) {
+                                actionButton = `<button class="btn-leave-game" onclick="leaveOpenPlaySlot('${slot.id}')">
+                                    <span style="font-size:16px;">🚪</span> LEAVE GAME
+                                </button>`;
                             } else if (isFull) {
                                 actionButton = `<button class="btn-join" onclick="joinWaitlist('${slot.id}')" style="background: linear-gradient(135deg, #F59E0B, #D97706);">JOIN WAITLIST</button>`;
                             } else {
@@ -3670,14 +3768,35 @@
 
                             // Status Badge Logic
                             let statusBadge = '';
-                            if (slot.count >= 2) {
-                                statusBadge = `<span style="background:var(--success-light); color:var(--emerald); padding:2px 8px; border-radius:12px; font-size:11px; font-weight:700;">CONFIRMED</span>`;
+                            if (isPast) {
+                                statusBadge = `<span style="background:#444; color:#999; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:700;">ENDED â±</span>`;
+                            } else if (slot.count >= 2) {
+                                statusBadge = `<span style="background:var(--success-light); color:var(--emerald); padding:2px 8px; border-radius:12px; font-size:11px; font-weight:700;">CONFIRMED âœ“</span>`;
                             } else {
-                                statusBadge = `<span style="background:var(--warning-light); color:var(--warning); padding:2px 8px; border-radius:12px; font-size:11px; font-weight:700;">PENDING 1/2</span>`;
+                                statusBadge = `<span style="background:var(--warning-light); color:var(--warning); padding:2px 8px; border-radius:12px; font-size:11px; font-weight:700;">PENDING ${slot.count}/2</span>`;
                             }
+
+                            // Player list - clickable to show profile (name + skill only, NO phone)
+                            const playersListHtml = slot.players.length > 0 
+                                ? `<div style="margin-top:6px; display:flex; flex-wrap:wrap; gap:6px;">
+                                    ${slot.players.map(p => `
+                                        <span onclick="showPlayerProfile('${p.name}', '${p.level || 'Unrated'}')" 
+                                              style="background:rgba(255,255,255,0.1); padding:4px 10px; border-radius:16px; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">
+                                            ${p.name}${p.isCreator ? ' 👑' : ''}
+                                            <span style="background:var(--accent); color:white; padding:2px 6px; border-radius:8px; font-size:10px;">${p.level || '?'}</span>
+                                        </span>
+                                    `).join('')}
+                                   </div>`
+                                : '';
+
+                            // Card styling for past slots
+                            const cardStyle = isPast 
+                                ? 'opacity: 0.5; filter: grayscale(50%);' 
+                                : '';
 
                             const div = document.createElement('div');
                             div.className = 'open-play-card';
+                            div.style.cssText = cardStyle;
                             div.innerHTML = `
                               <div class="open-play-header">
                                   <div style="display:flex; flex-direction:column; gap:4px;">
@@ -3690,13 +3809,9 @@
                                   ${dotsHtml}
                               </div>
                               <div style="margin-bottom:12px; font-size:12px; color:var(--text-muted);">
-                                  Court ${slot.court} • ${slot.count}/${slot.max} players joined
-                                  ${slot.count < 2 ? '<span style="color:#F59E0B;"> (Need 2 to play)</span>' : ''}
-                                  ${slot.players.length > 0 ?
-                                    `<div style="margin-top:4px; color:var(--text-primary);">
-                                       ${slot.players.map(p => p.name + (p.isCreator ? ' 👑' : '')).join(", ")}
-                                     </div>`
-                                    : ''}
+                                  Court ${slot.court} • ${slot.count}/${slot.max} players • $${5 * (slot.duration || 1)}/person
+                                  ${!isPast && slot.count < 2 ? '<span style="color:#F59E0B;"> (Need 2 to play)</span>' : ''}
+                                  ${playersListHtml}
                               </div>
                               ${actionButton}
                           `;
@@ -3806,6 +3921,44 @@
                 showLoading(false);
                 showMessage("Error leaving game", "error");
             }
+        }
+
+        // Show player profile popup (name and skill only - phone is private)
+        function showPlayerProfile(name, skill) {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.7); display: flex; align-items: center;
+                justify-content: center; z-index: 10000; animation: fadeIn 0.2s ease;
+            `;
+            modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+            
+            modal.innerHTML = `
+                <div style="background: var(--card-bg); padding: 24px; border-radius: 16px; 
+                            max-width: 300px; text-align: center; animation: slideUp 0.3s ease;">
+                    <div style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+                                border-radius: 50%; display: flex; align-items: center; justify-content: center;
+                                font-size: 24px; font-weight: bold; color: white; margin: 0 auto 16px;">
+                        ${name.charAt(0).toUpperCase()}
+                    </div>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">
+                        ${name}
+                    </div>
+                    <div style="background: var(--accent); color: white; padding: 6px 16px; 
+                                border-radius: 20px; display: inline-block; font-size: 13px; font-weight: 600;">
+                        🎾 ${skill}
+                    </div>
+                    <div style="margin-top: 16px; font-size: 12px; color: var(--text-muted);">
+                        🔒 Phone number is private
+                    </div>
+                    <button onclick="this.closest('div').parentElement.remove()" 
+                            style="margin-top: 16px; padding: 10px 24px; background: var(--accent);
+                                   color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                        Close
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(modal);
         }
 
         async function joinWaitlist(slotId) {
@@ -3948,7 +4101,7 @@
 
             const btn = document.querySelector('#createSlotModal .btn-primary');
             const originalText = btn.textContent;
-            btn.textContent = "Creating... ⏳";
+            btn.textContent = "Creating... â³";
             btn.disabled = true;
 
             // showLoading(true); // Modal covers this, so we use button state instead.
@@ -3989,8 +4142,8 @@
             <h2 class="modal-header">Create Open Play Slot</h2>
             <p style="color:var(--text-muted); font-size:13px; margin-bottom:16px;">
                 Create a slot and invite others to join! <br>
-                <span style="color:#F59E0B">âš ️ Fee: $5/hr per player (Walk-in)</span><br>
-                <span style="color:#EF4444">âš ️ Slots with 0 players will be removed 1h before game time.</span>
+                <span style="color:#F59E0B">âš ï¸ Fee: $5/hr per player (Walk-in)</span><br>
+                <span style="color:#EF4444">âš ï¸ Slots with 0 players will be removed 1h before game time.</span>
             </p>
             <div class="form-group">
                 <label>Date</label>
