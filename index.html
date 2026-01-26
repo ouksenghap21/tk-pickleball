@@ -2141,7 +2141,7 @@
                 <span class="currency">$</span><span id="checkoutTotal">15</span>
             </div>
             <div class="checkout-details">
-                <span id="checkoutSummary">1 hr â€¢ 1 court</span>
+                <span id="checkoutSummary">1 hr • 1 court</span>
                 <span class="pay-badge-mini" data-i18n="payOnArrival">Pay on arrival</span>
             </div>
         </div>
@@ -2168,7 +2168,7 @@
                                 <span class="payment-option-price" id="creditOptionPrice">FREE</span>
                             </div>
                             <div class="payment-option-subtitle">
-                                Use <span id="creditsToUse">0</span> hrs â€¢ Balance: <span id="creditsRemaining">0</span>
+                                Use <span id="creditsToUse">0</span> hrs • Balance: <span id="creditsRemaining">0</span>
                                 hrs left
                             </div>
                         </div>
@@ -2668,7 +2668,7 @@
 
             // Update Checkout Bar
             document.getElementById('checkoutTotal').textContent = totalPrice;
-            document.getElementById('checkoutSummary').textContent = `${totalHours} hrs â€¢ ${courts} ${courts === 1 ? 'court' : 'courts'}`;
+            document.getElementById('checkoutSummary').textContent = `${totalHours} hrs • ${courts} ${courts === 1 ? 'court' : 'courts'}`;
 
             // Also update internal fields if needed
             const totalHoursEl = document.getElementById('totalHours');
@@ -3197,7 +3197,7 @@
                     document.getElementById('timeGrid').innerHTML = '';
                     document.getElementById('selectedTime').value = '';
                     document.getElementById('checkoutTotal').textContent = '13'; // Reset footer total
-                    document.getElementById('checkoutSummary').textContent = '1 hr â€¢ 1 court';
+                    document.getElementById('checkoutSummary').textContent = '1 hr • 1 court';
                     document.getElementById('totalHours').textContent = '1';
                     document.getElementById('priceBreakdown').textContent = '1 hour × 1 court';
 
@@ -3690,7 +3690,7 @@
                                   ${dotsHtml}
                               </div>
                               <div style="margin-bottom:12px; font-size:12px; color:var(--text-muted);">
-                                  Court ${slot.court} â€¢ ${slot.count}/${slot.max} players joined
+                                  Court ${slot.court} • ${slot.count}/${slot.max} players joined
                                   ${slot.count < 2 ? '<span style="color:#F59E0B;"> (Need 2 to play)</span>' : ''}
                                   ${slot.players.length > 0 ?
                                     `<div style="margin-top:4px; color:var(--text-primary);">
