@@ -2121,6 +2121,8 @@
 
 
 
+
+
     <nav class="bottom-nav">
         <div class="nav-item active" id="nav-book" onclick="switchTab('book')">
             <span class="nav-icon">📅</span>
@@ -3579,7 +3581,7 @@
 
             try {
                 // Check Profile First
-                const checkProfileUrl = `${BACKEND_URL}?action=checkUserHasProfile&telegram_id=${user.telegram_id}`;
+                const checkProfileUrl = `${BACKEND_URL}?action=checkUserHasProfile&telegram_id=${user.telegram_id}&t=${new Date().getTime()}`;
                 const profileRes = await fetch(checkProfileUrl);
                 const profileData = await profileRes.json();
 
@@ -3612,7 +3614,7 @@
                 }
 
                 // Fetch Slots
-                const slotsUrl = `${BACKEND_URL}?action=getOpenPlaySlots`;
+                const slotsUrl = `${BACKEND_URL}?action=getOpenPlaySlots&t=${new Date().getTime()}`;
                 const res = await fetch(slotsUrl);
                 const data = await res.json();
 
@@ -3724,7 +3726,7 @@
             showLoading(true);
 
             // Pass phone and name
-            const url = `${BACKEND_URL}?action=joinOpenPlay&slot_id=${slotId}&telegram_id=${user.telegram_id}&name=${encodeURIComponent(name)}&phone=${encodeURIComponent(phone)}`;
+            const url = `${BACKEND_URL}?action=joinOpenPlay&slot_id=${slotId}&telegram_id=${user.telegram_id}&name=${encodeURIComponent(name)}&phone=${encodeURIComponent(phone)}&t=${new Date().getTime()}`;
             try {
                 const res = await fetch(url);
                 const data = await res.json();
@@ -3758,7 +3760,7 @@
             if (!confirm("Are you sure you want to leave this game?")) return;
 
             showLoading(true);
-            const url = `${BACKEND_URL}?action=leaveOpenPlay&slot_id=${slotId}&telegram_id=${user.telegram_id}`;
+            const url = `${BACKEND_URL}?action=leaveOpenPlay&slot_id=${slotId}&telegram_id=${user.telegram_id}&t=${new Date().getTime()}`;
             try {
                 const res = await fetch(url);
                 const data = await res.json();
@@ -3915,7 +3917,7 @@
             }
 
             showLoading(true);
-            const url = `${BACKEND_URL}?action=createUserOpenPlaySlot&telegram_id=${user.telegram_id}&date=${date}&time=${time}&level=${encodeURIComponent(level)}&name=${encodeURIComponent(name)}&duration=${duration}&max=${max}`;
+            const url = `${BACKEND_URL}?action=createUserOpenPlaySlot&telegram_id=${user.telegram_id}&date=${date}&time=${time}&level=${encodeURIComponent(level)}&name=${encodeURIComponent(name)}&duration=${duration}&max=${max}&t=${new Date().getTime()}`;
 
             try {
                 const res = await fetch(url);
@@ -3923,9 +3925,14 @@
                 showLoading(false);
 
                 if (data.success) {
-                    showMessage("Slot created! You're player #1 🎾", "success");
+                    // Close Modal First
                     hideCreateSlotModal();
-                    await loadCommunityData(); // Ensure refresh completes
+
+                    // Show success
+                    showMessage("Slot created! You're player #1 🎾", "success");
+
+                    // Refresh Data
+                    await loadCommunityData();
                 } else {
                     showMessage(data.error || "Error creating slot", "error");
                 }
