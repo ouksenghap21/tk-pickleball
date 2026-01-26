@@ -3572,12 +3572,11 @@
                 return;
             }
 
-            // Only show full loading state if list is empty (prevents flickering on refresh)
+            // Only show full loading state if list is completely empty
             if (list.children.length === 0) {
                 list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted);">Loading...</div>';
-            } else {
-                // Optional: Show small spinner or status indicator elsewhere
             }
+            // If list has content, do NOT clear it. Just update quietly.
 
             try {
                 // Check Profile First
@@ -3618,6 +3617,8 @@
                 const res = await fetch(slotsUrl);
                 const data = await res.json();
 
+                // Clear list only AFTER we have data, just before rendering
+                // Or even better: diff it. But for now, clearing here is better than clearing before fetch.
                 list.innerHTML = '';
 
                 if (data.success && data.slots.length > 0) {
@@ -3916,13 +3917,21 @@
                 return showMessage("Please fill all fields", "error");
             }
 
-            showLoading(true);
+            const btn = document.querySelector('#createSlotModal .btn-primary');
+            const originalText = btn.textContent;
+            btn.textContent = "Creating... ⏳";
+            btn.disabled = true;
+
+            // showLoading(true); // Modal covers this, so we use button state instead.
+
             const url = `${BACKEND_URL}?action=createUserOpenPlaySlot&telegram_id=${user.telegram_id}&date=${date}&time=${time}&level=${encodeURIComponent(level)}&name=${encodeURIComponent(name)}&duration=${duration}&max=${max}&t=${new Date().getTime()}`;
 
             try {
                 const res = await fetch(url);
                 const data = await res.json();
-                showLoading(false);
+                // showLoading(false);
+                btn.textContent = originalText;
+                btn.disabled = false;
 
                 if (data.success) {
                     // Close Modal First
@@ -3937,7 +3946,9 @@
                     showMessage(data.error || "Error creating slot", "error");
                 }
             } catch (e) {
-                showLoading(false);
+                // showLoading(false);
+                btn.textContent = originalText;
+                btn.disabled = false;
                 showMessage("Network error", "error");
             }
         }
@@ -3959,6 +3970,7 @@
             <div class="form-group">
                 <label>Time</label>
                 <select id="createSlotTime" class="form-input">
+                    <option value="08:00">8:00 AM</option>
                     <option value="09:00">9:00 AM</option>
                     <option value="10:00">10:00 AM</option>
                     <option value="11:00">11:00 AM</option>
