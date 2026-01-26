@@ -1835,7 +1835,7 @@
                         <div class="balance"><span id="creditBalanceDisplay">0</span> hours</div>
                     </div>
                 </div>
-                <div class="credit-status">● Active</div>
+                <div class="credit-status">â— Active</div>
             </div>
 
             <div id="messageBox" class="message"></div>
@@ -2141,7 +2141,7 @@
                 <span class="currency">$</span><span id="checkoutTotal">15</span>
             </div>
             <div class="checkout-details">
-                <span id="checkoutSummary">1 hr • 1 court</span>
+                <span id="checkoutSummary">1 hr â€¢ 1 court</span>
                 <span class="pay-badge-mini" data-i18n="payOnArrival">Pay on arrival</span>
             </div>
         </div>
@@ -2168,7 +2168,7 @@
                                 <span class="payment-option-price" id="creditOptionPrice">FREE</span>
                             </div>
                             <div class="payment-option-subtitle">
-                                Use <span id="creditsToUse">0</span> hrs • Balance: <span id="creditsRemaining">0</span>
+                                Use <span id="creditsToUse">0</span> hrs â€¢ Balance: <span id="creditsRemaining">0</span>
                                 hrs left
                             </div>
                         </div>
@@ -2323,11 +2323,11 @@
             const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
 
             if (isWeekend) {
-                return { en: 'Weekend Rate: $15/hr', km: 'តម្លៃចុងសប្តាហ៍: $15/ម៉ោង' };
+                return { en: 'Weekend Rate: $15/hr', km: 'ážáž˜áŸ’áž›áŸƒáž…áž»áž„ážŸáž”áŸ’ážáž¶áž áŸ: $15/áž˜áŸ‰áŸ„áž„' };
             } else if (startHour >= PRICING.PEAK_START_HOUR) {
-                return { en: 'Peak Rate: $15/hr', km: 'តម្លៃម៉ោងកំពូល: $15/ម៉ោង' };
+                return { en: 'Peak Rate: $15/hr', km: 'ážáž˜áŸ’áž›áŸƒáž˜áŸ‰áŸ„áž„áž€áŸ†áž–áž¼áž›: $15/áž˜áŸ‰áŸ„áž„' };
             }
-            return { en: 'Off-Peak Rate: $13/hr', km: 'តម្លៃម៉ោងធម្មតា: $13/ម៉ោង' };
+            return { en: 'Off-Peak Rate: $13/hr', km: 'ážáž˜áŸ’áž›áŸƒáž˜áŸ‰áŸ„áž„áž’áž˜áŸ’áž˜ážáž¶: $13/áž˜áŸ‰áŸ„áž„' };
         }
         let autoRefreshTimer = null;
         let currentLang = 'en';
@@ -2412,54 +2412,54 @@
             },
             km: {
                 title: 'TK PICKLEBALL',
-                subtitle: 'កក់ទីលានរបស់អ្នកក្នុងពេលប៉ុន្មានវិនាទី',
-                fullName: 'ឈ្មោះ',
-                namePlaceholder: 'បញ្ចូលឈ្មោះរបស់អ្នក',
-                phoneNumber: 'ទូរស័ព្ទ',
-                phonePlaceholder: '០១២-៣៤៥-៦៧៨៩',
-                date: 'កាលបរិច្ឆេទ',
-                today: 'ថ្ងៃនេះ',
-                tomorrow: 'ថ្ងៃស្អែក',
-                nextWeek: 'សប្តាហ៍ក្រោយ',
-                duration: 'រយៈពេល',
-                hours: 'ម៉ោង',
-                courts: 'ទីលាន',
-                selectCourts: 'ជ្រើសរើសទីលាន',
-                court: 'ទីលាន',
-                startTime: 'ជ្រើសរើសពេលវេលា',
-                selectFirst: 'សូមជ្រើសរើសកាលបរិច្ឆេទ រយៈពេល និងទីលានសិន។',
-                hideFull: 'លាក់ទីលានពេញ',
-                checking: 'កំពុងពិនិត្យ...',
-                totalAmount: 'ចំនួនសរុប',
-                payOnArrival: '💵 បង់នៅពេលមកដល់',
-                location: 'ទីលាន TK Pickleball',
-                locationDetails: 'បើកប្រចាំថ្ងៃ ម៉ោង ៨ព្រឹក - ១០យប់',
-                confirmBooking: '🏓 បញ្ជាក់ការកក់',
-                processing: 'កំពុងដំណើរការ...',
-                confirmTitle: 'បញ្ជាក់ការកក់',
-                cancel: 'បោះបង់',
-                confirm: 'បញ្ជាក់',
-                courtsAvailable: 'ទំនេរ',
-                full: 'ពេញ',
-                noSlots: 'គ្មានពេលវេលាទំនេរ។ សូមសាកល្បងថ្ងៃផ្សេង។',
-                errorTelegram: 'កំហុស៖ សូមបើកកម្មវិធីនេះពី Telegram។',
-                errorFillFields: 'សូមបំពេញវាលទាំងអស់ និងជ្រើសរើសពេលវេលា',
-                successBooked: 'ការកក់បានបញ្ជាក់! ជួបគ្នានៅទីលាន! 🎉',
-                successBookedCredits: 'ការកក់បានបញ្ជាក់! ឥណទានត្រូវបានអនុវត្ត។ 🎉',
-                errorDoubleBooked: 'ពេលវេលានេះទើបត្រូវបានកក់។ សូមជ្រើសរើសពេលផ្សេង។',
-                errorBookingFailed: 'ការកក់បរាជ័យ។ សូមសាកល្បងម្តងទៀត។',
-                errorConnection: 'កំហុសការតភ្ជាប់។ សូមពិនិត្យអ៊ីនធឺណិត។',
-                modalDate: 'កាលបរិច្ឆេទ',
-                modalTime: 'ពេលវេលា',
-                modalDuration: 'រយៈពេល',
-                modalCourts: 'ទីលាន',
-                modalName: 'ឈ្មោះ',
-                modalPhone: 'ទូរស័ព្ទ',
-                modalTotal: 'សរុប',
-                hour: 'ម៉ោង',
-                pastTimeError: 'ពេលវេលានេះបានកន្លងផុតហើយ។',
-                noSlotsToday: 'គ្មានពេលវេលាសម្រាប់ថ្ងៃនេះទៀតទេ។ សូមសាកល្បងថ្ងៃស្អែក!',
-                insufficientCredits: 'ឥណទានមិនគ្រប់គ្រាន់។ ត្រូវការ {{needed}} ម៉ោង មាន {{have}} ម៉ោង។'
+                subtitle: 'áž€áž€áŸ‹áž‘áž¸áž›áž¶áž“ážšáž”ážŸáŸ‹áž¢áŸ’áž“áž€áž€áŸ’áž“áž»áž„áž–áŸáž›áž”áŸ‰áž»áž“áŸ’áž˜áž¶áž“ážœáž·áž“áž¶áž‘áž¸',
+                fullName: 'ážˆáŸ’áž˜áŸ„áŸ‡',
+                namePlaceholder: 'áž”áž‰áŸ’áž…áž¼áž›ážˆáŸ’áž˜áŸ„áŸ‡ážšáž”ážŸáŸ‹áž¢áŸ’áž“áž€',
+                phoneNumber: 'áž‘áž¼ážšážŸáŸáž–áŸ’áž‘',
+                phonePlaceholder: 'áŸ áŸ¡áŸ¢-áŸ£áŸ¤áŸ¥-áŸ¦áŸ§áŸ¨áŸ©',
+                date: 'áž€áž¶áž›áž”ážšáž·áž…áŸ’áž†áŸáž‘',
+                today: 'ážáŸ’áž„áŸƒáž“áŸáŸ‡',
+                tomorrow: 'ážáŸ’áž„áŸƒážŸáŸ’áž¢áŸ‚áž€',
+                nextWeek: 'ážŸáž”áŸ’ážáž¶áž áŸáž€áŸ’ážšáŸ„áž™',
+                duration: 'ážšáž™áŸˆáž–áŸáž›',
+                hours: 'áž˜áŸ‰áŸ„áž„',
+                courts: 'áž‘áž¸áž›áž¶áž“',
+                selectCourts: 'áž‡áŸ’ážšáž¾ážŸážšáž¾ážŸáž‘áž¸áž›áž¶áž“',
+                court: 'áž‘áž¸áž›áž¶áž“',
+                startTime: 'áž‡áŸ’ážšáž¾ážŸážšáž¾ážŸáž–áŸáž›ážœáŸáž›áž¶',
+                selectFirst: 'ážŸáž¼áž˜áž‡áŸ’ážšáž¾ážŸážšáž¾ážŸáž€áž¶áž›áž”ážšáž·áž…áŸ’áž†áŸáž‘ ážšáž™áŸˆáž–áŸáž› áž“áž·áž„áž‘áž¸áž›áž¶áž“ážŸáž·áž“áŸ”',
+                hideFull: 'áž›áž¶áž€áŸ‹áž‘áž¸áž›áž¶áž“áž–áŸáž‰',
+                checking: 'áž€áŸ†áž–áž»áž„áž–áž·áž“áž·ážáŸ’áž™...',
+                totalAmount: 'áž…áŸ†áž“áž½áž“ážŸážšáž»áž”',
+                payOnArrival: '💵 áž”áž„áŸ‹áž“áŸ…áž–áŸáž›áž˜áž€ážŠáž›áŸ‹',
+                location: 'áž‘áž¸áž›áž¶áž“ TK Pickleball',
+                locationDetails: 'áž”áž¾áž€áž”áŸ’ážšáž…áž¶áŸ†ážáŸ’áž„áŸƒ áž˜áŸ‰áŸ„áž„ áŸ¨áž–áŸ’ážšáž¹áž€ - áŸ¡áŸ áž™áž”áŸ‹',
+                confirmBooking: '🏓 áž”áž‰áŸ’áž‡áž¶áž€áŸ‹áž€áž¶ážšáž€áž€áŸ‹',
+                processing: 'áž€áŸ†áž–áž»áž„ážŠáŸ†ážŽáž¾ážšáž€áž¶ážš...',
+                confirmTitle: 'áž”áž‰áŸ’áž‡áž¶áž€áŸ‹áž€áž¶ážšáž€áž€áŸ‹',
+                cancel: 'áž”áŸ„áŸ‡áž”áž„áŸ‹',
+                confirm: 'áž”áž‰áŸ’áž‡áž¶áž€áŸ‹',
+                courtsAvailable: 'áž‘áŸ†áž“áŸážš',
+                full: 'áž–áŸáž‰',
+                noSlots: 'áž‚áŸ’áž˜áž¶áž“áž–áŸáž›ážœáŸáž›áž¶áž‘áŸ†áž“áŸážšáŸ” ážŸáž¼áž˜ážŸáž¶áž€áž›áŸ’áž”áž„ážáŸ’áž„áŸƒáž•áŸ’ážŸáŸáž„áŸ”',
+                errorTelegram: 'áž€áŸ†áž áž»ážŸáŸ– ážŸáž¼áž˜áž”áž¾áž€áž€áž˜áŸ’áž˜ážœáž·áž’áž¸áž“áŸáŸ‡áž–áž¸ TelegramáŸ”',
+                errorFillFields: 'ážŸáž¼áž˜áž”áŸ†áž–áŸáž‰ážœáž¶áž›áž‘áž¶áŸ†áž„áž¢ážŸáŸ‹ áž“áž·áž„áž‡áŸ’ážšáž¾ážŸážšáž¾ážŸáž–áŸáž›ážœáŸáž›áž¶',
+                successBooked: 'áž€áž¶ážšáž€áž€áŸ‹áž”áž¶áž“áž”áž‰áŸ’áž‡áž¶áž€áŸ‹! áž‡áž½áž”áž‚áŸ’áž“áž¶áž“áŸ…áž‘áž¸áž›áž¶áž“! 🎉',
+                successBookedCredits: 'áž€áž¶ážšáž€áž€áŸ‹áž”áž¶áž“áž”áž‰áŸ’áž‡áž¶áž€áŸ‹! áž¥ážŽáž‘áž¶áž“ážáŸ’ážšáž¼ážœáž”áž¶áž“áž¢áž“áž»ážœážáŸ’ážáŸ” 🎉',
+                errorDoubleBooked: 'áž–áŸáž›ážœáŸáž›áž¶áž“áŸáŸ‡áž‘áž¾áž”ážáŸ’ážšáž¼ážœáž”áž¶áž“áž€áž€áŸ‹áŸ” ážŸáž¼áž˜áž‡áŸ’ážšáž¾ážŸážšáž¾ážŸáž–áŸáž›áž•áŸ’ážŸáŸáž„áŸ”',
+                errorBookingFailed: 'áž€áž¶ážšáž€áž€áŸ‹áž”ážšáž¶áž‡áŸáž™áŸ” ážŸáž¼áž˜ážŸáž¶áž€áž›áŸ’áž”áž„áž˜áŸ’ážáž„áž‘áŸ€ážáŸ”',
+                errorConnection: 'áž€áŸ†áž áž»ážŸáž€áž¶ážšážáž—áŸ’áž‡áž¶áž”áŸ‹áŸ” ážŸáž¼áž˜áž–áž·áž“áž·ážáŸ’áž™áž¢áŸŠáž¸áž“áž’ážºážŽáž·ážáŸ”',
+                modalDate: 'áž€áž¶áž›áž”ážšáž·áž…áŸ’áž†áŸáž‘',
+                modalTime: 'áž–áŸáž›ážœáŸáž›áž¶',
+                modalDuration: 'ážšáž™áŸˆáž–áŸáž›',
+                modalCourts: 'áž‘áž¸áž›áž¶áž“',
+                modalName: 'ážˆáŸ’áž˜áŸ„áŸ‡',
+                modalPhone: 'áž‘áž¼ážšážŸáŸáž–áŸ’áž‘',
+                modalTotal: 'ážŸážšáž»áž”',
+                hour: 'áž˜áŸ‰áŸ„áž„',
+                pastTimeError: 'áž–áŸáž›ážœáŸáž›áž¶áž“áŸáŸ‡áž”áž¶áž“áž€áž“áŸ’áž›áž„áž•áž»ážáž áž¾áž™áŸ”',
+                noSlotsToday: 'áž‚áŸ’áž˜áž¶áž“áž–áŸáž›ážœáŸáž›áž¶ážŸáž˜áŸ’ážšáž¶áž”áŸ‹ážáŸ’áž„áŸƒáž“áŸáŸ‡áž‘áŸ€ážáž‘áŸáŸ” ážŸáž¼áž˜ážŸáž¶áž€áž›áŸ’áž”áž„ážáŸ’áž„áŸƒážŸáŸ’áž¢áŸ‚áž€!',
+                insufficientCredits: 'áž¥ážŽáž‘áž¶áž“áž˜áž·áž“áž‚áŸ’ážšáž”áŸ‹áž‚áŸ’ážšáž¶áž“áŸ‹áŸ” ážáŸ’ážšáž¼ážœáž€áž¶ážš {{needed}} áž˜áŸ‰áŸ„áž„ áž˜áž¶áž“ {{have}} áž˜áŸ‰áŸ„áž„áŸ”'
             }
         };
 
@@ -2556,7 +2556,7 @@
                 if (data.success && data.balance > 0) {
                     userCreditBalance = data.balance;
                     updateCreditBanner();
-                    console.log('✅ User has ' + userCreditBalance + ' credit hours');
+                    console.log('âœ… User has ' + userCreditBalance + ' credit hours');
                     return data.balance;
                 }
             } catch (e) {
@@ -2631,7 +2631,7 @@
 
                     if (data.success && data.phone) {
                         document.getElementById('phone').value = data.phone;
-                        console.log('✅ Auto-filled phone from previous booking');
+                        console.log('âœ… Auto-filled phone from previous booking');
                     }
                 } catch (e) {
                     console.log('Could not prefill user data:', e);
@@ -2661,14 +2661,14 @@
             } else if (dateInput && dateInput.value) {
                 // No time selected yet - show range or default
                 totalPrice = duration * courts * PRICING.WEEKDAY_OFFPEAK; // Show minimum
-                rateText = currentLang === 'km' ? '$13-$15/ម៉ោង' : '$13-$15/hr';
+                rateText = currentLang === 'km' ? '$13-$15/áž˜áŸ‰áŸ„áž„' : '$13-$15/hr';
             } else {
                 totalPrice = duration * courts * PRICING.WEEKDAY_PEAK; // Default to peak
             }
 
             // Update Checkout Bar
             document.getElementById('checkoutTotal').textContent = totalPrice;
-            document.getElementById('checkoutSummary').textContent = `${totalHours} hrs • ${courts} ${courts === 1 ? 'court' : 'courts'}`;
+            document.getElementById('checkoutSummary').textContent = `${totalHours} hrs â€¢ ${courts} ${courts === 1 ? 'court' : 'courts'}`;
 
             // Also update internal fields if needed
             const totalHoursEl = document.getElementById('totalHours');
@@ -2783,7 +2783,7 @@
 
             const cached = availabilityCache.get(cacheKey);
             if (cached && (Date.now() - cached.timestamp < CACHE_DURATION)) {
-                console.log('✅ Using cached availability');
+                console.log('âœ… Using cached availability');
                 renderTimeSlots(cached.data, cached.courtStatus);
                 document.getElementById('timeLoadingMessage').style.display = 'none';
                 return;
@@ -2805,13 +2805,13 @@
                         courtStatus: data.courtStatus // Store precise court data
                     });
 
-                    console.log('✅ Cached availability for:', cacheKey);
+                    console.log('âœ… Cached availability for:', cacheKey);
                     renderTimeSlots(data.availability, data.courtStatus);
                 } else {
                     showMessage(data.error || translations[currentLang].errorConnection, 'error');
                 }
             } catch (error) {
-                console.error('💥 Fetch error:', error);
+                console.error('👥 Fetch error:', error);
                 document.getElementById('timeLoadingMessage').style.display = 'none';
                 showMessage(translations[currentLang].errorConnection, 'error');
             }
@@ -2868,10 +2868,10 @@
                 slotDiv.dataset.time = slot.value;
 
                 const courtsText = isAvailable
-                    ? (availableCourts > requestedCourts + 2 ? `✓ ${availableCourts} ${translations[currentLang].courtsAvailable}` :
+                    ? (availableCourts > requestedCourts + 2 ? `✔ ${availableCourts} ${translations[currentLang].courtsAvailable}` :
                         availableCourts === requestedCourts ? `! ${availableCourts} left` :
                             `${availableCourts} ${translations[currentLang].courtsAvailable}`)
-                    : (availableCourts > 0 ? `${availableCourts} ${translations[currentLang].courtsAvailable}` : `● ${translations[currentLang].full}`);
+                    : (availableCourts > 0 ? `${availableCourts} ${translations[currentLang].courtsAvailable}` : `â— ${translations[currentLang].full}`);
 
                 slotDiv.innerHTML = `
                 <div class="time">${slot.label}</div>
@@ -3011,7 +3011,7 @@
                 const currentHour = now.getHours();
 
                 if (selectedHour <= currentHour) {
-                    showMessage('⚠️ ' + translations[currentLang].pastTimeError, 'error');
+                    showMessage('âš ️ ' + translations[currentLang].pastTimeError, 'error');
                     availabilityCache.clear();
                     checkAndLoadAvailability();
                     return false;
@@ -3100,7 +3100,7 @@
             hideConfirmationModal();
 
             if (!navigator.onLine) {
-                showMessage('❌ No internet connection.', 'error');
+                showMessage('âŒ No internet connection.', 'error');
                 return;
             }
 
@@ -3186,7 +3186,7 @@
                     } else if (paymentMethod === 'partial' && data.creditsUsed > 0) {
                         const creditsUsed = data.creditsUsed;
                         const cashDue = data.cashDue || ((totalHours - creditsUsed) * PRICING.WEEKDAY_PEAK);
-                        successMsg = `✅ Booking confirmed! ${creditsUsed} hrs credits used, $${cashDue} due on arrival. 🎉`;
+                        successMsg = `âœ… Booking confirmed! ${creditsUsed} hrs credits used, $${cashDue} due on arrival. 🎉`;
                     } else {
                         successMsg = translations[currentLang].successBooked;
                     }
@@ -3197,7 +3197,7 @@
                     document.getElementById('timeGrid').innerHTML = '';
                     document.getElementById('selectedTime').value = '';
                     document.getElementById('checkoutTotal').textContent = '13'; // Reset footer total
-                    document.getElementById('checkoutSummary').textContent = '1 hr • 1 court';
+                    document.getElementById('checkoutSummary').textContent = '1 hr â€¢ 1 court';
                     document.getElementById('totalHours').textContent = '1';
                     document.getElementById('priceBreakdown').textContent = '1 hour × 1 court';
 
@@ -3215,7 +3215,7 @@
                     }, 3000);
                 } else {
                     const errorMsg = data.error || data.message || translations[currentLang].errorBookingFailed;
-                    console.error('❌ Booking error:', errorMsg);
+                    console.error('âŒ Booking error:', errorMsg);
                     showMessage(errorMsg, 'error');
 
                     if (errorMsg.includes('already booked') || errorMsg.includes('not available')) {
@@ -3225,7 +3225,7 @@
                 }
             } catch (error) {
                 showLoading(false);
-                console.error('💥 Network error:', error);
+                console.error('👥 Network error:', error);
                 showMessage(translations[currentLang].errorConnection + ': ' + error.message, 'error');
             }
         }
@@ -3512,16 +3512,16 @@
             startAutoRefresh();
 
             window.addEventListener('online', () => {
-                showMessage('✅ Back online! Refreshing...', 'success');
+                showMessage('âœ… Back online! Refreshing...', 'success');
                 availabilityCache.clear();
                 checkAndLoadAvailability();
             });
 
             window.addEventListener('offline', () => {
-                showMessage('⚠️ No internet connection.', 'error');
+                showMessage('âš ️ No internet connection.', 'error');
             });
 
-            console.log('TK Pickleball Booking System Initialized ✅');
+            console.log('TK Pickleball Booking System Initialized âœ…');
         }
 
         // ============================================
@@ -3690,7 +3690,7 @@
                                   ${dotsHtml}
                               </div>
                               <div style="margin-bottom:12px; font-size:12px; color:var(--text-muted);">
-                                  Court ${slot.court} • ${slot.count}/${slot.max} players joined
+                                  Court ${slot.court} â€¢ ${slot.count}/${slot.max} players joined
                                   ${slot.count < 2 ? '<span style="color:#F59E0B;"> (Need 2 to play)</span>' : ''}
                                   ${slot.players.length > 0 ?
                                     `<div style="margin-top:4px; color:var(--text-primary);">
@@ -3735,7 +3735,20 @@
             const name = document.getElementById('editProfileName').value || user.first_name;
             const phone = document.getElementById('editProfilePhone').value || "";
 
+            // Phone is required for OpenPlay
+            if (!phone || phone.trim() === "") {
+                showMessage("Phone number is required to join Open Play. Please update your profile first.", "error");
+                // Open profile modal
+                setTimeout(() => {
+                    document.getElementById('profileModal').classList.add('active');
+                    document.getElementById('editProfilePhone').focus();
+                }, 500);
+                return;
+            }
+
+            // Show loading overlay
             showLoading(true);
+            showMessage("Joining game...", "success");
 
             // Pass phone and name
             const url = `${BACKEND_URL}?action=joinOpenPlay&slot_id=${slotId}&telegram_id=${user.telegram_id}&name=${encodeURIComponent(name)}&phone=${encodeURIComponent(phone)}&t=${new Date().getTime()}`;
@@ -3749,12 +3762,14 @@
                     const parts = slotId.split('_');
                     const cDate = parts[0];
                     const cTime = parts[1];
-                    const cCourt = parts[2];
+                    const cCourt = parts[2] || "1";
 
-                    // Simple alert for now, can be modal
-                    alert(`✅ You have successfully joined the game!\n\n📅 Date: ${cDate}\n⏰ Time: ${cTime}\nCOURT: ${cCourt}\n\nSee you on the court! 🎾`);
+                    // Show success with proper status
+                    const statusText = data.new_count >= 2 ? "GAME CONFIRMED!" : "PENDING - Need more players";
+                    showMessage("Successfully joined! " + statusText, "success");
 
-                    loadCommunityData(); // Refresh
+                    // Refresh to show updated player list
+                    loadCommunityData();
 
                 } else {
                     showMessage(data.error, "error");
@@ -3771,7 +3786,10 @@
 
             if (!confirm("Are you sure you want to leave this game?")) return;
 
+            // Show loading
             showLoading(true);
+            showMessage("Leaving game...", "success");
+
             const url = `${BACKEND_URL}?action=leaveOpenPlay&slot_id=${slotId}&telegram_id=${user.telegram_id}&t=${new Date().getTime()}`;
             try {
                 const res = await fetch(url);
@@ -3779,8 +3797,8 @@
                 showLoading(false);
 
                 if (data.success) {
-                    showMessage("You left the game", "success");
-                    loadCommunityData();
+                    showMessage("You have left the game", "success");
+                    loadCommunityData(); // Refresh to update player list
                 } else {
                     showMessage(data.error, "error");
                 }
@@ -3971,8 +3989,8 @@
             <h2 class="modal-header">Create Open Play Slot</h2>
             <p style="color:var(--text-muted); font-size:13px; margin-bottom:16px;">
                 Create a slot and invite others to join! <br>
-                <span style="color:#F59E0B">⚠️ Fee: $5/hr per player (Walk-in)</span><br>
-                <span style="color:#EF4444">⚠️ Slots with 0 players will be removed 1h before game time.</span>
+                <span style="color:#F59E0B">âš ️ Fee: $5/hr per player (Walk-in)</span><br>
+                <span style="color:#EF4444">âš ️ Slots with 0 players will be removed 1h before game time.</span>
             </p>
             <div class="form-group">
                 <label>Date</label>
