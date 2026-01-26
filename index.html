@@ -3702,6 +3702,17 @@
                     // Pre-fill edit form
                     document.getElementById('editProfileName').value = p.name;
                     document.getElementById('editProfilePhone').value = p.phone;
+                    
+                    // Set skill dropdown to match profile
+                    const skillSelect = document.getElementById('editProfileSkill');
+                    if (p.skillLevel && skillSelect) {
+                        for (let i = 0; i < skillSelect.options.length; i++) {
+                            if (skillSelect.options[i].value === p.skillLevel) {
+                                skillSelect.selectedIndex = i;
+                                break;
+                            }
+                        }
+                    }
                 }
 
                 // Fetch Slots
@@ -3757,13 +3768,13 @@
                                 // Past slot - no action buttons
                                 actionButton = `<div style="text-align:center; padding:10px; color:var(--text-muted); font-size:12px; background:rgba(0,0,0,0.2); border-radius:8px;">â± This session has ended</div>`;
                             } else if (isJoined) {
-                                actionButton = `<button class="btn-leave-game" onclick="leaveOpenPlaySlot('${slot.id}')">
+                                actionButton = `<button class="btn-leave-game" id="btn-leave-${slot.id}" onclick="leaveOpenPlaySlot('${slot.id}', this)">
                                     <span style="font-size:16px;">🚪</span> LEAVE GAME
                                 </button>`;
                             } else if (isFull) {
                                 actionButton = `<button class="btn-join" onclick="joinWaitlist('${slot.id}')" style="background: linear-gradient(135deg, #F59E0B, #D97706);">JOIN WAITLIST</button>`;
                             } else {
-                                actionButton = `<button class="btn-join" onclick="joinOpenPlaySlot('${slot.id}')">JOIN GAME</button>`;
+                                actionButton = `<button class="btn-join" id="btn-join-${slot.id}" onclick="joinOpenPlaySlot('${slot.id}', this)">JOIN GAME</button>`;
                             }
 
                             // Status Badge Logic
@@ -3842,13 +3853,14 @@
             return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         }
 
-        async function joinOpenPlaySlot(slotId) {
+        async function joinOpenPlaySlot(slotId, btnElement) {
             const user = getTelegramUserData();
             if (!user) return showMessage("Please open in Telegram", "error");
 
             // Get data from profile form (which is populated on load)
             const name = document.getElementById('editProfileName').value || user.first_name;
             const phone = document.getElementById('editProfilePhone').value || "";
+            const skill = document.getElementById('editProfileSkill').value || "Unrated";
 
             // Phone is required for OpenPlay
             if (!phone || phone.trim() === "") {
@@ -3861,16 +3873,26 @@
                 return;
             }
 
-            // Show loading overlay
-            showLoading(true);
-            showMessage("Joining game...", "success");
+            // Show loading state on button
+            const originalBtnText = btnElement ? btnElement.innerHTML : '';
+            if (btnElement) {
+                btnElement.disabled = true;
+                btnElement.innerHTML = '⏳ Joining...';
+                btnElement.style.opacity = '0.7';
+            }
 
-            // Pass phone and name
-            const url = `${BACKEND_URL}?action=joinOpenPlay&slot_id=${slotId}&telegram_id=${user.telegram_id}&name=${encodeURIComponent(name)}&phone=${encodeURIComponent(phone)}&t=${new Date().getTime()}`;
+            // Pass phone, name, AND skill level
+            const url = `${BACKEND_URL}?action=joinOpenPlay&slot_id=${slotId}&telegram_id=${user.telegram_id}&name=${encodeURIComponent(name)}&phone=${encodeURIComponent(phone)}&level=${encodeURIComponent(skill)}&t=${new Date().getTime()}`;
             try {
                 const res = await fetch(url);
                 const data = await res.json();
-                showLoading(false);
+
+                // Restore button state
+                if (btnElement) {
+                    btnElement.disabled = false;
+                    btnElement.innerHTML = originalBtnText;
+                    btnElement.style.opacity = '1';
+                }
 
                 if (data.success) {
                     // Extract info from slotId (format: yyyy-MM-dd_HH:mm_CourtNum)
@@ -3890,26 +3912,41 @@
                     showMessage(data.error, "error");
                 }
             } catch (e) {
-                showLoading(false);
+                // Restore button state on error
+                if (btnElement) {
+                    btnElement.disabled = false;
+                    btnElement.innerHTML = originalBtnText;
+                    btnElement.style.opacity = '1';
+                }
                 showMessage("Error joining game", "error");
             }
         }
 
-        async function leaveOpenPlaySlot(slotId) {
+        async function leaveOpenPlaySlot(slotId, btnElement) {
             const user = getTelegramUserData();
             if (!user) return showMessage("Please open in Telegram", "error");
 
             if (!confirm("Are you sure you want to leave this game?")) return;
 
-            // Show loading
-            showLoading(true);
-            showMessage("Leaving game...", "success");
+            // Show loading state on button
+            const originalBtnText = btnElement ? btnElement.innerHTML : '';
+            if (btnElement) {
+                btnElement.disabled = true;
+                btnElement.innerHTML = '⏳ Leaving...';
+                btnElement.style.opacity = '0.7';
+            }
 
             const url = `${BACKEND_URL}?action=leaveOpenPlay&slot_id=${slotId}&telegram_id=${user.telegram_id}&t=${new Date().getTime()}`;
             try {
                 const res = await fetch(url);
                 const data = await res.json();
-                showLoading(false);
+
+                // Restore button state
+                if (btnElement) {
+                    btnElement.disabled = false;
+                    btnElement.innerHTML = originalBtnText;
+                    btnElement.style.opacity = '1';
+                }
 
                 if (data.success) {
                     showMessage("You have left the game", "success");
@@ -3918,7 +3955,12 @@
                     showMessage(data.error, "error");
                 }
             } catch (e) {
-                showLoading(false);
+                // Restore button state on error
+                if (btnElement) {
+                    btnElement.disabled = false;
+                    btnElement.innerHTML = originalBtnText;
+                    btnElement.style.opacity = '1';
+                }
                 showMessage("Error leaving game", "error");
             }
         }
