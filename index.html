@@ -1862,7 +1862,7 @@
                         <div class="balance"><span id="creditBalanceDisplay">0</span> hours</div>
                     </div>
                 </div>
-                <div class="credit-status">â— Active</div>
+                <div class="credit-status">● Active</div>
             </div>
 
             <div id="messageBox" class="message"></div>
@@ -2648,7 +2648,7 @@
                 if (data.success && data.balance > 0) {
                     userCreditBalance = data.balance;
                     updateCreditBanner();
-                    console.log('âœ… User has ' + userCreditBalance + ' credit hours');
+                    console.log('✅ User has ' + userCreditBalance + ' credit hours');
                     return data.balance;
                 }
             } catch (e) {
@@ -2723,7 +2723,7 @@
 
                     if (data.success && data.phone) {
                         document.getElementById('phone').value = data.phone;
-                        console.log('âœ… Auto-filled phone from previous booking');
+                        console.log('✅ Auto-filled phone from previous booking');
                     }
                 } catch (e) {
                     console.log('Could not prefill user data:', e);
@@ -2875,7 +2875,7 @@
 
             const cached = availabilityCache.get(cacheKey);
             if (cached && (Date.now() - cached.timestamp < CACHE_DURATION)) {
-                console.log('âœ… Using cached availability');
+                console.log('✅ Using cached availability');
                 renderTimeSlots(cached.data, cached.courtStatus);
                 document.getElementById('timeLoadingMessage').style.display = 'none';
                 return;
@@ -2897,7 +2897,7 @@
                         courtStatus: data.courtStatus // Store precise court data
                     });
 
-                    console.log('âœ… Cached availability for:', cacheKey);
+                    console.log('✅ Cached availability for:', cacheKey);
                     renderTimeSlots(data.availability, data.courtStatus);
                 } else {
                     showMessage(data.error || translations[currentLang].errorConnection, 'error');
@@ -2960,10 +2960,10 @@
                 slotDiv.dataset.time = slot.value;
 
                 const courtsText = isAvailable
-                    ? (availableCourts > requestedCourts + 2 ? `âœ” ${availableCourts} ${translations[currentLang].courtsAvailable}` :
+                    ? (availableCourts > requestedCourts + 2 ? `✔ ${availableCourts} ${translations[currentLang].courtsAvailable}` :
                         availableCourts === requestedCourts ? `! ${availableCourts} left` :
                             `${availableCourts} ${translations[currentLang].courtsAvailable}`)
-                    : (availableCourts > 0 ? `${availableCourts} ${translations[currentLang].courtsAvailable}` : `â— ${translations[currentLang].full}`);
+                    : (availableCourts > 0 ? `${availableCourts} ${translations[currentLang].courtsAvailable}` : `● ${translations[currentLang].full}`);
 
                 slotDiv.innerHTML = `
                 <div class="time">${slot.label}</div>
@@ -3103,7 +3103,7 @@
                 const currentHour = now.getHours();
 
                 if (selectedHour <= currentHour) {
-                    showMessage('âš ï¸ ' + translations[currentLang].pastTimeError, 'error');
+                    showMessage('⚠️ ' + translations[currentLang].pastTimeError, 'error');
                     availabilityCache.clear();
                     checkAndLoadAvailability();
                     return false;
@@ -3192,7 +3192,7 @@
             hideConfirmationModal();
 
             if (!navigator.onLine) {
-                showMessage('âŒ No internet connection.', 'error');
+                showMessage('❌ No internet connection.', 'error');
                 return;
             }
 
@@ -3278,7 +3278,7 @@
                     } else if (paymentMethod === 'partial' && data.creditsUsed > 0) {
                         const creditsUsed = data.creditsUsed;
                         const cashDue = data.cashDue || ((totalHours - creditsUsed) * PRICING.WEEKDAY_PEAK);
-                        successMsg = `âœ… Booking confirmed! ${creditsUsed} hrs credits used, $${cashDue} due on arrival. 🎉`;
+                        successMsg = `✅ Booking confirmed! ${creditsUsed} hrs credits used, $${cashDue} due on arrival. 🎉`;
                     } else {
                         successMsg = translations[currentLang].successBooked;
                     }
@@ -3307,7 +3307,7 @@
                     }, 3000);
                 } else {
                     const errorMsg = data.error || data.message || translations[currentLang].errorBookingFailed;
-                    console.error('âŒ Booking error:', errorMsg);
+                    console.error('❌ Booking error:', errorMsg);
                     showMessage(errorMsg, 'error');
 
                     if (errorMsg.includes('already booked') || errorMsg.includes('not available')) {
@@ -3604,16 +3604,16 @@
             startAutoRefresh();
 
             window.addEventListener('online', () => {
-                showMessage('âœ… Back online! Refreshing...', 'success');
+                showMessage('✅ Back online! Refreshing...', 'success');
                 availabilityCache.clear();
                 checkAndLoadAvailability();
             });
 
             window.addEventListener('offline', () => {
-                showMessage('âš ï¸ No internet connection.', 'error');
+                showMessage('⚠️ No internet connection.', 'error');
             });
 
-            console.log('TK Pickleball Booking System Initialized âœ…');
+            console.log('TK Pickleball Booking System Initialized ✅');
         }
 
         // ============================================
@@ -3766,7 +3766,7 @@
                             let actionButton = '';
                             if (isPast) {
                                 // Past slot - no action buttons
-                                actionButton = `<div style="text-align:center; padding:10px; color:var(--text-muted); font-size:12px; background:rgba(0,0,0,0.2); border-radius:8px;">â± This session has ended</div>`;
+                                actionButton = `<div style="text-align:center; padding:10px; color:var(--text-muted); font-size:12px; background:rgba(0,0,0,0.2); border-radius:8px;">⏱ This session has ended</div>`;
                             } else if (isJoined) {
                                 actionButton = `<button class="btn-leave-game" id="btn-leave-${slot.id}" onclick="leaveOpenPlaySlot('${slot.id}', this)">
                                     <span style="font-size:16px;">🚪</span> LEAVE GAME
@@ -3780,9 +3780,9 @@
                             // Status Badge Logic
                             let statusBadge = '';
                             if (isPast) {
-                                statusBadge = `<span style="background:#444; color:#999; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:700;">ENDED â±</span>`;
+                                statusBadge = `<span style="background:#444; color:#999; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:700;">ENDED ⏱</span>`;
                             } else if (slot.count >= 2) {
-                                statusBadge = `<span style="background:var(--success-light); color:var(--emerald); padding:2px 8px; border-radius:12px; font-size:11px; font-weight:700;">CONFIRMED âœ“</span>`;
+                                statusBadge = `<span style="background:var(--success-light); color:var(--emerald); padding:2px 8px; border-radius:12px; font-size:11px; font-weight:700;">CONFIRMED ✔</span>`;
                             } else {
                                 statusBadge = `<span style="background:var(--warning-light); color:var(--warning); padding:2px 8px; border-radius:12px; font-size:11px; font-weight:700;">PENDING ${slot.count}/2</span>`;
                             }
@@ -4143,7 +4143,7 @@
 
             const btn = document.querySelector('#createSlotModal .btn-primary');
             const originalText = btn.textContent;
-            btn.textContent = "Creating... â³";
+            btn.textContent = "Creating... ⏳";
             btn.disabled = true;
 
             // showLoading(true); // Modal covers this, so we use button state instead.
@@ -4184,8 +4184,8 @@
             <h2 class="modal-header">Create Open Play Slot</h2>
             <p style="color:var(--text-muted); font-size:13px; margin-bottom:16px;">
                 Create a slot and invite others to join! <br>
-                <span style="color:#F59E0B">âš ï¸ Fee: $5/hr per player (Walk-in)</span><br>
-                <span style="color:#EF4444">âš ï¸ Slots with 0 players will be removed 1h before game time.</span>
+                <span style="color:#F59E0B">⚠️ Fee: $5/hr per player (Walk-in)</span><br>
+                <span style="color:#EF4444">⚠️ Slots with 0 players will be removed 1h before game time.</span>
             </p>
             <div class="form-group">
                 <label>Date</label>
