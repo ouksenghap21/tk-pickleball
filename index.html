@@ -1965,6 +1965,7 @@
                         availability...</div>
                     <div id="timeGrid" class="time-grid"></div>
                     <input type="hidden" id="selectedTime" name="time" required>
+                    <input type="hidden" id="selectedCourtNumbers" name="selectedCourtNumbers" value="">
                 </div>
 
                 <!-- Visual Court Venue - Cinema Style -->
@@ -2921,6 +2922,9 @@
                 document.getElementById('timeLoadingMessage').style.display = 'none';
 
                 if (data.status === 'success') {
+                    console.log('📡 API Response - courtStatus:', data.courtStatus);
+                    console.log('📡 API Response - availability:', data.availability);
+                    
                     availabilityCache.set(cacheKey, {
                         timestamp: Date.now(),
                         data: data.availability,
@@ -3220,6 +3224,13 @@
 
         async function submitBooking() {
             hideConfirmationModal();
+            
+            // Debug: Log all hidden input values
+            console.log('🚀 submitBooking started');
+            console.log('📋 Hidden input - selectedCourtNumbers element:', document.getElementById('selectedCourtNumbers'));
+            console.log('📋 Hidden input - selectedCourtNumbers value:', document.getElementById('selectedCourtNumbers')?.value);
+            console.log('📋 Hidden input - selectedTime value:', document.getElementById('selectedTime')?.value);
+            console.log('📋 Hidden input - courts value:', document.getElementById('courts')?.value);
 
             if (!navigator.onLine) {
                 showMessage('❌ No internet connection.', 'error');
@@ -3241,11 +3252,31 @@
             const time = document.getElementById('selectedTime').value;
             const duration = document.getElementById('duration').value;
             const courts = document.getElementById('courts').value;
+            const selectedCourtNumbers = document.getElementById('selectedCourtNumbers')?.value || '';
             const paymentMethod = document.getElementById('selectedPaymentMethod').value;
             const totalHours = parseInt(duration) * parseInt(courts);
 
+            // VALIDATION: Require court selection
+            if (!selectedCourtNumbers) {
+                showLoading(false);
+                showMessage('Please select a court before booking', 'error');
+                if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
+                    Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+                }
+                return;
+            }
+            
+            // VALIDATION: Ensure number of selected courts matches requested courts
+            const selectedCourtsList = selectedCourtNumbers.split(',').filter(c => c.trim() !== '');
+            if (selectedCourtsList.length !== parseInt(courts)) {
+                showLoading(false);
+                showMessage(`Please select exactly ${courts} court(s)`, 'error');
+                return;
+            }
+
             console.log('📤 Submitting booking:', {
                 name, phone, date, time, duration, courts,
+                selectedCourtNumbers: selectedCourtNumbers,
                 telegram_id: telegramUser.telegram_id,
                 paymentMethod: paymentMethod
             });
@@ -3258,6 +3289,7 @@
                 time: time,
                 duration: duration,
                 courts: courts,
+                selected_courts: selectedCourtNumbers, // NEW: Send specific court numbers
                 telegram_id: telegramUser.telegram_id,
                 payment_method: paymentMethod,
                 source: 'telegram_miniapp'
@@ -3449,6 +3481,19 @@
             // Time slider pills in court venue
             document.querySelectorAll('.time-slot-pill').forEach(pill => {
                 pill.addEventListener('click', () => {
+                    // Check if this time slot is unavailable (grayed out for selected court)
+                    if (pill.classList.contains('unavailable') || pill.classList.contains('past')) {
+                        const selectedCourtNumbers = document.getElementById('selectedCourtNumbers')?.value || '';
+                        if (selectedCourtNumbers) {
+                            showMessage(`This time is not available for Court ${selectedCourtNumbers}`, 'error');
+                        } else {
+                            showMessage('This time slot is not available', 'error');
+                        }
+                        if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
+                            Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+                        }
+                        return;
+                    }
                     const time = pill.dataset.time;
                     selectTimeSlotPill(time);
                 });
@@ -3474,6 +3519,43 @@
 
             // Set the hidden input directly (since old grid is hidden)
             document.getElementById('selectedTime').value = time;
+            
+            // Get currently selected court (if any)
+            const selectedCourtNumbers = document.getElementById('selectedCourtNumbers')?.value || '';
+            
+            // DO NOT clear court selection - instead check if selected court is available at new time
+            if (selectedCourtNumbers) {
+                const date = document.getElementById('date').value;
+                const duration = document.getElementById('duration').value;
+                const courtsRequested = document.getElementById('courts').value;
+                const cacheKey = `${date}_${duration}_${courtsRequested}`;
+                const cached = availabilityCache.get(cacheKey);
+                
+                if (cached && cached.courtStatus && cached.courtStatus[time]) {
+                    const selectedCourts = selectedCourtNumbers.split(',').map(c => parseInt(c)).filter(c => !isNaN(c));
+                    let allAvailable = true;
+                    
+                    for (const courtNum of selectedCourts) {
+                        const courtIndex = courtNum - 1;
+                        if (!cached.courtStatus[time][courtIndex]) {
+                            allAvailable = false;
+                            break;
+                        }
+                    }
+                    
+                    if (!allAvailable) {
+                        // Selected court not available at this time - deselect and warn
+                        document.querySelectorAll('.court-tile.selected').forEach(tile => {
+                            tile.classList.remove('selected');
+                            tile.classList.add('unavailable');
+                            const statusEl = tile.querySelector('.court-status');
+                            if (statusEl) statusEl.textContent = 'BOOKED';
+                        });
+                        document.getElementById('selectedCourtNumbers').value = '';
+                        showMessage(`Court ${selectedCourtNumbers} is not available at ${time}. Please select another court.`, 'warning');
+                    }
+                }
+            }
 
             // Update price based on the selected time
             updatePrice();
@@ -3525,36 +3607,91 @@
 
         function updateCourtTilesAvailability(availableCourts, courtStatusArray) {
             const tiles = document.querySelectorAll('.court-tile');
+            
+            // Get currently selected court numbers to preserve selection if still available
+            const selectedCourtNumbers = document.getElementById('selectedCourtNumbers')?.value || '';
+            const selectedCourts = selectedCourtNumbers ? selectedCourtNumbers.split(',').map(c => parseInt(c)) : [];
 
-            // Reset all tiles
             tiles.forEach((tile, index) => {
-                tile.classList.remove('available', 'unavailable', 'selected');
+                const courtNum = index + 1; // Court 1 = index 0
+                const wasSelected = selectedCourts.includes(courtNum);
                 const statusEl = tile.querySelector('.court-status');
 
                 let isAvailable = false;
 
                 if (courtStatusArray && courtStatusArray.length > index) {
-                    // OPTION 1: Use specific status from backend (Precise Mode)
+                    // Use specific status from backend (Precise Mode)
                     isAvailable = courtStatusArray[index];
                 } else {
-                    // OPTION 2: Fallback to count-based logic (Simple Mode)
-                    // Courts 1 to availableCourts are available
+                    // Fallback to count-based logic
                     isAvailable = index < availableCourts;
                 }
 
+                // Remove all state classes first
+                tile.classList.remove('available', 'unavailable', 'selected');
+
                 if (isAvailable) {
-                    tile.classList.add('available');
-                    if (statusEl) statusEl.textContent = 'OPEN';
+                    if (wasSelected) {
+                        // Preserve selection if court is still available
+                        tile.classList.add('selected');
+                        if (statusEl) statusEl.textContent = 'SELECTED';
+                    } else {
+                        tile.classList.add('available');
+                        if (statusEl) statusEl.textContent = 'OPEN';
+                    }
                 } else {
                     tile.classList.add('unavailable');
                     if (statusEl) statusEl.textContent = 'BOOKED';
+                    
+                    // If this court was selected but is now unavailable, clear the selection
+                    if (wasSelected) {
+                        const newSelection = selectedCourts.filter(c => c !== courtNum);
+                        document.getElementById('selectedCourtNumbers').value = newSelection.join(',');
+                        document.getElementById('courts').value = Math.max(1, newSelection.length);
+                    }
                 }
             });
         }
 
         function toggleCourtTileSelection(tile, courtNum) {
+            const selectedTime = document.getElementById('selectedTime').value;
+            const date = document.getElementById('date').value;
+            const duration = document.getElementById('duration').value;
+            const courtsRequested = document.getElementById('courts').value;
+            
+            console.log('🎾 toggleCourtTileSelection:', { courtNum, selectedTime, date });
+            
+            if (!date) {
+                showMessage('Please select a date first', 'warning');
+                return;
+            }
+            
+            const cacheKey = `${date}_${duration}_${courtsRequested}`;
+            const cached = availabilityCache.get(cacheKey);
+            
+            // If time is selected, validate court availability at that time
+            if (selectedTime && cached && cached.courtStatus && cached.courtStatus[selectedTime]) {
+                const courtIndex = parseInt(courtNum) - 1;
+                const isAvailable = cached.courtStatus[selectedTime][courtIndex];
+                
+                console.log('📊 Court', courtNum, 'at', selectedTime, ':', isAvailable ? 'AVAILABLE' : 'BOOKED');
+                
+                if (!isAvailable) {
+                    showMessage(`Court ${courtNum} is not available at ${selectedTime}`, 'error');
+                    if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
+                        Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+                    }
+                    // Update tile to show unavailable
+                    tile.classList.remove('available', 'selected');
+                    tile.classList.add('unavailable');
+                    const statusEl = tile.querySelector('.court-status');
+                    if (statusEl) statusEl.textContent = 'BOOKED';
+                    return;
+                }
+            }
+            
             if (tile.classList.contains('unavailable')) {
-                // Show feedback that court is booked
+                showMessage(`Court ${courtNum} is not available`, 'error');
                 if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
                     Telegram.WebApp.HapticFeedback.notificationOccurred('error');
                 }
@@ -3569,7 +3706,15 @@
                 tile.classList.add('available');
                 tile.querySelector('.court-status').textContent = 'OPEN';
             } else {
-                tile.classList.remove('available');
+                // Deselect all other courts first (single court selection mode)
+                document.querySelectorAll('.court-tile.selected').forEach(t => {
+                    t.classList.remove('selected');
+                    t.classList.add('available');
+                    const statusEl = t.querySelector('.court-status');
+                    if (statusEl) statusEl.textContent = 'OPEN';
+                });
+                
+                tile.classList.remove('available', 'unavailable');
                 tile.classList.add('selected');
                 tile.querySelector('.court-status').textContent = 'SELECTED';
             }
@@ -3585,23 +3730,170 @@
 
             // Count selected courts and update hidden input
             updateSelectedCourtsCount();
+            
+            // Update time slot availability based on selected court
+            updateTimeSlotsForSelectedCourt();
         }
 
-        // Count selected court tiles and update the hidden input
+        // Count selected court tiles and update the hidden inputs
         function updateSelectedCourtsCount() {
             const selectedTiles = document.querySelectorAll('.court-tile.selected');
             const count = selectedTiles.length;
 
-            // Ensure at least 1 court is selected
+            // Collect the specific court numbers that are selected
+            const selectedCourtNumbers = [];
+            selectedTiles.forEach(tile => {
+                const courtNum = tile.dataset.court;
+                if (courtNum) {
+                    selectedCourtNumbers.push(courtNum);
+                }
+            });
+
+            // Ensure at least 1 court is selected for the count display
             const courtCount = Math.max(1, count);
             document.getElementById('courts').value = courtCount;
+            
+            // Store the specific court numbers (comma-separated)
+            const selectedCourtsInput = document.getElementById('selectedCourtNumbers');
+            if (selectedCourtsInput) {
+                selectedCourtsInput.value = selectedCourtNumbers.join(',');
+                console.log('✅ Updated selectedCourtNumbers to:', selectedCourtsInput.value);
+            } else {
+                console.error('❌ selectedCourtNumbers hidden input NOT FOUND!');
+            }
+            
+            console.log('Selected courts:', selectedCourtNumbers.join(',') || 'none', 'Count:', count);
 
             // Update price display
             updatePrice();
-
-            // Update the old selector buttons to match (for consistency)
-            document.querySelectorAll('.court-btn').forEach(btn => {
-                btn.classList.toggle('selected', btn.dataset.value === String(courtCount));
+            
+            // Update time slots to reflect availability for selected courts
+            updateTimeSlotsForSelectedCourt();
+        }
+        
+        // Update time slot pills to show availability for specifically selected courts
+        function updateTimeSlotsForSelectedCourt() {
+            const selectedCourtNumbers = document.getElementById('selectedCourtNumbers')?.value || '';
+            console.log('🔄 updateTimeSlotsForSelectedCourt called, selectedCourts:', selectedCourtNumbers);
+            
+            if (!selectedCourtNumbers) {
+                console.log('⏭️ No courts selected, skipping time slot update');
+                return; // No specific court selected
+            }
+            
+            const date = document.getElementById('date').value;
+            const duration = document.getElementById('duration').value;
+            const courtsRequested = document.getElementById('courts').value;
+            
+            if (!date) return;
+            
+            const cacheKey = `${date}_${duration}_${courtsRequested}`;
+            const cached = availabilityCache.get(cacheKey);
+            
+            console.log('🔍 Cache for updateTimeSlotsForSelectedCourt:', { cacheKey, hasCached: !!cached, hasCourtStatus: cached?.courtStatus ? 'yes' : 'no' });
+            
+            if (!cached || !cached.courtStatus) {
+                console.warn('⚠️ No cache or courtStatus for time slot update');
+                return;
+            }
+            
+            const selectedCourts = selectedCourtNumbers.split(',').map(c => parseInt(c)).filter(c => !isNaN(c));
+            if (selectedCourts.length === 0) return;
+            
+            console.log('🎯 Checking availability for courts:', selectedCourts);
+            
+            // Update time slider pills
+            const pills = document.querySelectorAll('.time-slot-pill');
+            pills.forEach(pill => {
+                const time = pill.dataset.time;
+                if (!time) return;
+                
+                const courtStatus = cached.courtStatus[time];
+                if (!courtStatus) return;
+                
+                // Check if ALL selected courts are available at this time
+                let allSelectedAvailable = true;
+                for (const courtNum of selectedCourts) {
+                    const courtIndex = courtNum - 1; // Court 1 = index 0
+                    if (courtIndex >= 0 && courtIndex < courtStatus.length) {
+                        if (!courtStatus[courtIndex]) {
+                            allSelectedAvailable = false;
+                            console.log(`❌ Court ${courtNum} NOT available at ${time}`);
+                            break;
+                        }
+                    }
+                }
+                
+                // Update pill appearance
+                if (!allSelectedAvailable && !pill.classList.contains('past')) {
+                    pill.classList.add('unavailable');
+                    pill.style.opacity = '0.4';
+                    pill.style.pointerEvents = 'none';
+                    
+                    // Update text to show court-specific unavailability
+                    const infoSpan = pill.querySelector('.pill-info');
+                    if (infoSpan) {
+                        infoSpan.textContent = `Court ${selectedCourts.join(',')} booked`;
+                        infoSpan.style.color = '#ef4444';
+                    }
+                } else if (allSelectedAvailable && !pill.classList.contains('past')) {
+                    // Only remove unavailable if:
+                    // 1. It was added by us (for court-specific unavailability)
+                    // 2. The slot actually has enough total courts available
+                    const slotHour = parseInt(time.split(':')[0]);
+                    const now = new Date();
+                    const currentHour = now.getHours();
+                    const todayStr = formatDate(now);
+                    const selectedDate = document.getElementById('date').value;
+                    const isToday = selectedDate === todayStr;
+                    const isPast = isToday && slotHour <= currentHour;
+                    
+                    // Also check if enough total courts are available
+                    const totalAvailable = cached.data[time] || 0;
+                    const courtsRequested = parseInt(document.getElementById('courts').value) || 1;
+                    const hasEnoughTotalCourts = totalAvailable >= courtsRequested;
+                    
+                    if (!isPast && hasEnoughTotalCourts) {
+                        pill.classList.remove('unavailable');
+                        pill.style.opacity = '1';
+                        pill.style.pointerEvents = 'auto';
+                        
+                        // Restore original pill info
+                        const infoSpan = pill.querySelector('.pill-info');
+                        if (infoSpan) {
+                            if (totalAvailable > 0) {
+                                infoSpan.textContent = `${totalAvailable} courts`;
+                                infoSpan.style.color = '';
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Also update the old time grid if visible
+            const timeSlots = document.querySelectorAll('.time-slot');
+            timeSlots.forEach(slot => {
+                const time = slot.dataset.time;
+                if (!time) return;
+                
+                const courtStatus = cached.courtStatus[time];
+                if (!courtStatus) return;
+                
+                let allSelectedAvailable = true;
+                for (const courtNum of selectedCourts) {
+                    const courtIndex = courtNum - 1;
+                    if (courtIndex >= 0 && courtIndex < courtStatus.length) {
+                        if (!courtStatus[courtIndex]) {
+                            allSelectedAvailable = false;
+                            break;
+                        }
+                    }
+                }
+                
+                if (!allSelectedAvailable) {
+                    slot.classList.remove('available');
+                    slot.classList.add('unavailable');
+                }
             });
         }
 
