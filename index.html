@@ -2449,7 +2449,7 @@
             // Visual feedback
             const btn = document.getElementById('refreshAvailabilityBtn');
             if (btn) {
-                btn.innerHTML = 'â³ Loading...';
+                btn.innerHTML = '⏳ Loading...';
                 btn.disabled = true;
             }
             
@@ -2753,7 +2753,7 @@
                 if (data.success && data.balance > 0) {
                     userCreditBalance = data.balance;
                     updateCreditBanner();
-                    console.log('âœ… User has ' + userCreditBalance + ' credit hours');
+                    console.log('✅ User has ' + userCreditBalance + ' credit hours');
                     return data.balance;
                 }
             } catch (e) {
@@ -2828,7 +2828,7 @@
 
                     if (data.success && data.phone) {
                         document.getElementById('phone').value = data.phone;
-                        console.log('âœ… Auto-filled phone from previous booking');
+                        console.log('✅ Auto-filled phone from previous booking');
                     }
                 } catch (e) {
                     console.log('Could not prefill user data:', e);
@@ -3223,7 +3223,7 @@
                 const currentHour = now.getHours();
 
                 if (selectedHour <= currentHour) {
-                    showMessage('⚠ï¸ ' + translations[currentLang].pastTimeError, 'error');
+                    showMessage('⚠️ ' + translations[currentLang].pastTimeError, 'error');
                     availabilityCache.clear();
                     checkAndLoadAvailability();
                     return false;
@@ -3315,7 +3315,7 @@
             
 
             if (!navigator.onLine) {
-                showMessage('âŒ No internet connection.', 'error');
+                showMessage('❌ No internet connection.', 'error');
                 return;
             }
 
@@ -3355,12 +3355,6 @@
                 showMessage(`Please select exactly ${courts} court(s)`, 'error');
                 return;
             }
-
-                name, phone, date, time, duration, courts,
-                selectedCourtNumbers: selectedCourtNumbers,
-                telegram_id: telegramUser.telegram_id,
-                paymentMethod: paymentMethod
-            });
 
             const formData = {
                 action: 'book',
@@ -3404,7 +3398,7 @@
                     localStorage.setItem('lastBooking', JSON.stringify(lastBooking));
 
                     availabilityCache.clear();
-                    console.log('🔒Ã¯Â¸Â Cleared availability cache');
+                    console.log('🔒 Cleared availability cache');
 
                     if (data.creditsUsed) {
                         userCreditBalance = data.newCreditBalance !== undefined ? data.newCreditBalance : (userCreditBalance - data.creditsUsed);
@@ -3417,7 +3411,7 @@
                     } else if (paymentMethod === 'partial' && data.creditsUsed > 0) {
                         const creditsUsed = data.creditsUsed;
                         const cashDue = data.cashDue || ((totalHours - creditsUsed) * PRICING.WEEKDAY_PEAK);
-                        successMsg = `âœ… Booking confirmed! ${creditsUsed} hrs credits used, $${cashDue} due on arrival. 🎉`;
+                        successMsg = `✅ Booking confirmed! ${creditsUsed} hrs credits used, $${cashDue} due on arrival. 🎉`;
                     } else {
                         successMsg = translations[currentLang].successBooked;
                     }
@@ -3446,7 +3440,7 @@
                     }, 3000);
                 } else {
                     const errorMsg = data.error || data.message || translations[currentLang].errorBookingFailed;
-                    console.error('âŒ Booking error:', errorMsg);
+                    console.error('❌ Booking error:', errorMsg);
                     showMessage(errorMsg, 'error');
 
                     if (errorMsg.includes('already booked') || errorMsg.includes('not available')) {
@@ -3868,7 +3862,7 @@
             if (selectedCourtsInput) {
                 selectedCourtsInput.value = selectedCourtNumbers.join(',');
             } else {
-                console.error('âŒ selectedCourtNumbers hidden input NOT FOUND!');
+                console.error('❌ selectedCourtNumbers hidden input NOT FOUND!');
             }
             
 
@@ -3898,7 +3892,7 @@
             
             
             if (!cached || !cached.courtStatus) {
-                console.warn('⚠ï¸ No cache or courtStatus for time slot update');
+                console.warn('⚠️ No cache or courtStatus for time slot update');
                 return;
             }
             
@@ -4039,13 +4033,13 @@
             startAutoRefresh();
 
             window.addEventListener('online', () => {
-                showMessage('âœ… Back online! Refreshing...', 'success');
+                showMessage('✅ Back online! Refreshing...', 'success');
                 availabilityCache.clear();
                 checkAndLoadAvailability();
             });
 
             window.addEventListener('offline', () => {
-                showMessage('⚠ï¸ No internet connection.', 'error');
+                showMessage('⚠️ No internet connection.', 'error');
             });
         }
         
@@ -4219,7 +4213,7 @@
                             let actionButton = '';
                             if (isPast) {
                                 // Past slot - no action buttons
-                                actionButton = `<div style="text-align:center; padding:10px; color:var(--text-muted); font-size:12px; background:rgba(0,0,0,0.2); border-radius:8px;">â± This session has ended</div>`;
+                                actionButton = `<div style="text-align:center; padding:10px; color:var(--text-muted); font-size:12px; background:rgba(0,0,0,0.2); border-radius:8px;">⏱ This session has ended</div>`;
                             } else if (isJoined) {
                                 actionButton = `<button class="btn-leave-game" id="btn-leave-${slot.id}" onclick="leaveOpenPlaySlot('${slot.id}', this)">
                                     <span style="font-size:16px;">🚪</span> LEAVE GAME
@@ -4233,7 +4227,7 @@
                             // Status Badge Logic
                             let statusBadge = '';
                             if (isPast) {
-                                statusBadge = `<span style="background:#444; color:#999; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:700;">ENDED â±</span>`;
+                                statusBadge = `<span style="background:#444; color:#999; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:700;">ENDED ⏱</span>`;
                             } else if (slot.count >= 2) {
                                 statusBadge = `<span style="background:var(--success-light); color:var(--emerald); padding:2px 8px; border-radius:12px; font-size:11px; font-weight:700;">CONFIRMED ✔</span>`;
                             } else {
@@ -4330,7 +4324,7 @@
             const originalBtnText = btnElement ? btnElement.innerHTML : '';
             if (btnElement) {
                 btnElement.disabled = true;
-                btnElement.innerHTML = 'â³ Joining...';
+                btnElement.innerHTML = '⏳ Joining...';
                 btnElement.style.opacity = '0.7';
             }
 
@@ -4385,7 +4379,7 @@
             const originalBtnText = btnElement ? btnElement.innerHTML : '';
             if (btnElement) {
                 btnElement.disabled = true;
-                btnElement.innerHTML = 'â³ Leaving...';
+                btnElement.innerHTML = '⏳ Leaving...';
                 btnElement.style.opacity = '0.7';
             }
 
@@ -4596,7 +4590,7 @@
 
             const btn = document.querySelector('#createSlotModal .btn-primary');
             const originalText = btn.textContent;
-            btn.textContent = "Creating... â³";
+            btn.textContent = "Creating... ⏳";
             btn.disabled = true;
 
             // showLoading(true); // Modal covers this, so we use button state instead.
@@ -4637,8 +4631,8 @@
             <h2 class="modal-header">Create Open Play Slot</h2>
             <p style="color:var(--text-muted); font-size:13px; margin-bottom:16px;">
                 Create a slot and invite others to join! <br>
-                <span style="color:#F59E0B">⚠ï¸ Fee: $5/hr per player (Walk-in)</span><br>
-                <span style="color:#EF4444">⚠ï¸ Slots with 0 players will be removed 1h before game time.</span>
+                <span style="color:#F59E0B">⚠️ Fee: $5/hr per player (Walk-in)</span><br>
+                <span style="color:#EF4444">⚠️ Slots with 0 players will be removed 1h before game time.</span>
             </p>
             <div class="form-group">
                 <label>Date</label>
