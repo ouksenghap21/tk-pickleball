@@ -3717,8 +3717,16 @@
 
                 // Fetch Slots
                 const slotsUrl = `${BACKEND_URL}?action=getOpenPlaySlots&t=${new Date().getTime()}`;
+                console.log("Fetching Open Play slots from:", slotsUrl);
                 const res = await fetch(slotsUrl);
                 const data = await res.json();
+                console.log("Open Play slots response:", data);
+                console.log("Total slots returned:", data.slots ? data.slots.length : 0);
+                if (data.slots) {
+                    data.slots.forEach((s, idx) => {
+                        console.log(`Slot ${idx}: ${s.id} | ${s.date} ${s.time} | Count: ${s.count} | Status: ${s.status} | isPast: ${s.isPast}`);
+                    });
+                }
 
                 // Clear list only AFTER we have data, just before rendering
                 // Or even better: diff it. But for now, clearing here is better than clearing before fetch.
