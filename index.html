@@ -821,6 +821,69 @@
             margin: 20px 0;
         }
 
+        /* Court Arena Loading & Hidden States */
+        .court-arena-container {
+            position: relative;
+            min-height: 200px;
+        }
+
+        .court-arena-container.hidden {
+            display: none;
+        }
+
+        .court-arena-loading {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            gap: 16px;
+        }
+
+        .court-arena-loading.active {
+            display: flex;
+        }
+
+        .court-arena-loading .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--glass-border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .court-arena-loading .loading-text {
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .court-arena.loading {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .select-time-prompt {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .select-time-prompt .prompt-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .select-time-prompt .prompt-text {
+            font-size: 15px;
+            font-weight: 500;
+        }
+
         .court-grid-3d {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -1847,7 +1910,7 @@
             </div>
         </div>
         <div class="header-content">
-            <div class="logo-box"><span>🏓</span></div>
+            <div class="logo-box"><span>🏟</span></div>
             <h1 data-i18n="title">TK PICKLEBALL</h1>
             <p data-i18n="subtitle">Book your court in seconds</p>
         </div>
@@ -1865,7 +1928,7 @@
                         <div class="balance"><span id="creditBalanceDisplay">0</span> hours</div>
                     </div>
                 </div>
-                <div class="credit-status">● Active</div>
+                <div class="credit-status">● Active</div>
             </div>
 
             <div id="messageBox" class="message"></div>
@@ -2004,50 +2067,65 @@
                         </div>
                     </div>
 
-                    <!-- 3D Court Arena -->
-                    <div class="court-arena">
-                        <div class="court-grid-3d" id="courtGrid3D">
-                            <!-- Row 1 -->
-                            <div class="court-tile available" data-court="1">
-                                <div class="court-number">1</div>
-                                <div class="court-label" data-translate="courtLabel">Court</div>
-                                <div class="court-status" data-translate="openStatus">OPEN</div>
-                            </div>
-                            <div class="court-tile available" data-court="2">
-                                <div class="court-number">2</div>
-                                <div class="court-label" data-translate="courtLabel">Court</div>
-                                <div class="court-status" data-translate="openStatus">OPEN</div>
-                            </div>
-                            <div class="court-tile available" data-court="3">
-                                <div class="court-number">3</div>
-                                <div class="court-label" data-translate="courtLabel">Court</div>
-                                <div class="court-status" data-translate="openStatus">OPEN</div>
-                            </div>
-                            <div class="court-tile available" data-court="4">
-                                <div class="court-number">4</div>
-                                <div class="court-label" data-translate="courtLabel">Court</div>
-                                <div class="court-status" data-translate="openStatus">OPEN</div>
-                            </div>
-                            <!-- Row 2 -->
-                            <div class="court-tile available" data-court="5">
-                                <div class="court-number">5</div>
-                                <div class="court-label" data-translate="courtLabel">Court</div>
-                                <div class="court-status" data-translate="openStatus">OPEN</div>
-                            </div>
-                            <div class="court-tile available" data-court="6">
-                                <div class="court-number">6</div>
-                                <div class="court-label" data-translate="courtLabel">Court</div>
-                                <div class="court-status" data-translate="openStatus">OPEN</div>
-                            </div>
-                            <div class="court-tile available" data-court="7">
-                                <div class="court-number">7</div>
-                                <div class="court-label" data-translate="courtLabel">Court</div>
-                                <div class="court-status" data-translate="openStatus">OPEN</div>
-                            </div>
-                            <div class="court-tile available" data-court="8">
-                                <div class="court-number">8</div>
-                                <div class="court-label" data-translate="courtLabel">Court</div>
-                                <div class="court-status" data-translate="openStatus">OPEN</div>
+                    <!-- 3D Court Arena Container -->
+                    <div class="court-arena-container hidden" id="courtArenaContainer">
+                        <!-- Select Time Prompt (shown initially) -->
+                        <div class="select-time-prompt" id="selectTimePrompt">
+                            <div class="prompt-icon">⏰</div>
+                            <div class="prompt-text">Select a time slot above to see court availability</div>
+                        </div>
+
+                        <!-- Loading Animation -->
+                        <div class="court-arena-loading" id="courtArenaLoading">
+                            <div class="loading-spinner"></div>
+                            <div class="loading-text">Loading court availability...</div>
+                        </div>
+
+                        <!-- 3D Court Arena -->
+                        <div class="court-arena" id="courtArena">
+                            <div class="court-grid-3d" id="courtGrid3D">
+                                <!-- Row 1 -->
+                                <div class="court-tile available" data-court="1">
+                                    <div class="court-number">1</div>
+                                    <div class="court-label" data-translate="courtLabel">Court</div>
+                                    <div class="court-status" data-translate="openStatus">OPEN</div>
+                                </div>
+                                <div class="court-tile available" data-court="2">
+                                    <div class="court-number">2</div>
+                                    <div class="court-label" data-translate="courtLabel">Court</div>
+                                    <div class="court-status" data-translate="openStatus">OPEN</div>
+                                </div>
+                                <div class="court-tile available" data-court="3">
+                                    <div class="court-number">3</div>
+                                    <div class="court-label" data-translate="courtLabel">Court</div>
+                                    <div class="court-status" data-translate="openStatus">OPEN</div>
+                                </div>
+                                <div class="court-tile available" data-court="4">
+                                    <div class="court-number">4</div>
+                                    <div class="court-label" data-translate="courtLabel">Court</div>
+                                    <div class="court-status" data-translate="openStatus">OPEN</div>
+                                </div>
+                                <!-- Row 2 -->
+                                <div class="court-tile available" data-court="5">
+                                    <div class="court-number">5</div>
+                                    <div class="court-label" data-translate="courtLabel">Court</div>
+                                    <div class="court-status" data-translate="openStatus">OPEN</div>
+                                </div>
+                                <div class="court-tile available" data-court="6">
+                                    <div class="court-number">6</div>
+                                    <div class="court-label" data-translate="courtLabel">Court</div>
+                                    <div class="court-status" data-translate="openStatus">OPEN</div>
+                                </div>
+                                <div class="court-tile available" data-court="7">
+                                    <div class="court-number">7</div>
+                                    <div class="court-label" data-translate="courtLabel">Court</div>
+                                    <div class="court-status" data-translate="openStatus">OPEN</div>
+                                </div>
+                                <div class="court-tile available" data-court="8">
+                                    <div class="court-number">8</div>
+                                    <div class="court-label" data-translate="courtLabel">Court</div>
+                                    <div class="court-status" data-translate="openStatus">OPEN</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -2085,7 +2163,7 @@
 
                 <!-- Location Card -->
                 <div class="location-card">
-                    <div class="location-icon">📍</div>
+                    <div class="location-icon">🏓</div>
                     <div class="location-info">
                         <h3 data-i18n="location">TK Pickleball Courts</h3>
                         <p data-i18n="locationDetails">Open daily 8:00 AM - 10:00 PM</p>
@@ -2190,7 +2268,7 @@
     <!-- Confirmation Modal -->
     <div id="confirmModal" class="modal">
         <div class="modal-content">
-            <h2 class="modal-header">🏓 <span data-i18n="confirmTitle">Confirm Booking</span></h2>
+            <h2 class="modal-header">🏟 <span data-i18n="confirmTitle">Confirm Booking</span></h2>
             <div id="confirmDetails" class="modal-details"></div>
 
             <!-- Payment Options -->
@@ -2353,11 +2431,11 @@
             const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
 
             if (isWeekend) {
-                return { en: 'Weekend Rate: $15/hr', km: 'តម្លៃចុងសប្តាហ៍: $15/ម៉ោង' };
+                return { en: 'Weekend Rate: $15/hr', km: 'ážáž˜áŸ’áž›áŸƒáž…áž»áž„ážŸáž”áŸ’ážáž¶áž áŸ: $15/áž˜áŸ‰áŸ„áž„' };
             } else if (startHour >= PRICING.PEAK_START_HOUR) {
-                return { en: 'Peak Rate: $15/hr', km: 'តម្លៃម៉ោងកំពូល: $15/ម៉ោង' };
+                return { en: 'Peak Rate: $15/hr', km: 'ážáž˜áŸ’áž›áŸƒáž˜áŸ‰áŸ„áž„áž€áŸ†áž–áž¼áž›: $15/áž˜áŸ‰áŸ„áž„' };
             }
-            return { en: 'Off-Peak Rate: $13/hr', km: 'តម្លៃម៉ោងទំនាប: $13/ម៉ោង' };
+            return { en: 'Off-Peak Rate: $13/hr', km: 'ážáž˜áŸ’áž›áŸƒáž˜áŸ‰áŸ„áž„áž‘áŸ†áž“áž¶áž”: $13/áž˜áŸ‰áŸ„áž„' };
         }
         let autoRefreshTimer = null;
         let currentLang = 'en';
@@ -2371,7 +2449,7 @@
             // Visual feedback
             const btn = document.getElementById('refreshAvailabilityBtn');
             if (btn) {
-                btn.innerHTML = '⏳ Loading...';
+                btn.innerHTML = 'â³ Loading...';
                 btn.disabled = true;
             }
             
@@ -2438,7 +2516,7 @@
                 payOnArrival: '💵 Pay on arrival',
                 location: 'TK Pickleball Courts',
                 locationDetails: 'Open daily 8:00 AM - 10:00 PM',
-                confirmBooking: '🏓 Confirm Booking',
+                confirmBooking: '🏟 Confirm Booking',
                 processing: 'Processing your booking...',
                 confirmTitle: 'Confirm Booking',
                 cancel: 'Cancel',
@@ -2483,92 +2561,92 @@
             km: {
                 // === BOOK TAB TRANSLATIONS ===
                 title: 'TK PICKLEBALL',
-                subtitle: 'កក់ទីលានបានក្នុងរយៈពេលតែប៉ុន្មានវិនាទី',
-                fullName: 'ឈ្មោះ',
-                namePlaceholder: 'បញ្ចូលឈ្មោះរបស់អ្នក',
-                phoneNumber: 'លេខទូរស័ព្ទ',
+                subtitle: 'áž€áž€áŸ‹áž‘áž¸áž›áž¶áž“áž”áž¶áž“áž€áŸ’áž“áž»áž„ážšáž™áŸˆáž–áŸáž›ážáŸ‚áž”áŸ‰áž»áž“áŸ’áž˜áž¶áž“ážœáž·áž“áž¶áž‘áž¸',
+                fullName: 'ážˆáŸ’áž˜áŸ„áŸ‡',
+                namePlaceholder: 'áž”áž‰áŸ’áž…áž¼áž›ážˆáŸ’áž˜áŸ„áŸ‡ážšáž”ážŸáŸ‹áž¢áŸ’áž“áž€',
+                phoneNumber: 'áž›áŸážáž‘áž¼ážšážŸáŸáž–áŸ’áž‘',
                 phonePlaceholder: '012-345-6789',
-                date: 'កាលបរិច្ឆេទ',
-                today: 'ថ្ងៃនេះ',
-                tomorrow: 'ថ្ងៃស្អែក',
-                nextWeek: 'សប្តាហ៍ក្រោយ',
-                duration: 'រយៈពេល',
-                hours: 'ម៉ោង',
-                courts: 'ទីលាន',
-                selectCourts: 'ជ្រើសរើសទីលាន',
-                court: 'ទីលាន',
-                startTime: 'ជ្រើសរើសម៉ោង',
-                selectFirst: 'សូមជ្រើសរើសកាលបរិច្ឆេទ រយៈពេល និងទីលានជាមុន',
-                hideFull: 'លាក់ពេលពេញ',
-                checking: 'កំពុងពិនិត្យមើលភាពទំនេរ...',
-                totalAmount: 'ចំនួនទឹកប្រាក់សរុប',
-                payOnArrival: '💵 បង់ប្រាក់នៅពេលមកដល់',
-                location: 'ទីលាន Pickleball TK',
-                locationDetails: 'បើករៀងរាល់ថ្ងៃ ម៉ោង 8:00 ព្រឹក - 10:00 យប់',
-                confirmBooking: '🏓 បញ្ជាក់ការកក់',
-                processing: 'កំពុងដំណើរការការកក់...',
-                confirmTitle: 'បញ្ជាក់ការកក់',
-                cancel: 'បោះបង់',
-                confirm: 'បញ្ជាក់',
-                courtsAvailable: 'ទំនេរ',
-                full: 'ពេញ',
-                noSlots: 'មិនមានម៉ោងទំនេរ។ សូមសាកល្បងថ្ងៃផ្សេង ឬកាត់បន្ថយចំនួនទីលាន',
-                errorTelegram: 'កំហុស៖ សូមបើកកម្មវិធីនេះតាម Telegram',
-                errorFillFields: 'សូមបំពេញព័ត៌មានទាំងអស់ និងជ្រើសរើសម៉ោង',
-                successBooked: 'ការកក់បានជោគជ័យ! ជួបគ្នានៅទីលាន! 🎉',
-                successBookedCredits: 'ការកក់បានជោគជ័យ! បានប្រើក្រេឌីតរួចរាល់! 🎉',
-                errorDoubleBooked: 'ម៉ោងនេះទើបតែមានអ្នកកក់។ សូមជ្រើសរើសម៉ោងផ្សេង',
-                errorBookingFailed: 'ការកក់បរាជ័យ។ សូមព្យាយាមម្តងទៀត',
-                errorConnection: 'បញ្ហាការតភ្ជាប់អ៊ីនធឺណិត។ សូមពិនិត្យមើលការតភ្ជាប់របស់អ្នក',
-                modalDate: 'កាលបរិច្ឆេទ',
-                modalTime: 'ម៉ោង',
-                modalDuration: 'រយៈពេល',
-                modalCourts: 'ទីលាន',
-                modalName: 'ឈ្មោះ',
-                modalPhone: 'លេខទូរស័ព្ទ',
-                modalTotal: 'សរុប',
-                hour: 'ម៉ោង',
-                pastTimeError: 'ម៉ោងនេះបានកន្លងផុតទៅហើយ',
-                noSlotsToday: 'ថ្ងៃនេះមិនមានម៉ោងទំនេរទៀតទេ។ សូមសាកល្បងថ្ងៃស្អែក!',
-                insufficientCredits: 'ក្រេឌីតមិនគ្រប់គ្រាន់។ ត្រូវការ {{needed}} ម៉ោង ប៉ុន្តែមានតែ {{have}} ម៉ោង',
+                date: 'áž€áž¶áž›áž”ážšáž·áž…áŸ’áž†áŸáž‘',
+                today: 'ážáŸ’áž„áŸƒáž“áŸáŸ‡',
+                tomorrow: 'ážáŸ’áž„áŸƒážŸáŸ’áž¢áŸ‚áž€',
+                nextWeek: 'ážŸáž”áŸ’ážáž¶áž áŸáž€áŸ’ážšáŸ„áž™',
+                duration: 'ážšáž™áŸˆáž–áŸáž›',
+                hours: 'áž˜áŸ‰áŸ„áž„',
+                courts: 'áž‘áž¸áž›áž¶áž“',
+                selectCourts: 'áž‡áŸ’ážšáž¾ážŸážšáž¾ážŸáž‘áž¸áž›áž¶áž“',
+                court: 'áž‘áž¸áž›áž¶áž“',
+                startTime: 'áž‡áŸ’ážšáž¾ážŸážšáž¾ážŸáž˜áŸ‰áŸ„áž„',
+                selectFirst: 'ážŸáž¼áž˜áž‡áŸ’ážšáž¾ážŸážšáž¾ážŸáž€áž¶áž›áž”ážšáž·áž…áŸ’áž†áŸáž‘ ážšáž™áŸˆáž–áŸáž› áž“áž·áž„áž‘áž¸áž›áž¶áž“áž‡áž¶áž˜áž»áž“',
+                hideFull: 'áž›áž¶áž€áŸ‹áž–áŸáž›áž–áŸáž‰',
+                checking: 'áž€áŸ†áž–áž»áž„áž–áž·áž“áž·ážáŸ’áž™áž˜áž¾áž›áž—áž¶áž–áž‘áŸ†áž“áŸážš...',
+                totalAmount: 'áž…áŸ†áž“áž½áž“áž‘áž¹áž€áž”áŸ’ážšáž¶áž€áŸ‹ážŸážšáž»áž”',
+                payOnArrival: '💵 áž”áž„áŸ‹áž”áŸ’ážšáž¶áž€áŸ‹áž“áŸ…áž–áŸáž›áž˜áž€ážŠáž›áŸ‹',
+                location: 'áž‘áž¸áž›áž¶áž“ Pickleball TK',
+                locationDetails: 'áž”áž¾áž€ážšáŸ€áž„ážšáž¶áž›áŸ‹ážáŸ’áž„áŸƒ áž˜áŸ‰áŸ„áž„ 8:00 áž–áŸ’ážšáž¹áž€ - 10:00 áž™áž”áŸ‹',
+                confirmBooking: '🏟 áž”áž‰áŸ’áž‡áž¶áž€áŸ‹áž€áž¶ážšáž€áž€áŸ‹',
+                processing: 'áž€áŸ†áž–áž»áž„ážŠáŸ†ážŽáž¾ážšáž€áž¶ážšáž€áž¶ážšáž€áž€áŸ‹...',
+                confirmTitle: 'áž”áž‰áŸ’áž‡áž¶áž€áŸ‹áž€áž¶ážšáž€áž€áŸ‹',
+                cancel: 'áž”áŸ„áŸ‡áž”áž„áŸ‹',
+                confirm: 'áž”áž‰áŸ’áž‡áž¶áž€áŸ‹',
+                courtsAvailable: 'áž‘áŸ†áž“áŸážš',
+                full: 'áž–áŸáž‰',
+                noSlots: 'áž˜áž·áž“áž˜áž¶áž“áž˜áŸ‰áŸ„áž„áž‘áŸ†áž“áŸážšáŸ” ážŸáž¼áž˜ážŸáž¶áž€áž›áŸ’áž”áž„ážáŸ’áž„áŸƒáž•áŸ’ážŸáŸáž„ áž¬áž€áž¶ážáŸ‹áž”áž“áŸ’ážáž™áž…áŸ†áž“áž½áž“áž‘áž¸áž›áž¶áž“',
+                errorTelegram: 'áž€áŸ†áž áž»ážŸáŸ– ážŸáž¼áž˜áž”áž¾áž€áž€áž˜áŸ’áž˜ážœáž·áž’áž¸áž“áŸáŸ‡ážáž¶áž˜ Telegram',
+                errorFillFields: 'ážŸáž¼áž˜áž”áŸ†áž–áŸáž‰áž–áŸážáŸŒáž˜áž¶áž“áž‘áž¶áŸ†áž„áž¢ážŸáŸ‹ áž“áž·áž„áž‡áŸ’ážšáž¾ážŸážšáž¾ážŸáž˜áŸ‰áŸ„áž„',
+                successBooked: 'áž€áž¶ážšáž€áž€áŸ‹áž”áž¶áž“áž‡áŸ„áž‚áž‡áŸáž™! áž‡áž½áž”áž‚áŸ’áž“áž¶áž“áŸ…áž‘áž¸áž›áž¶áž“! 🎉',
+                successBookedCredits: 'áž€áž¶ážšáž€áž€áŸ‹áž”áž¶áž“áž‡áŸ„áž‚áž‡áŸáž™! áž”áž¶áž“áž”áŸ’ážšáž¾áž€áŸ’ážšáŸážŒáž¸ážážšáž½áž…ážšáž¶áž›áŸ‹! 🎉',
+                errorDoubleBooked: 'áž˜áŸ‰áŸ„áž„áž“áŸáŸ‡áž‘áž¾áž”ážáŸ‚áž˜áž¶áž“áž¢áŸ’áž“áž€áž€áž€áŸ‹áŸ” ážŸáž¼áž˜áž‡áŸ’ážšáž¾ážŸážšáž¾ážŸáž˜áŸ‰áŸ„áž„áž•áŸ’ážŸáŸáž„',
+                errorBookingFailed: 'áž€áž¶ážšáž€áž€áŸ‹áž”ážšáž¶áž‡áŸáž™áŸ” ážŸáž¼áž˜áž–áŸ’áž™áž¶áž™áž¶áž˜áž˜áŸ’ážáž„áž‘áŸ€áž',
+                errorConnection: 'áž”áž‰áŸ’áž áž¶áž€áž¶ážšážáž—áŸ’áž‡áž¶áž”áŸ‹áž¢áŸŠáž¸áž“áž’ážºážŽáž·ážáŸ” ážŸáž¼áž˜áž–áž·áž“áž·ážáŸ’áž™áž˜áž¾áž›áž€áž¶ážšážáž—áŸ’áž‡áž¶áž”áŸ‹ážšáž”ážŸáŸ‹áž¢áŸ’áž“áž€',
+                modalDate: 'áž€áž¶áž›áž”ážšáž·áž…áŸ’áž†áŸáž‘',
+                modalTime: 'áž˜áŸ‰áŸ„áž„',
+                modalDuration: 'ážšáž™áŸˆáž–áŸáž›',
+                modalCourts: 'áž‘áž¸áž›áž¶áž“',
+                modalName: 'ážˆáŸ’áž˜áŸ„áŸ‡',
+                modalPhone: 'áž›áŸážáž‘áž¼ážšážŸáŸáž–áŸ’áž‘',
+                modalTotal: 'ážŸážšáž»áž”',
+                hour: 'áž˜áŸ‰áŸ„áž„',
+                pastTimeError: 'áž˜áŸ‰áŸ„áž„áž“áŸáŸ‡áž”áž¶áž“áž€áž“áŸ’áž›áž„áž•áž»ážáž‘áŸ…áž áž¾áž™',
+                noSlotsToday: 'ážáŸ’áž„áŸƒáž“áŸáŸ‡áž˜áž·áž“áž˜áž¶áž“áž˜áŸ‰áŸ„áž„áž‘áŸ†áž“áŸážšáž‘áŸ€ážáž‘áŸáŸ” ážŸáž¼áž˜ážŸáž¶áž€áž›áŸ’áž”áž„ážáŸ’áž„áŸƒážŸáŸ’áž¢áŸ‚áž€!',
+                insufficientCredits: 'áž€áŸ’ážšáŸážŒáž¸ážáž˜áž·áž“áž‚áŸ’ážšáž”áŸ‹áž‚áŸ’ážšáž¶áž“áŸ‹áŸ” ážáŸ’ážšáž¼ážœáž€áž¶ážš {{needed}} áž˜áŸ‰áŸ„áž„ áž”áŸ‰áž»áž“áŸ’ážáŸ‚áž˜áž¶áž“ážáŸ‚ {{have}} áž˜áŸ‰áŸ„áž„',
                 // === VENUE / COURT SELECTION TRANSLATIONS ===
-                venueTitle: '🏟️ ទីលាន TK Pickleball',
-                selectCourtsBelow: 'ជ្រើសរើសទីលានរបស់អ្នកខាងក្រោម',
-                chooseTimeSlot: 'ជ្រើសរើសម៉ោង',
-                courtLabel: 'ទីលាន',
-                openStatus: 'ទំនេរ',
-                legendAvailable: 'ទំនេរ',
-                legendSelected: 'ការជ្រើសរើសរបស់អ្នក',
-                legendBooked: 'កក់រួចហើយ',
-                totalHrs: 'ម៉ោងសរុប',
-                hourSingular: 'ម៉ោង',
-                hourPlural: 'ម៉ោង',
-                pricePerHour: '/ម៉ោង',
+                venueTitle: '🏟️ áž‘áž¸áž›áž¶áž“ TK Pickleball',
+                selectCourtsBelow: 'áž‡áŸ’ážšáž¾ážŸážšáž¾ážŸáž‘áž¸áž›áž¶áž“ážšáž”ážŸáŸ‹áž¢áŸ’áž“áž€ážáž¶áž„áž€áŸ’ážšáŸ„áž˜',
+                chooseTimeSlot: 'áž‡áŸ’ážšáž¾ážŸážšáž¾ážŸáž˜áŸ‰áŸ„áž„',
+                courtLabel: 'áž‘áž¸áž›áž¶áž“',
+                openStatus: 'áž‘áŸ†áž“áŸážš',
+                legendAvailable: 'áž‘áŸ†áž“áŸážš',
+                legendSelected: 'áž€áž¶ážšáž‡áŸ’ážšáž¾ážŸážšáž¾ážŸážšáž”ážŸáŸ‹áž¢áŸ’áž“áž€',
+                legendBooked: 'áž€áž€áŸ‹ážšáž½áž…áž áž¾áž™',
+                totalHrs: 'áž˜áŸ‰áŸ„áž„ážŸážšáž»áž”',
+                hourSingular: 'áž˜áŸ‰áŸ„áž„',
+                hourPlural: 'áž˜áŸ‰áŸ„áž„',
+                pricePerHour: '/áž˜áŸ‰áŸ„áž„',
                 // === NAVIGATION TRANSLATIONS ===
-                navBook: 'កក់',
-                navOpenPlay: 'លេងរួមគ្នា',
+                navBook: 'áž€áž€áŸ‹',
+                navOpenPlay: 'áž›áŸáž„ážšáž½áž˜áž‚áŸ’áž“áž¶',
                 // === OPEN PLAY / COMMUNITY TAB TRANSLATIONS ===
-                lookingForGame: 'កំពុងរកគូប្រកួត?',
-                openPlaySlots: 'ម៉ោងលេងសំរាប់គ្រប់គ្នា 🎾',
-                createSlot: '+ បង្កើតម៉ោង',
-                loadingGames: 'កំពុងផ្ទុក...',
-                editProfile: 'កែប្រែប្រវត្តិរូប',
-                displayName: 'ឈ្មោះបង្ហាញ',
-                skillLevel: 'កម្រិតជំនាញ',
-                beginner: 'អ្នកចាប់ផ្ដើម',
-                intermediate: 'មធ្យម',
-                advanced: 'កម្រិតខ្ពស់',
-                phonePrivateNote: '🔒 លេខទូរស័ព្ទរបស់អ្នកមិនត្រូវបានចែករំលែកជាមួយអ្នកលេងដ៏ទៃឡើយ។',
-                saveProfile: 'រក្សាទុកប្រវត្តិរូប',
-                joinGame: 'ចូលលេង',
-                leaveGame: 'ចាកចេញ',
+                lookingForGame: 'áž€áŸ†áž–áž»áž„ážšáž€áž‚áž¼áž”áŸ’ážšáž€áž½áž?',
+                openPlaySlots: 'áž˜áŸ‰áŸ„áž„áž›áŸáž„ážŸáŸ†ážšáž¶áž”áŸ‹áž‚áŸ’ážšáž”áŸ‹áž‚áŸ’áž“áž¶ 🎾',
+                createSlot: '+ áž”áž„áŸ’áž€áž¾ážáž˜áŸ‰áŸ„áž„',
+                loadingGames: 'áž€áŸ†áž–áž»áž„áž•áŸ’áž‘áž»áž€...',
+                editProfile: 'áž€áŸ‚áž”áŸ’ážšáŸ‚áž”áŸ’ážšážœážáŸ’ážáž·ážšáž¼áž”',
+                displayName: 'ážˆáŸ’áž˜áŸ„áŸ‡áž”áž„áŸ’áž áž¶áž‰',
+                skillLevel: 'áž€áž˜áŸ’ážšáž·ážáž‡áŸ†áž“áž¶áž‰',
+                beginner: 'áž¢áŸ’áž“áž€áž…áž¶áž”áŸ‹áž•áŸ’ážŠáž¾áž˜',
+                intermediate: 'áž˜áž’áŸ’áž™áž˜',
+                advanced: 'áž€áž˜áŸ’ážšáž·ážážáŸ’áž–ážŸáŸ‹',
+                phonePrivateNote: '🔒 áž›áŸážáž‘áž¼ážšážŸáŸáž–áŸ’áž‘ážšáž”ážŸáŸ‹áž¢áŸ’áž“áž€áž˜áž·áž“ážáŸ’ážšáž¼ážœáž”áž¶áž“áž…áŸ‚áž€ážšáŸ†áž›áŸ‚áž€áž‡áž¶áž˜áž½áž™áž¢áŸ’áž“áž€áž›áŸáž„ážŠáŸáž‘áŸƒáž¡áž¾áž™áŸ”',
+                saveProfile: 'ážšáž€áŸ’ážŸáž¶áž‘áž»áž€áž”áŸ’ážšážœážáŸ’ážáž·ážšáž¼áž”',
+                joinGame: 'áž…áž¼áž›áž›áŸáž„',
+                leaveGame: 'áž…áž¶áž€áž…áŸáž‰',
                 // === PAYMENT OPTIONS TRANSLATIONS ===
-                payWithCredits: 'បង់ប្រាក់ដោយក្រេឌីត',
-                free: 'ឥតគិតថ្លៃ',
-                hrsLeft: 'ម៉ោងនៅសល់',
-                creditsAndCash: 'ក្រេឌីត + សាច់ប្រាក់',
-                onArrival: 'នៅពេលមកដល់',
-                payFullAtCounter: 'បង់ប្រាក់ទាំងអស់នៅបញ្ជរ'
+                payWithCredits: 'áž”áž„áŸ‹áž”áŸ’ážšáž¶áž€áŸ‹ážŠáŸ„áž™áž€áŸ’ážšáŸážŒáž¸áž',
+                free: 'áž¥ážáž‚áž·ážážáŸ’áž›áŸƒ',
+                hrsLeft: 'áž˜áŸ‰áŸ„áž„áž“áŸ…ážŸáž›áŸ‹',
+                creditsAndCash: 'áž€áŸ’ážšáŸážŒáž¸áž + ážŸáž¶áž…áŸ‹áž”áŸ’ážšáž¶áž€áŸ‹',
+                onArrival: 'áž“áŸ…áž–áŸáž›áž˜áž€ážŠáž›áŸ‹',
+                payFullAtCounter: 'áž”áž„áŸ‹áž”áŸ’ážšáž¶áž€áŸ‹áž‘áž¶áŸ†áž„áž¢ážŸáŸ‹áž“áŸ…áž”áž‰áŸ’áž‡ážš'
             }
         };
 
@@ -2675,7 +2753,7 @@
                 if (data.success && data.balance > 0) {
                     userCreditBalance = data.balance;
                     updateCreditBanner();
-                    console.log('✅ User has ' + userCreditBalance + ' credit hours');
+                    console.log('âœ… User has ' + userCreditBalance + ' credit hours');
                     return data.balance;
                 }
             } catch (e) {
@@ -2750,7 +2828,7 @@
 
                     if (data.success && data.phone) {
                         document.getElementById('phone').value = data.phone;
-                        console.log('✅ Auto-filled phone from previous booking');
+                        console.log('âœ… Auto-filled phone from previous booking');
                     }
                 } catch (e) {
                     console.log('Could not prefill user data:', e);
@@ -2780,7 +2858,7 @@
             } else if (dateInput && dateInput.value) {
                 // No time selected yet - show range or default
                 totalPrice = duration * courts * PRICING.WEEKDAY_OFFPEAK; // Show minimum
-                rateText = currentLang === 'km' ? '$13-$15/ម៉ោង' : '$13-$15/hr';
+                rateText = currentLang === 'km' ? '$13-$15/áž˜áŸ‰áŸ„áž„' : '$13-$15/hr';
             } else {
                 totalPrice = duration * courts * PRICING.WEEKDAY_PEAK; // Default to peak
             }
@@ -2857,7 +2935,7 @@
                 rebookBtn.style.background = 'linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%)';
                 rebookBtn.style.color = 'white';
                 rebookBtn.style.border = 'none';
-                rebookBtn.innerHTML = '🔞 Same as Last';
+                rebookBtn.innerHTML = '🏓ž Same as Last';
 
                 rebookBtn.onclick = () => {
                     selectDuration(parseInt(data.duration));
@@ -2895,6 +2973,7 @@
 
             if (!date || !duration || !courts) {
                 document.getElementById('timeLoadingMessage').style.display = 'none';
+                hideCourtArenaLoading();
                 return;
             }
 
@@ -2904,6 +2983,14 @@
             if (cached && (Date.now() - cached.timestamp < CACHE_DURATION)) {
                 renderTimeSlots(cached.data, cached.courtStatus);
                 document.getElementById('timeLoadingMessage').style.display = 'none';
+                
+                // Update court arena if a time is selected
+                const selectedTime = document.getElementById('selectedTime').value;
+                if (selectedTime && cached.courtStatus && cached.courtStatus[selectedTime]) {
+                    updateCourtTilesAvailability(cached.data[selectedTime], cached.courtStatus[selectedTime]);
+                } else {
+                    hideCourtArenaLoading();
+                }
                 return;
             }
 
@@ -2925,13 +3012,23 @@
                     });
 
                     renderTimeSlots(data.availability, data.courtStatus);
+                    
+                    // Update court arena if a time is selected
+                    const selectedTime = document.getElementById('selectedTime').value;
+                    if (selectedTime && data.courtStatus && data.courtStatus[selectedTime]) {
+                        updateCourtTilesAvailability(data.availability[selectedTime], data.courtStatus[selectedTime]);
+                    } else {
+                        hideCourtArenaLoading();
+                    }
                 } else {
                     showMessage(data.error || translations[currentLang].errorConnection, 'error');
+                    hideCourtArenaLoading();
                 }
             } catch (error) {
                 console.error('👥 Fetch error:', error);
                 document.getElementById('timeLoadingMessage').style.display = 'none';
                 showMessage(translations[currentLang].errorConnection, 'error');
+                hideCourtArenaLoading();
             }
         }
 
@@ -2989,7 +3086,7 @@
                     ? (availableCourts > requestedCourts + 2 ? `✔ ${availableCourts} ${translations[currentLang].courtsAvailable}` :
                         availableCourts === requestedCourts ? `! ${availableCourts} left` :
                             `${availableCourts} ${translations[currentLang].courtsAvailable}`)
-                    : (availableCourts > 0 ? `${availableCourts} ${translations[currentLang].courtsAvailable}` : `● ${translations[currentLang].full}`);
+                    : (availableCourts > 0 ? `${availableCourts} ${translations[currentLang].courtsAvailable}` : `● ${translations[currentLang].full}`);
 
                 slotDiv.innerHTML = `
                 <div class="time">${slot.label}</div>
@@ -3126,7 +3223,7 @@
                 const currentHour = now.getHours();
 
                 if (selectedHour <= currentHour) {
-                    showMessage('⚠️ ' + translations[currentLang].pastTimeError, 'error');
+                    showMessage('⚠ï¸ ' + translations[currentLang].pastTimeError, 'error');
                     availabilityCache.clear();
                     checkAndLoadAvailability();
                     return false;
@@ -3218,7 +3315,7 @@
             
 
             if (!navigator.onLine) {
-                showMessage('❌ No internet connection.', 'error');
+                showMessage('âŒ No internet connection.', 'error');
                 return;
             }
 
@@ -3307,7 +3404,7 @@
                     localStorage.setItem('lastBooking', JSON.stringify(lastBooking));
 
                     availabilityCache.clear();
-                    console.log('🔒ï¸ Cleared availability cache');
+                    console.log('🔒Ã¯Â¸Â Cleared availability cache');
 
                     if (data.creditsUsed) {
                         userCreditBalance = data.newCreditBalance !== undefined ? data.newCreditBalance : (userCreditBalance - data.creditsUsed);
@@ -3320,7 +3417,7 @@
                     } else if (paymentMethod === 'partial' && data.creditsUsed > 0) {
                         const creditsUsed = data.creditsUsed;
                         const cashDue = data.cashDue || ((totalHours - creditsUsed) * PRICING.WEEKDAY_PEAK);
-                        successMsg = `✅ Booking confirmed! ${creditsUsed} hrs credits used, $${cashDue} due on arrival. 🎉`;
+                        successMsg = `âœ… Booking confirmed! ${creditsUsed} hrs credits used, $${cashDue} due on arrival. 🎉`;
                     } else {
                         successMsg = translations[currentLang].successBooked;
                     }
@@ -3349,7 +3446,7 @@
                     }, 3000);
                 } else {
                     const errorMsg = data.error || data.message || translations[currentLang].errorBookingFailed;
-                    console.error('❌ Booking error:', errorMsg);
+                    console.error('âŒ Booking error:', errorMsg);
                     showMessage(errorMsg, 'error');
 
                     if (errorMsg.includes('already booked') || errorMsg.includes('not available')) {
@@ -3490,6 +3587,33 @@
         // ============================================
         // VISUAL COURT ARENA FUNCTIONS
         // ============================================
+        function showCourtArenaLoading() {
+            const container = document.getElementById('courtArenaContainer');
+            const loading = document.getElementById('courtArenaLoading');
+            const arena = document.getElementById('courtArena');
+            const prompt = document.getElementById('selectTimePrompt');
+            const legend = document.querySelector('.court-legend');
+            
+            // Show container
+            container.classList.remove('hidden');
+            
+            // Hide prompt, show loading
+            if (prompt) prompt.style.display = 'none';
+            loading.classList.add('active');
+            arena.classList.add('loading');
+            if (legend) legend.style.display = 'none';
+        }
+        
+        function hideCourtArenaLoading() {
+            const loading = document.getElementById('courtArenaLoading');
+            const arena = document.getElementById('courtArena');
+            const legend = document.querySelector('.court-legend');
+            
+            loading.classList.remove('active');
+            arena.classList.remove('loading');
+            if (legend) legend.style.display = '';
+        }
+        
         function selectTimeSlotPill(time) {
             // Update pill selection UI
             document.querySelectorAll('.time-slot-pill').forEach(pill => {
@@ -3498,6 +3622,9 @@
 
             // Set the hidden input directly (since old grid is hidden)
             document.getElementById('selectedTime').value = time;
+            
+            // Show loading state for court arena
+            showCourtArenaLoading();
             
             // Get currently selected court (if any)
             const selectedCourtNumbers = document.getElementById('selectedCourtNumbers')?.value || '';
@@ -3560,14 +3687,17 @@
             const duration = document.getElementById('duration').value;
             const courtsRequested = document.getElementById('courts').value;
 
-            if (!date) return;
+            if (!date) {
+                hideCourtArenaLoading();
+                return;
+            }
 
             const cacheKey = `${date}_${duration}_${courtsRequested}`;
             const cached = availabilityCache.get(cacheKey);
 
-            // If cache is older than 5 seconds, force refresh for fresh data
+            // If cache is older than 15 seconds, force refresh for fresh data
             if (!cached || (Date.now() - cached.timestamp > 15000)) {
-                // Trigger fresh availability check
+                // Trigger fresh availability check (loading will be hidden after fetch completes)
                 performAvailabilityCheck();
                 return;
             }
@@ -3630,6 +3760,9 @@
                     }
                 }
             });
+            
+            // Hide loading animation after updating tiles
+            hideCourtArenaLoading();
         }
 
         function toggleCourtTileSelection(tile, courtNum) {
@@ -3735,7 +3868,7 @@
             if (selectedCourtsInput) {
                 selectedCourtsInput.value = selectedCourtNumbers.join(',');
             } else {
-                console.error('❌ selectedCourtNumbers hidden input NOT FOUND!');
+                console.error('âŒ selectedCourtNumbers hidden input NOT FOUND!');
             }
             
 
@@ -3765,7 +3898,7 @@
             
             
             if (!cached || !cached.courtStatus) {
-                console.warn('⚠️ No cache or courtStatus for time slot update');
+                console.warn('⚠ï¸ No cache or courtStatus for time slot update');
                 return;
             }
             
@@ -3906,13 +4039,13 @@
             startAutoRefresh();
 
             window.addEventListener('online', () => {
-                showMessage('✅ Back online! Refreshing...', 'success');
+                showMessage('âœ… Back online! Refreshing...', 'success');
                 availabilityCache.clear();
                 checkAndLoadAvailability();
             });
 
             window.addEventListener('offline', () => {
-                showMessage('⚠️ No internet connection.', 'error');
+                showMessage('⚠ï¸ No internet connection.', 'error');
             });
         }
         
@@ -4086,7 +4219,7 @@
                             let actionButton = '';
                             if (isPast) {
                                 // Past slot - no action buttons
-                                actionButton = `<div style="text-align:center; padding:10px; color:var(--text-muted); font-size:12px; background:rgba(0,0,0,0.2); border-radius:8px;">⏱ This session has ended</div>`;
+                                actionButton = `<div style="text-align:center; padding:10px; color:var(--text-muted); font-size:12px; background:rgba(0,0,0,0.2); border-radius:8px;">â± This session has ended</div>`;
                             } else if (isJoined) {
                                 actionButton = `<button class="btn-leave-game" id="btn-leave-${slot.id}" onclick="leaveOpenPlaySlot('${slot.id}', this)">
                                     <span style="font-size:16px;">🚪</span> LEAVE GAME
@@ -4100,7 +4233,7 @@
                             // Status Badge Logic
                             let statusBadge = '';
                             if (isPast) {
-                                statusBadge = `<span style="background:#444; color:#999; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:700;">ENDED ⏱</span>`;
+                                statusBadge = `<span style="background:#444; color:#999; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:700;">ENDED â±</span>`;
                             } else if (slot.count >= 2) {
                                 statusBadge = `<span style="background:var(--success-light); color:var(--emerald); padding:2px 8px; border-radius:12px; font-size:11px; font-weight:700;">CONFIRMED ✔</span>`;
                             } else {
@@ -4197,7 +4330,7 @@
             const originalBtnText = btnElement ? btnElement.innerHTML : '';
             if (btnElement) {
                 btnElement.disabled = true;
-                btnElement.innerHTML = '⏳ Joining...';
+                btnElement.innerHTML = 'â³ Joining...';
                 btnElement.style.opacity = '0.7';
             }
 
@@ -4252,7 +4385,7 @@
             const originalBtnText = btnElement ? btnElement.innerHTML : '';
             if (btnElement) {
                 btnElement.disabled = true;
-                btnElement.innerHTML = '⏳ Leaving...';
+                btnElement.innerHTML = 'â³ Leaving...';
                 btnElement.style.opacity = '0.7';
             }
 
@@ -4463,7 +4596,7 @@
 
             const btn = document.querySelector('#createSlotModal .btn-primary');
             const originalText = btn.textContent;
-            btn.textContent = "Creating... ⏳";
+            btn.textContent = "Creating... â³";
             btn.disabled = true;
 
             // showLoading(true); // Modal covers this, so we use button state instead.
@@ -4504,8 +4637,8 @@
             <h2 class="modal-header">Create Open Play Slot</h2>
             <p style="color:var(--text-muted); font-size:13px; margin-bottom:16px;">
                 Create a slot and invite others to join! <br>
-                <span style="color:#F59E0B">⚠️ Fee: $5/hr per player (Walk-in)</span><br>
-                <span style="color:#EF4444">⚠️ Slots with 0 players will be removed 1h before game time.</span>
+                <span style="color:#F59E0B">⚠ï¸ Fee: $5/hr per player (Walk-in)</span><br>
+                <span style="color:#EF4444">⚠ï¸ Slots with 0 players will be removed 1h before game time.</span>
             </p>
             <div class="form-group">
                 <label>Date</label>
