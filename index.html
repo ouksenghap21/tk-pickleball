@@ -1976,7 +1976,12 @@
 
                     <!-- Time Slider -->
                     <div class="time-slider-container">
-                        <div class="time-slider-label" data-translate="chooseTimeSlot">Choose Time Slot</div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <div class="time-slider-label" data-translate="chooseTimeSlot">Choose Time Slot</div>
+                            <button type="button" id="refreshAvailabilityBtn" onclick="forceRefreshAvailability()" style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 4px 10px; border-radius: 6px; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                                🔄 Refresh
+                            </button>
+                        </div>
                         <div class="time-slider-scroll" id="timeSliderScroll">
                             <div class="time-slot-pill" data-time="08:00">8:00 AM</div>
                             <div class="time-slot-pill" data-time="09:00">9:00 AM</div>
@@ -2360,7 +2365,32 @@
         let autoRefreshTimer = null;
         let currentLang = 'en';
         const availabilityCache = new Map();
-        const CACHE_DURATION = 30000;
+        const CACHE_DURATION = 10000; // 10 seconds - short cache for fresh availability data
+
+        // Force refresh availability - clears cache and reloads
+        function forceRefreshAvailability() {
+            availabilityCache.clear();
+            
+            // Visual feedback
+            const btn = document.getElementById('refreshAvailabilityBtn');
+            if (btn) {
+                btn.innerHTML = '⏳ Loading...';
+                btn.disabled = true;
+            }
+            
+            // Trigger refresh
+            performAvailabilityCheck().then(() => {
+                if (btn) {
+                    btn.innerHTML = '🔄 Refresh';
+                    btn.disabled = false;
+                }
+            });
+            
+            // Haptic feedback
+            if (typeof Telegram !== 'undefined' && Telegram.WebApp.HapticFeedback) {
+                Telegram.WebApp.HapticFeedback.impactOccurred('light');
+            }
+        }
 
         // Credit system variables
         let userCreditBalance = 0;
@@ -3473,6 +3503,13 @@
 
             const cacheKey = `${date}_${duration}_${courtsRequested}`;
             const cached = availabilityCache.get(cacheKey);
+
+            // If cache is older than 5 seconds, force refresh for fresh data
+            if (!cached || (Date.now() - cached.timestamp > 5000)) {
+                // Trigger fresh availability check
+                performAvailabilityCheck();
+                return;
+            }
 
             if (cached && cached.data) {
                 // If we have precise court status from backend, use it
