@@ -769,13 +769,7 @@
         }
 
         .time-slot-pill:hover {
-            background: var(--bg-tertiary, #3A3A3C);
-        }
-
-        .time-slot-pill.selected {
-            background: var(--primary);
-            color: white;
-            box-shadow: none;
+            background: var(--bg-tertiary);
         }
 
         .time-slot-pill.unavailable {
@@ -783,6 +777,7 @@
             cursor: not-allowed;
             text-decoration: line-through;
             color: var(--text-muted);
+            background: var(--bg-elevated);
         }
 
         .time-slot-pill.almost-full {
@@ -793,6 +788,15 @@
         .time-slot-pill.plenty {
             background: var(--success-light);
             color: var(--success);
+        }
+
+        /* Selected state - must override all other states */
+        .time-slot-pill.selected,
+        .time-slot-pill.selected.plenty,
+        .time-slot-pill.selected.almost-full {
+            background: var(--primary) !important;
+            color: white !important;
+            box-shadow: none;
         }
 
         .time-slot-pill.peak::after {
@@ -989,17 +993,14 @@
 
         .legend-dot.available {
             background: var(--emerald);
-            box-shadow: 0 0 10px var(--emerald-glow);
         }
 
         .legend-dot.selected {
-            background: var(--accent);
-            box-shadow: 0 0 10px var(--accent-glow);
+            background: var(--primary);
         }
 
         .legend-dot.unavailable {
-            background: var(--text-muted);
-            opacity: 0.5;
+            background: var(--bg-tertiary);
         }
 
         .skeleton {
