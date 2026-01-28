@@ -4079,9 +4079,9 @@
                 }
             }
 
-            // Fetch Slots
+            // Fetch Slots (no-store to ensure fresh data after join/leave)
             const slotsUrl = `${BACKEND_URL}?action=getOpenPlaySlots&t=${new Date().getTime()}`;
-            const res = await fetch(slotsUrl);
+            const res = await fetch(slotsUrl, { cache: 'no-store' });
             const data = await res.json();
 
             // Clear list only AFTER we have data, just before rendering
@@ -4268,8 +4268,10 @@
                 const statusText = data.new_count >= 2 ? "GAME CONFIRMED!" : "PENDING - Need more players";
                 showMessage("Successfully joined! " + statusText, "success");
 
-                // Refresh to show updated player list
-                loadCommunityData();
+                // Refresh to show updated player list (small delay to ensure backend processed)
+                setTimeout(async () => {
+                    await loadCommunityData();
+                }, 300);
 
             } else {
                 showMessage(data.error, "error");
@@ -4313,7 +4315,10 @@
 
             if (data.success) {
                 showMessage("You have left the game", "success");
-                loadCommunityData(); // Refresh to update player list
+                // Small delay to ensure backend has processed, then force refresh
+                setTimeout(async () => {
+                    await loadCommunityData();
+                }, 300);
             } else {
                 showMessage(data.error, "error");
             }
@@ -4593,7 +4598,7 @@
             onclick="hideCreateSlotModal()">Cancel</button>
     </div>
 </div>
-```
+
 
 </body>
 
