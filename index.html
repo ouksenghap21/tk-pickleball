@@ -2759,13 +2759,13 @@
             const totalHours = duration * courts;
 
             const dateInput = document.getElementById('date');
-            const selectedTime = document.querySelector('.time-slot.selected');
+            const selectedTimePill = document.querySelector('.time-slot-pill.selected');
 
             let totalPrice;
             let rateText = '@ $15/hour per court';
 
-            if (dateInput && dateInput.value && selectedTime) {
-                const time = selectedTime.dataset.time;
+            if (dateInput && dateInput.value && selectedTimePill) {
+                const time = selectedTimePill.dataset.time;
                 totalPrice = calculateDynamicPrice(dateInput.value, time, duration, courts);
                 const rateInfo = getRateLabel(dateInput.value, time);
                 rateText = rateInfo[currentLang] || rateInfo.en;
