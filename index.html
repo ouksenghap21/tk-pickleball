@@ -15,7 +15,7 @@
             --bg-card: #252540;
             --bg-elevated: #2D2D4A;
 
-```
+
         /* Vibrant Accent Colors */
         --primary: #6366F1;
         --primary-light: #818CF8;
@@ -1970,7 +1970,7 @@
                     date,
                     duration, and courts first.</p>
                 <div id="timeLoadingMessage" class="time-loading" style="display: none;" data-i18n="checking">
-                    Checking
+                    Please wait, loading availability...
                     availability...</div>
                 <div id="timeGrid" class="time-grid"></div>
                 <input type="hidden" id="selectedTime" name="time" required>
@@ -2433,7 +2433,7 @@
             startTime: 'Select Time',
             selectFirst: 'Select date, duration, and courts first.',
             hideFull: 'Hide full slots',
-            checking: 'Checking availability...',
+            checking: 'Please wait, loading availability...',
             totalAmount: 'Total Amount',
             payOnArrival: '💵 Pay on arrival',
             location: 'TK Pickleball Courts',
@@ -2499,7 +2499,7 @@
             startTime: 'ជ្រើសរើសម៉ោង',
             selectFirst: 'សូមជ្រើសរើសកាលបរិច្ឆេទ រយៈពេល និងទីលានជាមុន',
             hideFull: 'លាក់ពេលដែលពេញ',
-            checking: 'កំពុងពិនិត្យ...',
+            checking: 'សូមរង់ចាំ កំពុងផ្ទុកទិន្នន័យ...',
             totalAmount: 'ចំនួនសរុប',
             payOnArrival: '💵 បង់នៅពេលមកដល់',
             location: 'ទីលាន Pickleball TK',
@@ -4240,7 +4240,7 @@
         const originalBtnText = btnElement ? btnElement.innerHTML : '';
         if (btnElement) {
             btnElement.disabled = true;
-            btnElement.innerHTML = '⏳ Joining...';
+            btnElement.innerHTML = '⏳ Please wait...';
             btnElement.style.opacity = '0.7';
         }
 
@@ -4297,7 +4297,7 @@
         const originalBtnText = btnElement ? btnElement.innerHTML : '';
         if (btnElement) {
             btnElement.disabled = true;
-            btnElement.innerHTML = '⏳ Leaving...';
+            btnElement.innerHTML = '⏳ Please wait...';
             btnElement.style.opacity = '0.7';
         }
 
