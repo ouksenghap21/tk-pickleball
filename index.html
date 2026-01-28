@@ -1003,6 +1003,44 @@
             background: var(--bg-tertiary);
         }
 
+        /* Court Loading Message */
+        .court-loading {
+            display: none;
+            text-align: center;
+            padding: 32px 20px;
+            margin: 16px 0;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-card);
+        }
+
+        .court-loading.show {
+            display: block;
+        }
+
+        .court-loading-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .loading-spinner {
+            width: 24px;
+            height: 24px;
+            border: 2.5px solid var(--bg-tertiary);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         .skeleton {
             background: linear-gradient(90deg, var(--bg-elevated) 25%, var(--bg-card) 50%, var(--bg-elevated) 75%);
             background-size: 200% 100%;
@@ -1977,6 +2015,14 @@
                         </div>
                     </div>
 
+                    <!-- Court Loading Message -->
+                    <div class="court-loading" id="courtLoading">
+                        <div class="court-loading-content">
+                            <div class="loading-spinner"></div>
+                            <span data-translate="courtLoading">Checking court availability...</span>
+                        </div>
+                    </div>
+
                     <!-- 3D Court Arena -->
                     <div class="court-arena">
                         <div class="court-grid-3d" id="courtGrid3D">
@@ -2515,6 +2561,7 @@
                 legendAvailable: 'Available',
                 legendSelected: 'Your Selection',
                 legendBooked: 'Booked',
+                courtLoading: 'Checking court availability...',
                 totalHrs: 'total hrs',
                 hourSingular: 'hour',
                 hourPlural: 'hours',
@@ -2580,6 +2627,7 @@
                 legendAvailable: 'ទំនេរ',
                 legendSelected: 'ជម្រើសរបស់អ្នក',
                 legendBooked: 'បានកក់',
+                courtLoading: 'សូមរង់ចាំបន្តិច កំពុងពិនិត្យមើលទីលាន...',
                 totalHrs: 'សរុប ម៉ោង',
                 hourSingular: 'ម៉ោង',
                 hourPlural: 'ម៉ោង',
@@ -2969,6 +3017,10 @@
             }
 
             showSkeletonSlots();
+            
+            // Show court loading message
+            const courtLoading = document.getElementById('courtLoading');
+            if (courtLoading) courtLoading.classList.add('show');
 
             try {
                 const url = `${BACKEND_URL}?action=checkAvailability&date=${date}&duration=${duration}&courts=${courts}`;
@@ -2992,6 +3044,8 @@
             } catch (error) {
                 console.error('👥 Fetch error:', error);
                 document.getElementById('timeLoadingMessage').style.display = 'none';
+                const courtLoading = document.getElementById('courtLoading');
+                if (courtLoading) courtLoading.classList.remove('show');
                 showMessage(translations[currentLang].errorConnection, 'error');
             }
         }
@@ -3657,6 +3711,10 @@
         }
 
         function updateCourtTilesAvailability(availableCourts, courtStatusArray) {
+            // Hide court loading message
+            const courtLoading = document.getElementById('courtLoading');
+            if (courtLoading) courtLoading.classList.remove('show');
+            
             const tiles = document.querySelectorAll('.court-tile');
             
             // Get currently selected court numbers to preserve selection if still available
